@@ -27,18 +27,30 @@
 #define _CLASSDIAGRAM_HPP
 
 #include "defines.hpp"
-#include <map>
-#include <vector>
+#include "elementobject.hpp"
+#include "_elementnamerelator.hpp"
+#include <boost/unordered_map.hpp>
+#include <boost/bind.hpp>
 
-using std::multimap;
-using std::vector;
+using boost::bind;
+using boost::hash;
+
+typedef boost::shared_ptr<ElementNameRelator> ElementNameRelatorPtr;
+typedef boost::unordered_map<std::string, ElementObjectPtr> elementmap;
+typedef boost::unordered_map<ElementObject*, ElementNameRelatorPtr> relatormap;
+
 
 struct ClassDiagram::ClassDiagramPrivate
 {
 	ClassDiagramPrivate()
 	{
 	}
+	
+	void renameElement(ElementObject * element, const std::string & oldName);
+	void removeFromRelators(ElementObject * element);
 
+	elementmap _elements;
+	relatormap _relators;
 
 };
 

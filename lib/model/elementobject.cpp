@@ -103,6 +103,11 @@ ElementObject * ElementObject::parent() const
 
 string ElementObject::qualifiedName() const
 {
+	return "to be implemented";
+}
 
+ClassDiagram * ElementObject::classDiagram() const
+{
+	return _dd->_diagram;
 }
 

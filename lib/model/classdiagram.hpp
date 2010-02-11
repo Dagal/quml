@@ -32,6 +32,8 @@
 
 class ClassDiagram
 {
+	friend class ElementObject;
+
 	class ClassDiagramPrivate;
 
 public:
@@ -40,7 +42,10 @@ public:
 	void attachElementObject(ElementObjectPtr elementObject);
 	ElementObjectPtr detachElementObject(const std::string & elementName);
 
-	std::vector<ElementObject *> findElementsByQualifiedName(const std::string & elementName);
+	ElementObject * findElementsByQualifiedName(const std::string & elementName);
+
+protected:
+	void onElementNameChanged(ElementObject * element, const std::string & oldName);
 
 private:
 	boost::shared_ptr<ClassDiagramPrivate> _dd;

@@ -33,7 +33,7 @@ struct ElementObject::ElementObjectPrivate
 	ElementObjectPrivate(const ElementType type, ClassDiagram * diagram)
 	 : _type(type)
 	 , _parent(0)
-	 , _diagram(0)
+	 , _diagram(diagram)
 	{
 	}
 

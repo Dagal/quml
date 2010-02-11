@@ -23,42 +23,40 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include <iostream>
-#include <QSharedPointer>
-#include <QApplication>
-#include <QTimer>
-#include <QDebug>
-#include <iostream>
-#include <boost/bind.hpp>
-#include <algorithm>
-#include <vector>
-#include <boost/shared_ptr.hpp>
-#include <boost/unordered_set.hpp>
+#ifndef _ELEMENTNAMERELATIONSHIP_HPP
+#define _ELEMENTNAMERELATIONSHIP_HPP
+
+#include "classdiagram.hpp"
 #include <boost/function.hpp>
+#include <vector>
+#include <string>
 
-using std::cout;
-using std::vector;
-
-struct A
+class ElementNameRelator
 {
-	void operator()(int i)
-	{
-		std::cout << i << std::endl;
-	}
+	typedef boost::function<void (ElementObject*, std::string)> AltererFunctor;
 
-	std::string name()
+	struct Alterer
 	{
-		return "teast";
-	}
+	public:
+		Alterer(ElementObject * element, const AltererFunctor & functor)
+			: _element(element), _functor(functor)
+		{
+		}
+
+		void operator()(const std::string & newName);
+
+		ElementObject * _element;
+		AltererFunctor _functor;
+	};
+
+public:
+	void addAlterer(ElementObject * element, const AltererFunctor & functor);
+	void removeAlterer(ElementObject * object);
+
+	void executeAlterers(const std::string & name);
+
+private:
+	std::vector<Alterer> _alterers;
 };
 
-int main(int argc, char ** argv)
-{
-	A b;
-	std::vector<A> a;
-
-	//std::for_each(a.begin(), a.end(), boost::bind<void>(_1, 4));
-
-	boost::bind<void>(&A::operator(), _1, 4)(b);
-
-}
+#endif // _ELEMENTNAMERELATIONSHIP_HPP

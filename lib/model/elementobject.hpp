@@ -31,13 +31,12 @@
 #include <vector>
 #include <boost/signal.hpp>
 
-
 using std::string;
 using std::vector;
 
 class ElementObject
 {
-	friend class Diagram;
+	friend class ClassDiagram;
 
 	class ElementObjectPrivate;
 
@@ -51,7 +50,7 @@ public:
 	void setParent(ElementObject * parent);
 	const string & name() const;
 	ElementObject * parent() const;
-	ClassDiagram * diagram() const;
+	ClassDiagram * classDiagram() const;
 	ElementType type() const;
 	std::vector<ElementObject *> children() const;
 	string qualifiedName() const;

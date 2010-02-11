@@ -14,13 +14,15 @@ HEADERS += model/elementobject.hpp \
     model/datatypeobject.hpp \
     model/classdiagram.hpp \
     model/defines.hpp \
-    model/_classdiagram.hpp
+    model/_classdiagram.hpp \
+    model/_elementnamerelator.hpp
 SOURCES += model/elementobject.cpp \
     model/classobject.cpp \
     model/propertyobject.cpp \
     model/operationobject.cpp \
     model/parameterobject.cpp \
     model/datatypeobject.cpp \
-    model/classdiagram.cpp
+    model/classdiagram.cpp \
+    model/_elementnamerelator.cpp
 REL_PATH = 
 include($${REL_PATH}qumllib.pri)

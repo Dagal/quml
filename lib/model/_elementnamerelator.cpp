@@ -23,42 +23,39 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include <iostream>
-#include <QSharedPointer>
-#include <QApplication>
-#include <QTimer>
-#include <QDebug>
-#include <iostream>
+#include "_elementnamerelator.hpp"
 #include <boost/bind.hpp>
-#include <algorithm>
-#include <vector>
-#include <boost/shared_ptr.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/function.hpp>
 
-using std::cout;
-using std::vector;
-
-struct A
+void ElementNameRelator::Alterer::operator()(const std::string & newName)
 {
-	void operator()(int i)
-	{
-		std::cout << i << std::endl;
-	}
+	_functor(_element, newName);
+}
 
-	std::string name()
-	{
-		return "teast";
-	}
-};
-
-int main(int argc, char ** argv)
+void ElementNameRelator::addAlterer(ElementObject * element, const AltererFunctor & functor)
 {
-	A b;
-	std::vector<A> a;
+	if(!element)
+		return;
 
-	//std::for_each(a.begin(), a.end(), boost::bind<void>(_1, 4));
+	// remove an alterer if present
+	removeAlterer(element);
 
-	boost::bind<void>(&A::operator(), _1, 4)(b);
+	// add the alterer
+	_alterers.push_back(Alterer(element, functor));
+}
 
+void ElementNameRelator::removeAlterer(ElementObject * object)
+{
+	std::remove_if(
+			_alterers.begin(),
+			_alterers.end(),
+			boost::bind(&Alterer::_functor, _1) == object );
+}
+
+void ElementNameRelator::executeAlterers(const std::string & name)
+{
+	std::for_each(
+			_alterers.begin(),
+			_alterers.end(),
+			boost::bind(&ElementNameRelator::Alterer::operator (), _1, name)
+			);
 }
