@@ -4,3 +4,4 @@ Makefile
 *.so.*
 moc_*
 *.pro.user
+app/app
