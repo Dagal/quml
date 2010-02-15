@@ -25,20 +25,32 @@
 
 #include "elementobject.hpp"
 #include "_elementobject.hpp"
-#include "classobject.hpp"
-#include "operationobject.hpp"
-#include "propertyobject.hpp"
-#include "classdiagram.hpp"
+#include "umldiagram.hpp"
+#include "_umldiagram.hpp"
+#include <boost/bind.hpp>
 
-
-ElementObject::ElementObject(ElementType type, ClassDiagram * diagram)
-	: _dd(new ElementObjectPrivate(type, diagram))
+template<typename T> void deleter(T * element)
 {
+	delete element;
+}
 
+
+ElementObject::ElementObject(ElementType type, ElementObject * parent)
+	: _dd(new ElementObjectPrivate(type))
+{
+	setParent(parent);
 }
 
 ElementObject::~ElementObject()
 {
+	setUMLDiagram(0);
+	setParent(0);
+
+	std::for_each(
+			_dd->_children.begin(),
+			_dd->_children.end(),
+			boost::bind<void>(&deleter<ElementObject>, _1)
+			);
 }
 
 ElementType ElementObject::type() const
@@ -66,6 +78,8 @@ void ElementObject::setParent(ElementObject * parent)
 
 	if(oldParent) oldParent->_dd->removeChild(this);
 	if(parent) parent->_dd->_children.push_back(this);
+
+	if(parent) setUMLDiagram(parent->umlDiagram());
 
 	if(oldParent) oldParent->onChildRemoved(this);
 	if(parent) parent->onChildAdded(this);
@@ -103,11 +117,52 @@ ElementObject * ElementObject::parent() const
 
 string ElementObject::qualifiedName() const
 {
-	return "to be implemented";
+	if(parent())
+		return parent()->qualifiedName() + "::" + name();
+	else
+		return name();
 }
 
-ClassDiagram * ElementObject::classDiagram() const
+UMLDiagram * ElementObject::umlDiagram() const
 {
 	return _dd->_diagram;
+}
+
+void ElementObject::setUMLDiagram(UMLDiagram * diagram)
+{
+	// is it useful to do this?
+	if (umlDiagram() == diagram)
+		return;
+
+	UMLDiagram * oldOne = umlDiagram();
+
+
+	// should we detach from parent?
+	if(parent() && parent()->umlDiagram() != diagram)
+		setParent(0);
+
+	// set the new diagram
+	_dd->_diagram = diagram;
+
+	// remove from old Diagram
+	if(oldOne) oldOne->_dd->detachElementObject(qualifiedName());
+
+	// add to new diagram
+	if(diagram) diagram->_dd->attachElementObject(this);
+
+	// update the children
+	std::for_each(
+			_dd->_children.begin(),
+			_dd->_children.end(),
+			boost::bind(
+					&ElementObject::setUMLDiagram,
+					_1,
+					diagram)
+			);
+}
+
+std::vector<ElementObject *> ElementObject::children() const
+{
+	return _dd->_children;
 }
 

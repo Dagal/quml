@@ -29,31 +29,33 @@
 #include "defines.hpp"
 #include <string>
 #include <vector>
-#include <boost/signal.hpp>
 
-using std::string;
-using std::vector;
 
 class ElementObject
 {
-	friend class ClassDiagram;
-
 	class ElementObjectPrivate;
 
 public:
 	// constructor & destructor
-	ElementObject(ElementType type, ClassDiagram * diagram);
+	ElementObject(ElementType type, ElementObject * parent);
 	virtual ~ElementObject() = 0;
 
 	// getters and setters
-	void setName(const string & newName);
-	void setParent(ElementObject * parent);
-	const string & name() const;
-	ElementObject * parent() const;
-	ClassDiagram * classDiagram() const;
+	void setName(const std::string & newName);
+	const std::string & name() const;
+	virtual std::string qualifiedName() const;
 	ElementType type() const;
+
+	// child/parent functions
+	void setParent(ElementObject * parent);
+	ElementObject * parent() const;
 	std::vector<ElementObject *> children() const;
-	string qualifiedName() const;
+
+	// classdiagram functions
+	UMLDiagram * umlDiagram() const;
+	void setUMLDiagram(UMLDiagram * diagram);
+
+
 
 protected:
 	virtual void onChildAdded(ElementObject * child);

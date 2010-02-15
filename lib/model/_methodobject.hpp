@@ -23,29 +23,19 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef PARAMETEROBJECT_HPP
-#define PARAMETEROBJECT_HPP
+#ifndef _METHODOBJECT_HPP
+#define _METHODOBJECT_HPP
 
-#include "elementobject.hpp"
+#include "methodobject.hpp"
 
-class ParameterObject : public ElementObject
+struct MethodObject::MethodObjectPrivate
 {
-	class ParameterObjectPrivate;
+	MethodObject()
+	{
+	}
 
-public:
-	ParameterObject();
-
-protected:
-	ParameterObject(ElementType type);
-
-public:
-	const DatatypeObject * datatype() const;
-	const std::string & defaultValue() const;
-	void setDatatype(const DatatypeObject * datatype);
-	void setDefaultValue(const std::string & defaultValue);
-
-private:
-	boost::shared_ptr<ParameterObjectPrivate> _dd;
+	const DatatypeObject * _returnType;
+	std::vector<ParameterObject*> _parameters;
 };
 
-#endif // PARAMETEROBJECT_HPP
+#endif // _METHODOBJECT_HPP

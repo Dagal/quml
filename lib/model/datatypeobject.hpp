@@ -31,7 +31,7 @@
 class DatatypeObject : public ElementObject
 {
 public:
-	DatatypeObject(ElementType type, ClassDiagram * diagram);
+	DatatypeObject(ElementType type);
 };
 
 #endif // DATATYPE_HPP

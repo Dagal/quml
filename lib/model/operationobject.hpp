@@ -31,7 +31,7 @@
 class OperationObject : public ElementObject
 {
 public:
-	OperationObject(ClassDiagram * diagram);
+	OperationObject();
 };
 
 #endif // OPERATIONOBJECT_HPP

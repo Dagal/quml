@@ -23,29 +23,9 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef PARAMETEROBJECT_HPP
-#define PARAMETEROBJECT_HPP
+#include "packageobject.hpp"
 
-#include "elementobject.hpp"
-
-class ParameterObject : public ElementObject
+PackageObject::PackageObject(ElementObject * parent)
+	: ElementObject(Element_Package, parent)
 {
-	class ParameterObjectPrivate;
-
-public:
-	ParameterObject();
-
-protected:
-	ParameterObject(ElementType type);
-
-public:
-	const DatatypeObject * datatype() const;
-	const std::string & defaultValue() const;
-	void setDatatype(const DatatypeObject * datatype);
-	void setDefaultValue(const std::string & defaultValue);
-
-private:
-	boost::shared_ptr<ParameterObjectPrivate> _dd;
-};
-
-#endif // PARAMETEROBJECT_HPP
+}

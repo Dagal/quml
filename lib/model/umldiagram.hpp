@@ -23,29 +23,26 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef PARAMETEROBJECT_HPP
-#define PARAMETEROBJECT_HPP
+#ifndef UMLDIAGRAM_HPP
+#define UMLDIAGRAM_HPP
 
-#include "elementobject.hpp"
+#include "defines.hpp"
+#include <vector>
 
-class ParameterObject : public ElementObject
+class UMLDiagram
 {
-	class ParameterObjectPrivate;
+	friend class ElementObject;
+
+	class UMLDiagramPrivate;
 
 public:
-	ParameterObject();
+    UMLDiagram();
 
-protected:
-	ParameterObject(ElementType type);
-
-public:
-	const DatatypeObject * datatype() const;
-	const std::string & defaultValue() const;
-	void setDatatype(const DatatypeObject * datatype);
-	void setDefaultValue(const std::string & defaultValue);
+	ElementObject * findElement(const std::string & qualifiedName) const;
+	std::vector<ElementObject *> elements() const;
 
 private:
-	boost::shared_ptr<ParameterObjectPrivate> _dd;
+	boost::shared_ptr<UMLDiagramPrivate> _dd;
 };
 
-#endif // PARAMETEROBJECT_HPP
+#endif // UMLDIAGRAM_HPP

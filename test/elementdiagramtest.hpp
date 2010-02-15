@@ -23,29 +23,40 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef PARAMETEROBJECT_HPP
-#define PARAMETEROBJECT_HPP
+#ifndef ELEMENTDIAGRAMTEST_HPP
+#define ELEMENTDIAGRAMTEST_HPP
 
-#include "elementobject.hpp"
+#include <QObject>
+#include <QtTest/QtTest>
 
-class ParameterObject : public ElementObject
+#include "defines.hpp"
+
+class ElementDiagramTest : public QObject
 {
-	class ParameterObjectPrivate;
+	Q_OBJECT
 
-public:
-	ParameterObject();
+private slots:
 
-protected:
-	ParameterObject(ElementType type);
+	void parent_AddChildOnCreation();
+	void parent_AddChildAfterCreation();
+	void parentchild_qualifiedName();
+	void parentchild_setnameQualifiedName();
+	void parent_AddToDiagram();
+	void parentChild_RemoveChildParent();
+	void parentChild_AddParentToDiagram();
+	void parentChild_AddChildToDiagram();
+	void parentDiagram_AddChildToParent();
+	void parentChildDiagram_RemoveChildDiagram();
+	void parentChildDiagram_RemoveParentDiagram();
 
-public:
-	const DatatypeObject * datatype() const;
-	const std::string & defaultValue() const;
-	void setDatatype(const DatatypeObject * datatype);
-	void setDefaultValue(const std::string & defaultValue);
+	void cleanup();
+	void init();
 
 private:
-	boost::shared_ptr<ParameterObjectPrivate> _dd;
+	ElementObject * _parent;
+	ElementObject * _child;
+	UMLDiagram * _diagram;
+
 };
 
-#endif // PARAMETEROBJECT_HPP
+#endif // ELEMENTDIAGRAMTEST_HPP

@@ -23,29 +23,56 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef PARAMETEROBJECT_HPP
-#define PARAMETEROBJECT_HPP
+#ifndef VISIBILITY_HPP
+#define VISIBILITY_HPP
 
-#include "elementobject.hpp"
+#include <string>
 
-class ParameterObject : public ElementObject
+enum VisibilityType
 {
-	class ParameterObjectPrivate;
-
-public:
-	ParameterObject();
-
-protected:
-	ParameterObject(ElementType type);
-
-public:
-	const DatatypeObject * datatype() const;
-	const std::string & defaultValue() const;
-	void setDatatype(const DatatypeObject * datatype);
-	void setDefaultValue(const std::string & defaultValue);
-
-private:
-	boost::shared_ptr<ParameterObjectPrivate> _dd;
+	Visibility_Private,
+	Visibility_Public,
+	Visibility_Package,
+	Visibility_Protected,
 };
 
-#endif // PARAMETEROBJECT_HPP
+class Visibility
+{
+public:
+	Visibility(VisibilityType type = Visibility_Private);
+
+	void setType(VisibilityType type);
+	VisibilityType type() const;
+	std::string umlNotation() const;
+
+private:
+	VisibilityType _type;
+};
+
+inline Visibility::Visibility(VisibilityType type)
+	: _type(type)
+{
+}
+
+inline void Visibility::setType(VisibilityType type)
+{
+	_type = type;
+}
+
+inline VisibilityType Visibility::type() const
+{
+	return _type;
+}
+
+inline std::string Visibility::umlNotation() const
+{
+	switch(_type)
+	{
+	case Visibility_Public:		return "+";
+	case Visibility_Protected:	return "#";
+	case Visibility_Private:	return "-";
+	case Visibility_Package:	return "~";
+	}
+}
+
+#endif // VISIBILITY_HPP

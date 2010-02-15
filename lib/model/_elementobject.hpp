@@ -28,20 +28,22 @@
 
 #include "elementobject.hpp"
 
+using std::string;
+
 struct ElementObject::ElementObjectPrivate
 {
-	ElementObjectPrivate(const ElementType type, ClassDiagram * diagram)
+	ElementObjectPrivate(const ElementType type)
 	 : _type(type)
 	 , _parent(0)
-	 , _diagram(diagram)
+	 , _diagram(0)
 	{
 	}
 
 	ElementType _type;
 	string _name;
 	ElementObject * _parent;
-	ClassDiagram * _diagram;
-	vector<ElementObject *> _children;
+	UMLDiagram * _diagram;
+	std::vector<ElementObject *> _children;
 
 	void removeChild(ElementObject * child);
 };

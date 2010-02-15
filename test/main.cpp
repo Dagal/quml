@@ -23,18 +23,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include <QApplication>
-#include <QTimer>
+#include "elementdiagramtest.hpp"
 
-int main(int argc, char ** argv)
+int main()
 {
-	QApplication a(argc, argv);
-
-	QTimer t;
-	a.connect(&t, SIGNAL(timeout()), SLOT(quit()));
-
-	t.start(3000);
-
-	a.exec();
+	ElementDiagramTest t1;
+	QTest::qExec(&t1);
 }
-

@@ -61,7 +61,7 @@ void ClassDiagram::attachElementObject(ElementObjectPtr elementObject)
 	if(elementObject->classDiagram())
 		elementObject->classDiagram()->detachElementObject(elementObject->qualifiedName());
 
-	elementObject->_dd->_diagram = this;
+//	elementObject->_dd->_diagram = this;
 
 }
 
@@ -78,7 +78,7 @@ ElementObjectPtr ClassDiagram::detachElementObject(const string & elementName)
 	_dd->_elements.erase(it);
 
 	// and release us from it
-	val->_dd->_diagram = 0;
+//	val->_dd->_diagram = 0;
 
 	return val;
 }

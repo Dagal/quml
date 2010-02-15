@@ -28,13 +28,15 @@
 
 #include "parameterobject.hpp"
 
+using std::string;
+
 class ParameterObject::ParameterObjectPrivate
 {
 public:
 	ParameterObjectPrivate()
 	{}
 
-	string _datatype;
+	const DatatypeObject * _datatype;
 	string _defaultValue;
 };
 

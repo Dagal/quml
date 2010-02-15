@@ -33,7 +33,7 @@ class ClassObject : public DatatypeObject
 	class ClassObjectPrivate;
 
 public:
-	ClassObject(ClassDiagram * diagram);
+	ClassObject();
 
 protected:
 	virtual void onChildAdded(ElementObject * child);

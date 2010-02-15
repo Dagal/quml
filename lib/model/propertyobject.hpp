@@ -31,7 +31,7 @@
 class PropertyObject : public ParameterObject
 {
 public:
-	PropertyObject(ClassDiagram * diagram);
+	PropertyObject();
 };
 
 #endif // PROPERTYOBJECT_HPP

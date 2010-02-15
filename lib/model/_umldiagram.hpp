@@ -23,29 +23,26 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef PARAMETEROBJECT_HPP
-#define PARAMETEROBJECT_HPP
+#ifndef _UMLDIAGRAM_HPP
+#define _UMLDIAGRAM_HPP
 
-#include "elementobject.hpp"
+#include "umldiagram.hpp"
+#include <boost/unordered_map.hpp>
 
-class ParameterObject : public ElementObject
+struct UMLDiagram::UMLDiagramPrivate
 {
-	class ParameterObjectPrivate;
+	typedef boost::unordered_map<std::string, ElementObject*> elementmap;
 
-public:
-	ParameterObject();
+	UMLDiagramPrivate(UMLDiagram * umldiagram)
+		: _diagram(umldiagram)
+	{
+	}
 
-protected:
-	ParameterObject(ElementType type);
+	void attachElementObject(ElementObject * element);
+	void detachElementObject(const std::string & qualifiedName);
 
-public:
-	const DatatypeObject * datatype() const;
-	const std::string & defaultValue() const;
-	void setDatatype(const DatatypeObject * datatype);
-	void setDefaultValue(const std::string & defaultValue);
-
-private:
-	boost::shared_ptr<ParameterObjectPrivate> _dd;
+	elementmap _elements;
+	UMLDiagram * _diagram;
 };
 
-#endif // PARAMETEROBJECT_HPP
+#endif // _UMLDIAGRAM_HPP

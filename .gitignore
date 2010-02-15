@@ -5,3 +5,4 @@ Makefile
 moc_*
 *.pro.user
 app/app
+test/test

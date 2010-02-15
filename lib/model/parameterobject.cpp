@@ -37,7 +37,7 @@ ParameterObject::ParameterObject(ClassDiagram * diagram)
 {
 }
 
-const string & ParameterObject::datatype() const
+const DatatypeObject * ParameterObject::datatype() const
 {
 	return _dd->_datatype;
 }
@@ -49,7 +49,7 @@ const string & ParameterObject::defaultValue() const
 
 void ParameterObject::setDatatype(const DatatypeObject * datatype)
 {
-	_dd->_datatype = datatype->name();
+	_dd->_datatype = datatype;
 }
 
 void ParameterObject::setDefaultValue(const string & defaultValue)

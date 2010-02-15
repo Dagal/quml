@@ -28,7 +28,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-class ClassDiagram;
+class UMLDiagram;
 class ClassObject;
 class DatatypeObject;
 class ElementObject;
@@ -39,20 +39,13 @@ class PropertyObject;
 enum ElementType
 {
 	Element_Class,
+	Element_Package,
 	Element_Operation,
 	Element_Property,
 	Element_Parameter,
+	Element_Method,
 };
 
 typedef boost::shared_ptr<ElementObject> ElementObjectPtr;
-
-
-#define DELETER_CLASS(CLASSNAME) \
-private: \
-class deleter \
-{\
-public:\
-	void operator()(CLASSNAME * ptr) { delete ptr; }\
-}
 
 #endif // DEFINES_HPP

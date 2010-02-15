@@ -28,6 +28,8 @@
 
 #include "classobject.hpp"
 
+using std::vector;
+
 struct ClassObject::ClassObjectPrivate
 {
 	vector<PropertyObject*> _properties;
