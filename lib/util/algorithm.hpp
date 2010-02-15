@@ -23,32 +23,47 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef _UMLDIAGRAM_HPP
-#define _UMLDIAGRAM_HPP
+#ifndef ALGORITHM_HPP
+#define ALGORITHM_HPP
 
-#include "umldiagram.hpp"
-#include <boost/unordered_map.hpp>
+#include <algorithm>
 
-struct UMLDiagram::UMLDiagramPrivate
+namespace stf
 {
-	typedef std::vector<ElementObject *> elementvct;
-
-	UMLDiagramPrivate(UMLDiagram * umldiagram)
-		: _diagram(umldiagram)
+	template<typename _ForwardIterator, typename _Compare> _ForwardIterator fan_find(_ForwardIterator __first, _ForwardIterator __last, _Compare __fan_comp)
 	{
+		typedef typename std::iterator_traits<_ForwardIterator>::value_type _ValueType;
+		typedef typename std::iterator_traits<_ForwardIterator>::difference_type _DistanceType;
+
+		// concept requirements
+		__glibcxx_function_requires(_ForwardIteratorConcept<_ForwardIterator>)
+
+				_DistanceType __len = std::distance(__first, __last);
+		_DistanceType __half;
+		_ForwardIterator __middle;
+
+		while (__len > 0)
+		{
+			__half = __len >> 1;
+			__middle = __first;
+			std::advance(__middle, __half);
+
+			int __val = __fan_comp(*__middle);
+			if (__val < 0)
+			{
+				__first = __middle;
+				++__first;
+				__len = __len - __half - 1;
+			}
+			else if(__val > 0)
+			{
+				__len = __half;
+			}
+			else return __middle;
+		}
+
+		return __last;
 	}
+}
 
-	void attachElementObject(ElementObject * element);
-	void detachElementObject(const std::string & qualifiedName);
-	void changeElementName(const std::string & oldName, const std::string & newName);
-
-	elementvct::const_iterator findInElements(const std::string & name) const;
-	elementvct::iterator findInElements(const std::string & name);
-	void emptyLocation(const std::string & name);
-	void resortElements();
-
-	elementvct _elements;
-	UMLDiagram * _diagram;
-};
-
-#endif // _UMLDIAGRAM_HPP
+#endif // ALGORITHM_HPP

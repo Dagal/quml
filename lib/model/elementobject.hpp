@@ -36,6 +36,16 @@ class ElementObject
 	class ElementObjectPrivate;
 
 public:
+	struct comparator
+	{
+		bool operator()(const ElementObject * elementA, const ElementObject * elementB) const;
+	};
+	struct string_comparator
+	{
+		int operator()(const ElementObject * element, const std::string & name) const;
+	};
+
+public:
 	// constructor & destructor
 	ElementObject(ElementType type, ElementObject * parent);
 	virtual ~ElementObject() = 0;

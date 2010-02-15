@@ -27,42 +27,52 @@
 #include "_umldiagram.hpp"
 #include "elementobject.hpp"
 #include <boost/bind.hpp>
+#include "algorithm.hpp"
 
 UMLDiagram::UMLDiagram()
 	: _dd(new UMLDiagramPrivate(this))
 {
 }
 
+
+UMLDiagram::UMLDiagramPrivate::elementvct::iterator UMLDiagram::UMLDiagramPrivate::findInElements(const std::string & name)
+{
+	return  stf::fan_find(
+			_elements.begin(),
+			_elements.end(),
+			boost::bind<int>(
+					ElementObject::string_comparator(),
+					_1,
+					boost::ref(name)
+					)
+			);
+}
+
+UMLDiagram::UMLDiagramPrivate::elementvct::const_iterator UMLDiagram::UMLDiagramPrivate::findInElements(const std::string & name) const
+{
+	return  stf::fan_find(
+			_elements.begin(),
+			_elements.end(),
+			boost::bind<int>(
+					ElementObject::string_comparator(),
+					_1,
+					boost::ref(name)
+					)
+			);
+}
+
 ElementObject * UMLDiagram::findElement(const std::string & qualifiedName) const
 {
-	UMLDiagramPrivate::elementmap::iterator i = _dd->_elements.find(qualifiedName);
+	UMLDiagramPrivate::elementvct::const_iterator i = _dd->findInElements(qualifiedName);
 	if(i != _dd->_elements.end())
-		return i->second;
+		return *i;
 	else
 		return 0;
 }
 
 std::vector<ElementObject *> UMLDiagram::elements() const
 {
-	typedef std::vector<ElementObject*> elementvector;
-	elementvector vct;
-
-	std::for_each(
-			_dd->_elements.begin(),
-			_dd->_elements.end(),
-
-			boost::bind(
-					// insert into the vector
-					&elementvector::push_back,
-					boost::ref(vct),
-					boost::bind(
-							// the value of the unordered_map
-							&UMLDiagramPrivate::elementmap::value_type::second,
-							_1)
-					)
-			);
-
-	return vct;
+	return _dd->_elements;
 
 }
 
@@ -77,28 +87,33 @@ void UMLDiagram::UMLDiagramPrivate::attachElementObject(ElementObject * element)
 	emptyLocation(element->qualifiedName());
 
 	// add the element
-	_elements[element->qualifiedName()] = element;
+	_elements.push_back(element);
+	resortElements();
 }
 
 void UMLDiagram::UMLDiagramPrivate::detachElementObject(const std::string & qualifiedName)
 {
-	_elements.erase(qualifiedName);
+	_elements.erase(findInElements(qualifiedName));
 }
 
 void UMLDiagram::UMLDiagramPrivate::emptyLocation(const std::string & name)
 {
-	elementmap::iterator i = _elements.find(name);
+	elementvct::iterator  i = findInElements(name);
 	if(i != _elements.end())
-		i->second->setUMLDiagram(0);
+		(*i)->setUMLDiagram(0);
 }
 
 void UMLDiagram::UMLDiagramPrivate::changeElementName(const std::string & oldName, const std::string & newName)
 {
-	ElementObject * element = _diagram->findElement(oldName);
-	if(!element)
-		return;
-
-	_elements.erase(oldName);
-	emptyLocation(newName);
-	_elements[newName] = element;
+	// just update the complete list
+	resortElements();
 }
+
+void UMLDiagram::UMLDiagramPrivate::resortElements()
+{
+	std::sort(_elements.begin(),
+			  _elements.end(),
+			  ElementObject::comparator());
+}
+
+

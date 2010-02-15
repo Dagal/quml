@@ -35,30 +35,70 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/function.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp>
+#include "algorithm.hpp"
+#include <string>
 
 using std::cout;
 using std::vector;
 
-struct A
+
+
+
+struct test
 {
-	void operator()(int i)
+	struct comparator
 	{
-		std::cout << i << std::endl;
+		bool operator()(const test & t1, const test & t2) const
+		{
+			return t1.name() < t2.name();
+		}
+	};
+
+	test(std::string name)
+		: _name(name) {}
+
+	const std::string & name() const
+	{
+		return _name;
 	}
 
-	std::string name()
+	void print()
 	{
-		return "teast";
+		std::cout << _name;
 	}
+
+	std::string _name;
 };
 
 int main(int argc, char ** argv)
 {
-	A b;
-	std::vector<A> a;
+	std::vector<test> v;
+	v.push_back(test("een"));
+	v.push_back(test("twee"));
+	v.push_back(test("drie"));
+	v.push_back(test("aaaa"));
 
-	//std::for_each(a.begin(), a.end(), boost::bind<void>(_1, 4));
+	std::sort(
+			v.begin(),
+			v.end(),
+			test::comparator()
+			);
+	std::string a = "twee";
 
-	boost::bind<void>(&A::operator(), _1, 4)(b);
+	std::vector<test>::iterator i = stf::fan_find(
+			v.begin(),\
+			v.end(),
+			boost::bind(
+					static_cast<int (std::string::*)(const std::string &) const> (&std::string::compare),
+					boost::bind(&test::name, _1),
+					a
+					)
+			);
 
+	if(i != v.end())
+		std::cout << i->name();
+	else
+		std::cout << "dijn";
 }

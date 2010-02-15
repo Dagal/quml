@@ -34,6 +34,16 @@ template<typename T> void deleter(T * element)
 	delete element;
 }
 
+bool ElementObject::comparator::operator()(const ElementObject * elementA, const ElementObject * elementB) const
+{
+	return elementA->qualifiedName() < elementB->qualifiedName();
+}
+
+int ElementObject::string_comparator::operator()(const ElementObject * element, const std::string & name) const
+{
+	return element->qualifiedName().compare(name);
+}
+
 
 ElementObject::ElementObject(ElementType type, ElementObject * parent)
 	: _dd(new ElementObjectPrivate(type))
@@ -111,7 +121,7 @@ void ElementObject::onChildRemoved(ElementObject * /*child*/)
 {
 }
 
-void ElementObject::onChildNameChanged(const std::string & oldName, ElementObject * /*child*/)
+void ElementObject::onChildNameChanged(const std::string & /*oldName*/, ElementObject * /*child*/)
 {
 
 }
