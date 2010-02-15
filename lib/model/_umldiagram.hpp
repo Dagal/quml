@@ -40,6 +40,8 @@ struct UMLDiagram::UMLDiagramPrivate
 
 	void attachElementObject(ElementObject * element);
 	void detachElementObject(const std::string & qualifiedName);
+	void emptyLocation(const std::string & name);
+	void changeElementName(const std::string & oldName, const std::string & newName);
 
 	elementmap _elements;
 	UMLDiagram * _diagram;

@@ -99,7 +99,8 @@ void ElementObject::setName(const string & newName)
 	string oldName = name();
 	_dd->_name = newName;
 
-
+	if(umlDiagram()) umlDiagram()->_dd->changeElementName(oldName, newName);
+	if(parent()) parent()->onChildNameChanged(oldName, this);
 }
 
 void ElementObject::onChildAdded(ElementObject * /*child*/)
@@ -108,6 +109,11 @@ void ElementObject::onChildAdded(ElementObject * /*child*/)
 
 void ElementObject::onChildRemoved(ElementObject * /*child*/)
 {
+}
+
+void ElementObject::onChildNameChanged(const std::string & oldName, ElementObject * /*child*/)
+{
+
 }
 
 ElementObject * ElementObject::parent() const

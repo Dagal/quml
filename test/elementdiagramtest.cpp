@@ -151,3 +151,14 @@ void ElementDiagramTest::parentChildDiagram_RemoveParentDiagram()
 	QVERIFY(_child->parent() == _parent);
 	QVERIFY(_parent->umlDiagram() == 0);
 }
+
+void ElementDiagramTest::parentChildDiagram_nameChange()
+{
+	_child->setParent(_parent);
+	_parent->setUMLDiagram(_diagram);
+	_parent->setName("parent_new");
+	_child->setName("child_new");
+
+	QCOMPARE(_diagram->findElement(_child->qualifiedName()), _child);
+	QCOMPARE(_diagram->findElement(_parent->qualifiedName()), _parent);
+}

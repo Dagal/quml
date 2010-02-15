@@ -74,9 +74,7 @@ void UMLDiagram::UMLDiagramPrivate::attachElementObject(ElementObject * element)
 	assert(element->umlDiagram() == _diagram);
 
 	// an item already in this collection?
-	elementmap::iterator i = _elements.find(element->qualifiedName());
-	if(i != _elements.end())
-		i->second->setUMLDiagram(0);
+	emptyLocation(element->qualifiedName());
 
 	// add the element
 	_elements[element->qualifiedName()] = element;
@@ -85,4 +83,22 @@ void UMLDiagram::UMLDiagramPrivate::attachElementObject(ElementObject * element)
 void UMLDiagram::UMLDiagramPrivate::detachElementObject(const std::string & qualifiedName)
 {
 	_elements.erase(qualifiedName);
+}
+
+void UMLDiagram::UMLDiagramPrivate::emptyLocation(const std::string & name)
+{
+	elementmap::iterator i = _elements.find(name);
+	if(i != _elements.end())
+		i->second->setUMLDiagram(0);
+}
+
+void UMLDiagram::UMLDiagramPrivate::changeElementName(const std::string & oldName, const std::string & newName)
+{
+	ElementObject * element = _diagram->findElement(oldName);
+	if(!element)
+		return;
+
+	_elements.erase(oldName);
+	emptyLocation(newName);
+	_elements[newName] = element;
 }

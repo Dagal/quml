@@ -48,6 +48,7 @@ private slots:
 	void parentDiagram_AddChildToParent();
 	void parentChildDiagram_RemoveChildDiagram();
 	void parentChildDiagram_RemoveParentDiagram();
+	void parentChildDiagram_nameChange();
 
 	void cleanup();
 	void init();
