@@ -31,7 +31,11 @@
 class PropertyObject : public ParameterObject
 {
 public:
-	PropertyObject();
+	enum { elementtype = Element_Property };
+
+	PropertyObject(ElementObject * parent = 0);
+
+	virtual ElementType type() const { return Element_Property; }
 };
 
 #endif // PROPERTYOBJECT_HPP

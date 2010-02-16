@@ -23,39 +23,64 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "_elementnamerelator.hpp"
+#ifndef ELEMENTHELPER_HPP
+#define ELEMENTHELPER_HPP
+
+#include "elementobject.hpp"
+#include <boost/lambda/lambda.hpp>
 #include <boost/bind.hpp>
+#include <boost/lambda/if.hpp>
+#include <iostream>
 
-void ElementNameRelator::Alterer::operator()(const std::string & newName)
+template <typename ElementClass> ElementClass * element_cast(ElementObject * element)
 {
-	_functor(_element, newName);
+	if(!element) return 0;
+
+	if((element->type() && ElementClass::elementtype) != ElementClass::elementtype)
+		return 0;
+
+	return static_cast<ElementClass*>(element);
 }
 
-void ElementNameRelator::addAlterer(ElementObject * element, const AltererFunctor & functor)
+template <typename ElementClass> const ElementClass * element_cast(const ElementObject * element)
 {
-	if(!element)
-		return;
+	if(!element) return 0;
 
-	// remove an alterer if present
-	removeAlterer(element);
+	if((element->type() && ElementClass::elementtype) != ElementClass::elementtype)
+		return 0;
 
-	// add the alterer
-	_alterers.push_back(Alterer(element, functor));
+	return static_cast<ElementClass*>(element);
 }
 
-void ElementNameRelator::removeAlterer(ElementObject * object)
+template <typename T> struct addIfCastable
 {
-	std::remove_if(
-			_alterers.begin(),
-			_alterers.end(),
-			boost::bind(&Alterer::_functor, _1) == object );
-}
+	typedef void result_type;
 
-void ElementNameRelator::executeAlterers(const std::string & name)
+	void operator()(ElementObject * element, std::vector<T*> & vct)
+	{
+		T * el = element_cast<T>(element);
+		if(el)
+			vct.push_back(el);
+	}
+};
+
+template <typename ElementClass> std::vector<ElementClass*> findChildren(ElementObject * element)
 {
+	const std::vector<ElementObject * >	& children = element->children();
+	std::vector<ElementClass*> transf;
+
 	std::for_each(
-			_alterers.begin(),
-			_alterers.end(),
-			boost::bind(&ElementNameRelator::Alterer::operator (), _1, name)
+			children.begin(),
+			children.end(),
+			boost::bind(
+					addIfCastable<ElementClass>(),
+					_1,
+					boost::ref(transf))
 			);
+
+	return transf;
 }
+
+
+
+#endif // ELEMENTHELPER_HPP

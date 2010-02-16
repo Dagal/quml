@@ -38,7 +38,7 @@ namespace stf
 		// concept requirements
 		__glibcxx_function_requires(_ForwardIteratorConcept<_ForwardIterator>)
 
-				_DistanceType __len = std::distance(__first, __last);
+		_DistanceType __len = std::distance(__first, __last);
 		_DistanceType __half;
 		_ForwardIterator __middle;
 
@@ -64,6 +64,19 @@ namespace stf
 
 		return __last;
 	}
+
+//	template<typename _ForwardIterator, typename _OutputIterator typename _Transformer, typename _Predicate> _ForwardIterator copy_transformed_if(_ForwardIterator __first, _ForwardIterator __last, _OutputIterator __startOutput, _Transformer __transformer, _Predicate __predicate)
+//	{
+//		__glibcxx_function_requires(_ForwardIteratorConcept<_ForwardIterator>)
+//
+//		_ForwardIterator __current = __first;
+//
+//		while(__current != __last)
+//		{
+//
+//		}
+//
+//	}
 }
 
 #endif // ALGORITHM_HPP

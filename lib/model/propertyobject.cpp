@@ -25,7 +25,7 @@
 
 #include "propertyobject.hpp"
 
-PropertyObject::PropertyObject(ClassDiagram * diagram)
-	: ParameterObject(Element_Property, diagram)
+PropertyObject::PropertyObject(ElementObject * parent)
+	: ParameterObject(parent)
 {
 }

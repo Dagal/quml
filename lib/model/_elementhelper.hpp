@@ -23,32 +23,35 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "classcommand.hpp"
+#ifndef _ELEMENTHELPER_HPP
+#define _ELEMENTHELPER_HPP
 
-#include "classobject.hpp"
-#include "namespaceobject.hpp"
+#include "elementobject.hpp"
 
-CreateClassCommand::CreateClassCommand(NamespaceObject * namespaceObject, const QString & name)
-	: _namespaceObject(namespaceObject), _name(name)
+template <typename T> bool tryToAddToVector(ElementObject * child, std::vector<T*> & vct)
 {
+	if(!child)
+		return false;
+
+	T * element = element_cast<T>(child);
+	if(!element)
+		return false;
+
+	vct.push_back(element);
+	return true;
 }
 
-void CreateClassCommand::redo()
+template <typename T> bool tryToRemoveFromVector(ElementObject * child, std::vector<T*> & vct)
 {
-	ClassObject * newClass = new ClassObject(_name, _namespaceObject);
+	if(!child)
+		return false;
+
+	T * element = element_cast<T>(child);
+	if(!element)
+		return false;
+
+	vct.erase(std::find(vct.begin(), vct.end(), element));
+	return true;
 }
 
-void CreateClassCommand::undo()
-{
-	QList<ClassObject *> classes = _namespaceObject->getAllClasses();
-
-	foreach(ClassObject * classObject, _namespaceObject->getAllClasses())
-	{
-		if(classObject->name() == _name)
-		{
-			// remove it from the parent
-			classObject->setParent(0);
-			delete classObject;
-		}
-	}
-}
+#endif // _ELEMENTHELPER_HPP

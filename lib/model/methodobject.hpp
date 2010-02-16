@@ -33,13 +33,17 @@ class MethodObject : public ElementObject
 	class MethodObjectPrivate;
 
 public:
-	MethodObject(ClassDiagram * diagram = 0);
+	enum { elementtype = Element_Method };
+
+	MethodObject(ElementObject * parent = 0);
 
 	const DatatypeObject * returnType() const;
 	void setReturnType(const DatatypeObject * returnType);
 	void addParameter(ParameterObject * parameter);
 	void removeParameter(const std::string & name);
 	const std::vector<ParameterObject> & parameters() const;
+
+	virtual ElementType type() const { return Element_Method; }
 
 private:
 	boost::shared_ptr<MethodObjectPrivate> _dd;

@@ -25,7 +25,7 @@
 
 #include "methodobject.hpp"
 
-MethodObject::MethodObject(ClassDiagram * diagram)
-	: ElementObject(Element_Method, diagram)
+MethodObject::MethodObject(ElementObject * parent)
+	: ElementObject(parent)
 {
 }

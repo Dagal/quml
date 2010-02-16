@@ -26,6 +26,7 @@
 #include "elementdiagramtest.hpp"
 #include "packageobject.hpp"
 #include "umldiagram.hpp"
+#include "classobject.hpp"
 #include <iostream>
 #include <algorithm>
 
@@ -62,6 +63,17 @@ void ElementDiagramTest::parent_AddChildAfterCreation()
 	QCOMPARE(_parent->children().size(), (unsigned int)1);
 	QCOMPARE(_parent->children()[0], _child);
 	QCOMPARE(_child->parent(), _parent);
+}
+
+void ElementDiagramTest::parent_findChildren()
+{
+	for(int i = 0; i < 10; i++)
+		new PackageObject(_parent);
+
+	QCOMPARE(_parent->children().size(), (unsigned int)10);
+	QCOMPARE(::findChildren<PackageObject>(_parent).size(), (unsigned int)10);
+	QCOMPARE(::findChildren<ElementObject>(_parent).size(), (unsigned int)10);
+	QCOMPARE(::findChildren<ClassObject>(_parent).size(), (unsigned int)0);
 }
 
 void ElementDiagramTest::parentchild_qualifiedName()

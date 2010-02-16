@@ -27,13 +27,8 @@
 #include "_parameterobject.hpp"
 #include "datatypeobject.hpp"
 
-ParameterObject::ParameterObject(ElementType type, ClassDiagram * diagram)
-	: ElementObject(type, diagram), _dd(new ParameterObjectPrivate)
-{
-}
-
-ParameterObject::ParameterObject(ClassDiagram * diagram)
-	: ElementObject(Element_Parameter, diagram), _dd(new ParameterObjectPrivate)
+ParameterObject::ParameterObject(ElementObject * parent)
+	: ElementObject(parent), _dd(new ParameterObjectPrivate)
 {
 }
 

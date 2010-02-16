@@ -25,8 +25,8 @@
 
 #include "operationobject.hpp"
 
-OperationObject::OperationObject(ClassDiagram * diagram)
-	: ElementObject(Element_Operation, diagram)
+OperationObject::OperationObject(ElementObject * parent)
+	: ElementObject(parent)
 {
 }
 

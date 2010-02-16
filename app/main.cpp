@@ -46,14 +46,6 @@ using std::cout;
 using std::vector;
 
 
-int main(int argc, char ** argv)
+int main(int /*argc*/, char ** /*argv*/)
 {
-	PackageObject * o = new PackageObject;
-	PackageObject * o2 = new PackageObject(o);
-	PackageObject * o3 = new PackageObject(o);
-	PackageObject * o4 = new PackageObject(o);
-
-	//std::cout << findChildren<PackageObject>(o).size() << std::endl;
-	std::cout << findChildren<ClassObject>(o).size() << std::endl;
-
 }

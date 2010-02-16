@@ -56,9 +56,11 @@ ElementObject::~ElementObject()
 	setUMLDiagram(0);
 	setParent(0);
 
+	std::vector<ElementObject*> childrenCopy = children();
+
 	std::for_each(
-			_dd->_children.begin(),
-			_dd->_children.end(),
+			childrenCopy.begin(),
+			childrenCopy.end(),
 			boost::bind<void>(&deleter<ElementObject>, _1)
 			);
 }

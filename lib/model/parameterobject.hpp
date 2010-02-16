@@ -33,16 +33,16 @@ class ParameterObject : public ElementObject
 	class ParameterObjectPrivate;
 
 public:
-	ParameterObject();
+	enum { elementtype = Element_Parameter };
 
-protected:
-	ParameterObject(ElementType type);
+	ParameterObject(ElementObject * parent = 0);
 
-public:
 	const DatatypeObject * datatype() const;
 	const std::string & defaultValue() const;
 	void setDatatype(const DatatypeObject * datatype);
 	void setDefaultValue(const std::string & defaultValue);
+
+	virtual ElementType type() const { return Element_Parameter; }
 
 private:
 	boost::shared_ptr<ParameterObjectPrivate> _dd;

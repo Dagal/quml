@@ -31,7 +31,11 @@
 class OperationObject : public ElementObject
 {
 public:
-	OperationObject();
+	enum { elementtype = Element_Operation };
+
+	OperationObject(ElementObject * parent = 0);
+
+	virtual ElementType type() const { return Element_Operation; }
 };
 
 #endif // OPERATIONOBJECT_HPP
