@@ -30,7 +30,6 @@
 #include <string>
 #include <vector>
 
-
 class ElementObject
 {
 	class ElementObjectPrivate;
@@ -46,26 +45,26 @@ public:
 	};
 
 public:
+	enum { elementtype = Element };
+
 	// constructor & destructor
-	ElementObject(ElementType type, ElementObject * parent);
+	ElementObject(ElementObject * parent);
 	virtual ~ElementObject() = 0;
 
 	// getters and setters
 	void setName(const std::string & newName);
 	const std::string & name() const;
 	virtual std::string qualifiedName() const;
-	ElementType type() const;
+	virtual ElementType type() const = 0;
 
 	// child/parent functions
 	void setParent(ElementObject * parent);
 	ElementObject * parent() const;
-	std::vector<ElementObject *> children() const;
+	const std::vector<ElementObject *> & children() const;
 
 	// classdiagram functions
 	UMLDiagram * umlDiagram() const;
 	void setUMLDiagram(UMLDiagram * diagram);
-
-
 
 protected:
 	virtual void onChildAdded(ElementObject * child);
@@ -76,5 +75,6 @@ private:
 	boost::shared_ptr<ElementObjectPrivate> _dd;
 };
 
+#include "elementhelper.hpp"
 
 #endif // ELEMENTOBJECT_HPP

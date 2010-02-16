@@ -31,7 +31,9 @@
 class DatatypeObject : public ElementObject
 {
 public:
-	DatatypeObject(ElementType type);
+	enum { elementtype = Element_Datatype };
+
+	DatatypeObject(ElementObject * parent = 0);
 };
 
 #endif // DATATYPE_HPP

@@ -31,7 +31,12 @@
 class PackageObject : public ElementObject
 {
 public:
+	enum { elementtype = Element_Package };
+
 	PackageObject(ElementObject * parent = 0);
+	~PackageObject() {};
+
+	virtual ElementType type() const { return Element_Package; }
 };
 
 #endif // PACKAGEOBJECT_HPP

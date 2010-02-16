@@ -39,66 +39,21 @@
 #include <boost/lambda/bind.hpp>
 #include "algorithm.hpp"
 #include <string>
+#include "packageobject.hpp"
+#include "classobject.hpp"
 
 using std::cout;
 using std::vector;
 
 
-
-
-struct test
-{
-	struct comparator
-	{
-		bool operator()(const test & t1, const test & t2) const
-		{
-			return t1.name() < t2.name();
-		}
-	};
-
-	test(std::string name)
-		: _name(name) {}
-
-	const std::string & name() const
-	{
-		return _name;
-	}
-
-	void print()
-	{
-		std::cout << _name;
-	}
-
-	std::string _name;
-};
-
 int main(int argc, char ** argv)
 {
-	std::vector<test> v;
-	v.push_back(test("een"));
-	v.push_back(test("twee"));
-	v.push_back(test("drie"));
-	v.push_back(test("aaaa"));
+	PackageObject * o = new PackageObject;
+	PackageObject * o2 = new PackageObject(o);
+	PackageObject * o3 = new PackageObject(o);
+	PackageObject * o4 = new PackageObject(o);
 
-	std::sort(
-			v.begin(),
-			v.end(),
-			test::comparator()
-			);
-	std::string a = "twee";
+	//std::cout << findChildren<PackageObject>(o).size() << std::endl;
+	std::cout << findChildren<ClassObject>(o).size() << std::endl;
 
-	std::vector<test>::iterator i = stf::fan_find(
-			v.begin(),\
-			v.end(),
-			boost::bind(
-					static_cast<int (std::string::*)(const std::string &) const> (&std::string::compare),
-					boost::bind(&test::name, _1),
-					a
-					)
-			);
-
-	if(i != v.end())
-		std::cout << i->name();
-	else
-		std::cout << "dijn";
 }

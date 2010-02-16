@@ -25,7 +25,7 @@
 
 #include "datatypeobject.hpp"
 
-DatatypeObject::DatatypeObject(ElementType type, ClassDiagram * diagram)
-	: ElementObject(type, diagram)
+DatatypeObject::DatatypeObject(ElementObject * parent)
+	: ElementObject(parent)
 {
 }

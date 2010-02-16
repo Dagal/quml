@@ -30,38 +30,54 @@
 #include <iostream>
 
 
-template <typename T> bool tryToAddToVector(ElementObject * child, ElementType type, std::vector<T*> & vct)
+template <typename T> bool tryToAddToVector(ElementObject * child, std::vector<T*> & vct)
 {
-	if(!child || child->type() != type)
+	if(!child)
 		return false;
 
-	vct.push_back(static_cast<T*>(child));
+	T * element = element_cast<T>(child);
+	if(!element)
+		return false;
+
+	vct.push_back(element);
 	return true;
 }
 
-template <typename T> bool tryToRemoveFromVector(ElementObject * child, ElementType type, std::vector<T*> & vct)
+template <typename T> bool tryToRemoveFromVector(ElementObject * child, std::vector<T*> & vct)
 {
-	if(!child || child->type() != type)
+	if(!child)
 		return false;
 
-	vct.erase(std::find(vct.begin(), vct.end(), static_cast<T*>(child)));
+	T * element = element_cast<T>(child);
+	if(!element)
+		return false;
+
+	vct.erase(std::find(vct.begin(), vct.end(), element));
 	return true;
 }
 
-
-ClassObject::ClassObject(ClassDiagram * diagram)
-	: DatatypeObject(Element_Class, diagram), _dd(new ClassObjectPrivate)
+ClassObject::ClassObject(ElementObject * parent)
+	: DatatypeObject(parent), _dd(new ClassObjectPrivate)
 {
 }
 
 void ClassObject::onChildAdded(ElementObject * child)
 {
-	if (tryToAddToVector(child, Element_Operation, _dd->_operations)) return;
-	if (tryToAddToVector(child, Element_Property, _dd->_properties)) return;
+	if (tryToAddToVector(child, _dd->_operations)) return;
+	if (tryToAddToVector(child, _dd->_properties)) return;
 }
 
 void ClassObject::onChildRemoved(ElementObject * child)
 {
-	if (tryToRemoveFromVector(child, Element_Operation, _dd->_operations)) return;
-	if (tryToRemoveFromVector(child, Element_Property, _dd->_properties)) return;
+	if (tryToRemoveFromVector(child, _dd->_operations)) return;
+	if (tryToRemoveFromVector(child, _dd->_properties)) return;
+}
+
+const std::vector<OperationObject*> & ClassObject::operations() const
+{
+	return _dd->_operations;
+}
+const std::vector<PropertyObject*> & ClassObject::properties() const
+{
+	return _dd->_properties;
 }

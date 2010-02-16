@@ -26,6 +26,6 @@
 #include "packageobject.hpp"
 
 PackageObject::PackageObject(ElementObject * parent)
-	: ElementObject(Element_Package, parent)
+	: ElementObject(parent)
 {
 }

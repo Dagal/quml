@@ -38,12 +38,22 @@ class PropertyObject;
 
 enum ElementType
 {
-	Element_Class,
-	Element_Package,
-	Element_Operation,
-	Element_Property,
-	Element_Parameter,
-	Element_Method,
+	Element = 0,
+
+	Element_Package = 1,
+
+	Element_Datatype = 4 << 1,
+	Element_Primitive = 5 << 1,
+	Element_Class = 6 << 1,
+
+	Element_Method = 2 << 4,
+	Element_Operation = 3 << 4,
+
+	Element_Parameter = 2 << 6,
+	Element_Property = 3 << 6,
+
+
+
 };
 
 typedef boost::shared_ptr<ElementObject> ElementObjectPtr;

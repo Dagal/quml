@@ -27,6 +27,7 @@
 #include "packageobject.hpp"
 #include "umldiagram.hpp"
 #include <iostream>
+#include <algorithm>
 
 void ElementDiagramTest::init()
 {

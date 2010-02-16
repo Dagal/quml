@@ -30,7 +30,7 @@
 
 namespace stf
 {
-	template<typename _ForwardIterator, typename _Compare> _ForwardIterator fan_find(_ForwardIterator __first, _ForwardIterator __last, _Compare __fan_comp)
+	template<typename _ForwardIterator, typename _Compare> _ForwardIterator binary_find_if(_ForwardIterator __first, _ForwardIterator __last, _Compare __fan_comp)
 	{
 		typedef typename std::iterator_traits<_ForwardIterator>::value_type _ValueType;
 		typedef typename std::iterator_traits<_ForwardIterator>::difference_type _DistanceType;

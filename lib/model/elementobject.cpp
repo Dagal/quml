@@ -45,8 +45,8 @@ int ElementObject::string_comparator::operator()(const ElementObject * element, 
 }
 
 
-ElementObject::ElementObject(ElementType type, ElementObject * parent)
-	: _dd(new ElementObjectPrivate(type))
+ElementObject::ElementObject(ElementObject * parent)
+	: _dd(new ElementObjectPrivate)
 {
 	setParent(parent);
 }
@@ -61,11 +61,6 @@ ElementObject::~ElementObject()
 			_dd->_children.end(),
 			boost::bind<void>(&deleter<ElementObject>, _1)
 			);
-}
-
-ElementType ElementObject::type() const
-{
-	return _dd->_type;
 }
 
 void ElementObject::ElementObjectPrivate::removeChild(ElementObject * child)
@@ -177,7 +172,7 @@ void ElementObject::setUMLDiagram(UMLDiagram * diagram)
 			);
 }
 
-std::vector<ElementObject *> ElementObject::children() const
+const std::vector<ElementObject *> & ElementObject::children() const
 {
 	return _dd->_children;
 }

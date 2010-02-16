@@ -33,7 +33,14 @@ class ClassObject : public DatatypeObject
 	class ClassObjectPrivate;
 
 public:
-	ClassObject();
+	enum { elementtype = Element_Class };
+
+	ClassObject(ElementObject * parent = 0);
+
+	const std::vector<OperationObject*> & operations() const;
+	const std::vector<PropertyObject*> & properties() const;
+
+	virtual ElementType type() const { return Element_Class; }
 
 protected:
 	virtual void onChildAdded(ElementObject * child);

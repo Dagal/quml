@@ -37,7 +37,7 @@ UMLDiagram::UMLDiagram()
 
 UMLDiagram::UMLDiagramPrivate::elementvct::iterator UMLDiagram::UMLDiagramPrivate::findInElements(const std::string & name)
 {
-	return  stf::fan_find(
+	return  stf::binary_find_if(
 			_elements.begin(),
 			_elements.end(),
 			boost::bind<int>(
@@ -50,7 +50,7 @@ UMLDiagram::UMLDiagramPrivate::elementvct::iterator UMLDiagram::UMLDiagramPrivat
 
 UMLDiagram::UMLDiagramPrivate::elementvct::const_iterator UMLDiagram::UMLDiagramPrivate::findInElements(const std::string & name) const
 {
-	return  stf::fan_find(
+	return  stf::binary_find_if(
 			_elements.begin(),
 			_elements.end(),
 			boost::bind<int>(
@@ -103,7 +103,7 @@ void UMLDiagram::UMLDiagramPrivate::emptyLocation(const std::string & name)
 		(*i)->setUMLDiagram(0);
 }
 
-void UMLDiagram::UMLDiagramPrivate::changeElementName(const std::string & oldName, const std::string & newName)
+void UMLDiagram::UMLDiagramPrivate::changeElementName(const std::string & /*oldName*/, const std::string & /*newName*/)
 {
 	// just update the complete list
 	resortElements();

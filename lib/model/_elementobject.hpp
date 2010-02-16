@@ -32,14 +32,12 @@ using std::string;
 
 struct ElementObject::ElementObjectPrivate
 {
-	ElementObjectPrivate(const ElementType type)
-	 : _type(type)
-	 , _parent(0)
+	ElementObjectPrivate()
+		: _parent(0)
 	 , _diagram(0)
 	{
 	}
 
-	ElementType _type;
 	string _name;
 	ElementObject * _parent;
 	UMLDiagram * _diagram;
