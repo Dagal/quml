@@ -55,7 +55,10 @@ public:
 	void setName(const std::string & newName);
 	const std::string & name() const;
 	virtual std::string qualifiedName() const;
+	virtual std::string umlName() const = 0;
+
 	virtual ElementType type() const = 0;
+
 
 	// child/parent functions
 	void setParent(ElementObject * parent);

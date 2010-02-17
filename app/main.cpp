@@ -74,10 +74,5 @@ int main(int /*argc*/, char ** /*argv*/)
 
 	if(it != b.end())
 		b.erase(b.end(), b.end());
-
-
-
-	for(int i = 0; i < b.size(); i++)
-		std::cout << b[i] << std::endl;
 }
 

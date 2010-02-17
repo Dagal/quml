@@ -24,30 +24,44 @@
 *******************************************************************/
 
 #include "methodobject.hpp"
+#include "_methodobject.hpp"
+#include "parameterobject.hpp"
 
 MethodObject::MethodObject(ElementObject * parent)
-	: ElementObject(parent)
+	: ElementObject(parent), _dd(new MethodObjectPrivate)
 {
 }
 
 DatatypeObject * MethodObject::returnType() const
 {
-
+	return _dd->_returnType;
 }
 void MethodObject::setReturnType(DatatypeObject * returnType)
 {
-
+	_dd->_returnType = returnType;
 }
 
-void MethodObject::removeParameter(const std::string & name)
+ParameterObject * MethodObject::removeParameter(const std::string & name)
 {
+	ParameterObject * param = _dd->_parameters.findElement(name);
+	if(!param)
+		return 0;
+
+	param->setParent(0);
+	return param;
 }
 
-const std::vector<ParameterObject> & MethodObject::parameters() const
+const std::vector<ParameterObject*> & MethodObject::parameters() const
 {
-
+	return _dd->_parameters.vector();
 }
+
 ParameterObject * MethodObject::parameterAt(unsigned int position) const
+{
+	return _dd->_parameters.getElement(position);
+}
+
+virtual std::string MethodObject::umlName() const
 {
 
 }

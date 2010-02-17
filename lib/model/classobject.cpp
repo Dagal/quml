@@ -36,21 +36,26 @@ ClassObject::ClassObject(ElementObject * parent)
 
 void ClassObject::onChildAdded(ElementObject * child)
 {
-	if(_dd->_operations.addElement(element_cast<OperationObject>(child))) return;
-	if(_dd->_properties.addElement(element_cast<PropertyObject>(child))) return;
+	_dd->_operations.addElement(element_cast<OperationObject>(child));
+	_dd->_properties.addElement(element_cast<PropertyObject>(child));
 }
 
 void ClassObject::onChildRemoved(ElementObject * child)
 {
-	if(_dd->_operations.removeElement(element_cast<OperationObject>(child))) return;
-	if(_dd->_properties.removeElement(element_cast<PropertyObject>(child))) return;
+	_dd->_operations.removeElement(element_cast<OperationObject>(child));
+	_dd->_properties.removeElement(element_cast<PropertyObject>(child));
 }
 
 const std::vector<OperationObject*> & ClassObject::operations() const
 {
-	return _dd->_operations.elements();
+	return _dd->_operations.vector();
 }
 const std::vector<PropertyObject*> & ClassObject::properties() const
 {
-	return _dd->_properties.elements();
+	return _dd->_properties.vector();
+}
+
+virtual std::string ClassObject::umlName() const
+{
+	return name();
 }

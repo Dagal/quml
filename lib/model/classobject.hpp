@@ -40,6 +40,8 @@ public:
 	const std::vector<OperationObject*> & operations() const;
 	const std::vector<PropertyObject*> & properties() const;
 
+	virtual std::string umlName() const;
+
 	virtual ElementType type() const { return Element_Class; }
 
 protected:

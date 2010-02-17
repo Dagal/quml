@@ -19,7 +19,6 @@ HEADERS += model/elementobject.hpp \
     model/parameterobject.hpp \
     model/_parameterobject.hpp \
     model/datatypeobject.hpp \
-    util/sortedvector.hpp \
     model/elementhelper.hpp \
     model/elementhelper.hpp \
     model/_elementhelper.hpp \

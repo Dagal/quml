@@ -27,15 +27,16 @@
 #define _METHODOBJECT_HPP
 
 #include "methodobject.hpp"
+#include "elementcontainer.hpp"
 
 struct MethodObject::MethodObjectPrivate
 {
-	MethodObject()
+	MethodObjectPrivate()
 	{
 	}
 
 	DatatypeObject * _returnType;
-	std::vector<ParameterObject*> _parameters;
+	ElementContainer<ParameterObject> _parameters;
 };
 
 #endif // _METHODOBJECT_HPP

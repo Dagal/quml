@@ -36,7 +36,7 @@ template <typename T> class ElementContainer
 	{
 		elementfinder(const std::string & elementName) : _elementName(elementName) {}
 
-		void operator()(T * element)
+		bool operator()(const T * element) const
 		{
 			return element->name() == _elementName;
 		}
@@ -58,7 +58,7 @@ public:
 	T * getElement(unsigned int position) const;
 	unsigned int count() const;
 
-	const std::vector<T*> & elements() const;
+	const std::vector<T*> & vector() const;
 
 	typename std::vector<T*>::const_iterator findElementIterator(const std::string & element) const;
 	typename std::vector<T*>::iterator findElementIterator(const std::string & element);
@@ -107,7 +107,7 @@ template <typename T> inline bool ElementContainer<T>::hasElement(T * element) c
 
 template <typename T> T * ElementContainer<T>::findElement(const std::string & elementName) const
 {
-	vctConstIt it = findElement(elementName);
+	vctConstIt it = findElementIterator(elementName);
 	if(it != _elements.end())
 		return (*it);
 	else
@@ -124,7 +124,7 @@ template <typename T> inline unsigned int ElementContainer<T>::count() const
 {
 	return _elements.size();
 }
- template <typename T> inline const std::vector<T*> & ElementContainer<T>::elements() const
+ template <typename T> inline const std::vector<T*> & ElementContainer<T>::vector() const
 {
 	return _elements;
 }

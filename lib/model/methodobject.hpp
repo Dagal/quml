@@ -39,10 +39,11 @@ public:
 
 	DatatypeObject * returnType() const;
 	void setReturnType(DatatypeObject * returnType);
-	void removeParameter(const std::string & name);
-	const std::vector<ParameterObject> & parameters() const;
+	ParameterObject * removeParameter(const std::string & name);
+	const std::vector<ParameterObject*> & parameters() const;
 	ParameterObject * parameterAt(unsigned int position) const;
 
+	virtual std::string umlName() const;
 	virtual ElementType type() const { return Element_Method; }
 
 private:
