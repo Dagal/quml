@@ -29,3 +29,26 @@ MethodObject::MethodObject(ElementObject * parent)
 	: ElementObject(parent)
 {
 }
+
+DatatypeObject * MethodObject::returnType() const
+{
+
+}
+void MethodObject::setReturnType(DatatypeObject * returnType)
+{
+
+}
+
+void MethodObject::removeParameter(const std::string & name)
+{
+}
+
+const std::vector<ParameterObject> & MethodObject::parameters() const
+{
+
+}
+ParameterObject * MethodObject::parameterAt(unsigned int position) const
+{
+
+}
+

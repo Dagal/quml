@@ -27,15 +27,23 @@
 #define PROPERTYOBJECT_HPP
 
 #include "parameterobject.hpp"
+#include "visibility.hpp"
 
 class PropertyObject : public ParameterObject
 {
+	class PropertyObjectPrivate;
+
 public:
 	enum { elementtype = Element_Property };
 
 	PropertyObject(ElementObject * parent = 0);
+	void setVisibility(VisibilityType type);
+	VisibilityType visibility() const;
 
 	virtual ElementType type() const { return Element_Property; }
+
+private:
+	boost::shared_ptr<PropertyObjectPrivate> _dd;
 };
 
 #endif // PROPERTYOBJECT_HPP

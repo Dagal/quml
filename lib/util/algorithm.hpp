@@ -65,18 +65,37 @@ namespace stf
 		return __last;
 	}
 
-//	template<typename _ForwardIterator, typename _OutputIterator typename _Transformer, typename _Predicate> _ForwardIterator copy_transformed_if(_ForwardIterator __first, _ForwardIterator __last, _OutputIterator __startOutput, _Transformer __transformer, _Predicate __predicate)
-//	{
-//		__glibcxx_function_requires(_ForwardIteratorConcept<_ForwardIterator>)
-//
-//		_ForwardIterator __current = __first;
-//
-//		while(__current != __last)
-//		{
-//
-//		}
-//
-//	}
+	template <
+			typename _InputIterator,
+			typename _OutputIterator,
+			typename _UnaryOperation,
+			typename _UnaryPredicate>
+			_OutputIterator copy_transformed_if(
+					_InputIterator __first,
+					_InputIterator __last,
+					_OutputIterator __result,
+					_UnaryOperation __transform_op,
+					_UnaryPredicate __pred_on_transformed)
+	{
+		typedef typename _UnaryOperation::result_type retVal;
+
+		__glibcxx_function_requires(_InputIteratorConcept<_InputIterator>);
+		__glibcxx_function_requires(_OutputIteratorConcept<_OutputIterator, __typeof__(__transform_op(*__first))>);
+		__glibcxx_requires_valid_range(__first, __last);
+		__glibcxx_function_requires(_UnaryPredicateConcept<_UnaryPredicate,  retVal);
+
+		for(; __first != __last; ++__first)
+		{
+			retVal tmp(__transform_op(*__first));
+			if(__pred_on_transformed(tmp))
+			{
+				*__result = tmp;
+				__result++;
+			}
+		}
+
+		return __result;
+	}
 }
 
 #endif // ALGORITHM_HPP

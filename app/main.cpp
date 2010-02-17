@@ -46,6 +46,38 @@ using std::cout;
 using std::vector;
 
 
+
+int inverser(int a)
+{
+	return a + 1;
+}
+
+bool isOdd(int a)
+{
+	return (a%2 == 0);
+}
+
 int main(int /*argc*/, char ** /*argv*/)
 {
+	int ar[] = {1,2,3,4,5,6,7,8,9};
+
+	std::vector<int> a(ar, ar + sizeof(ar)/sizeof(int));
+
+	std::vector<int> b(a.size());
+
+	std::vector<int>::iterator it = stf::copy_transformed_if(
+			a.begin(),
+			a.end(),
+			b.begin(),
+			boost::bind<int>(inverser, _1),
+			isOdd);
+
+	if(it != b.end())
+		b.erase(b.end(), b.end());
+
+
+
+	for(int i = 0; i < b.size(); i++)
+		std::cout << b[i] << std::endl;
 }
+

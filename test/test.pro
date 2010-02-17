@@ -7,5 +7,5 @@ SOURCES += main.cpp \
     elementdiagramtest.cpp
 HEADERS += elementdiagramtest.hpp
 REL_PATH = ../lib/
-include($${REL_PATH}qumllib.pri)
+include($${REL_PATH}lib.pri)
 QT += testlib

@@ -36,21 +36,21 @@ ClassObject::ClassObject(ElementObject * parent)
 
 void ClassObject::onChildAdded(ElementObject * child)
 {
-	if (tryToAddToVector(child, _dd->_operations)) return;
-	if (tryToAddToVector(child, _dd->_properties)) return;
+	if(_dd->_operations.addElement(element_cast<OperationObject>(child))) return;
+	if(_dd->_properties.addElement(element_cast<PropertyObject>(child))) return;
 }
 
 void ClassObject::onChildRemoved(ElementObject * child)
 {
-	if (tryToRemoveFromVector(child, _dd->_operations)) return;
-	if (tryToRemoveFromVector(child, _dd->_properties)) return;
+	if(_dd->_operations.removeElement(element_cast<OperationObject>(child))) return;
+	if(_dd->_properties.removeElement(element_cast<PropertyObject>(child))) return;
 }
 
 const std::vector<OperationObject*> & ClassObject::operations() const
 {
-	return _dd->_operations;
+	return _dd->_operations.elements();
 }
 const std::vector<PropertyObject*> & ClassObject::properties() const
 {
-	return _dd->_properties;
+	return _dd->_properties.elements();
 }

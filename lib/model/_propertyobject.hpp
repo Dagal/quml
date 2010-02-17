@@ -23,30 +23,19 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef METHODOBJECT_HPP
-#define METHODOBJECT_HPP
+#ifndef _PROPERTYOBJECT_HPP
+#define _PROPERTYOBJECT_HPP
 
-#include "elementobject.hpp"
+#include "propertyobject.hpp"
 
-class MethodObject : public ElementObject
+struct PropertyObject::PropertyObjectPrivate
 {
-	class MethodObjectPrivate;
+	PropertyObjectPrivate()
+		: _visibility(Visibility_Private)
+	{
+	}
 
-public:
-	enum { elementtype = Element_Method };
-
-	MethodObject(ElementObject * parent = 0);
-
-	DatatypeObject * returnType() const;
-	void setReturnType(DatatypeObject * returnType);
-	void removeParameter(const std::string & name);
-	const std::vector<ParameterObject> & parameters() const;
-	ParameterObject * parameterAt(unsigned int position) const;
-
-	virtual ElementType type() const { return Element_Method; }
-
-private:
-	boost::shared_ptr<MethodObjectPrivate> _dd;
+	Visibility _visibility;
 };
 
-#endif // METHODOBJECT_HPP
+#endif // _PROPERTYOBJECT_HPP

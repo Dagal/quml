@@ -27,13 +27,14 @@
 #define P_CLASSOBJECT_HPP
 
 #include "classobject.hpp"
+#include "elementcontainer.hpp"
 
 using std::vector;
 
 struct ClassObject::ClassObjectPrivate
 {
-	vector<PropertyObject*> _properties;
-	vector<OperationObject*> _operations;
+	ElementContainer<PropertyObject> _properties;
+	ElementContainer<OperationObject> _operations;
 };
 
 #endif // P_CLASSOBJECT_HPP

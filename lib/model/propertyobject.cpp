@@ -24,8 +24,19 @@
 *******************************************************************/
 
 #include "propertyobject.hpp"
+#include "_propertyobject.hpp"
 
 PropertyObject::PropertyObject(ElementObject * parent)
-	: ParameterObject(parent)
+	: ParameterObject(parent), _dd(new PropertyObjectPrivate)
 {
+}
+
+void PropertyObject::setVisibility(VisibilityType type)
+{
+	_dd->_visibility.setType(type);
+}
+
+VisibilityType PropertyObject::visibility() const
+{
+	return _dd->_visibility.type();
 }

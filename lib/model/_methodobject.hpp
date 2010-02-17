@@ -34,7 +34,7 @@ struct MethodObject::MethodObjectPrivate
 	{
 	}
 
-	const DatatypeObject * _returnType;
+	DatatypeObject * _returnType;
 	std::vector<ParameterObject*> _parameters;
 };
 

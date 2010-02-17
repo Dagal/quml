@@ -27,10 +27,9 @@
 #define ELEMENTHELPER_HPP
 
 #include "elementobject.hpp"
-#include <boost/lambda/lambda.hpp>
+#include "algorithm.hpp"
 #include <boost/bind.hpp>
-#include <boost/lambda/if.hpp>
-#include <iostream>
+#include <boost/function.hpp>
 
 template <typename ElementClass> ElementClass * element_cast(ElementObject * element)
 {
@@ -52,32 +51,44 @@ template <typename ElementClass> const ElementClass * element_cast(const Element
 	return static_cast<ElementClass*>(element);
 }
 
-template <typename T> struct addIfCastable
-{
-	typedef void result_type;
 
-	void operator()(ElementObject * element, std::vector<T*> & vct)
-	{
-		T * el = element_cast<T>(element);
-		if(el)
-			vct.push_back(el);
-	}
-};
 
-template <typename ElementClass> std::vector<ElementClass*> findChildren(ElementObject * element)
+template <typename T> bool checkForValidNamedElement(T * element, const std::string & name)
 {
+	return (element && element->name() == name);
+}
+
+template <typename T> bool checkForValidElement(T * element)
+{
+	return (element);
+}
+
+template <typename ElementClass> std::vector<ElementClass*> findChildren(ElementObject * element, const std::string & name = std::string())
+{
+	typedef std::vector<ElementClass*> elementvct;
+	typedef typename elementvct::iterator elementvctit;
+
 	const std::vector<ElementObject * >	& children = element->children();
-	std::vector<ElementClass*> transf;
+	elementvct transf(children.size());
 
-	std::for_each(
+	boost::function<bool (ElementClass*)> pred;
+	if(name.empty())
+		pred = boost::bind(checkForValidElement<ElementClass>, _1);
+	else
+		pred = boost::bind(checkForValidNamedElement<ElementClass>, _1, boost::cref(name));
+
+
+	elementvctit it = stf::copy_transformed_if(
 			children.begin(),
 			children.end(),
-			boost::bind(
-					addIfCastable<ElementClass>(),
-					_1,
-					boost::ref(transf))
+			transf.begin(),
+			boost::bind<ElementClass*>(
+					element_cast<ElementClass>,
+					_1),
+			pred
 			);
 
+	transf.erase(it, transf.end());
 	return transf;
 }
 
