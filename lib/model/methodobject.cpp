@@ -26,6 +26,8 @@
 #include "methodobject.hpp"
 #include "_methodobject.hpp"
 #include "parameterobject.hpp"
+#include "datatypeobject.hpp"
+#include <sstream>
 
 MethodObject::MethodObject(ElementObject * parent)
 	: ElementObject(parent), _dd(new MethodObjectPrivate)
@@ -61,8 +63,25 @@ ParameterObject * MethodObject::parameterAt(unsigned int position) const
 	return _dd->_parameters.getElement(position);
 }
 
-virtual std::string MethodObject::umlName() const
+std::string MethodObject::umlName() const
 {
+	std::stringstream s;
 
+	s << name() << "(";
+
+	for(unsigned int i = 0; i < parameters().size(); i++)
+	{
+		s << parameterAt(i)->umlName();
+		if(i != parameters().size()-1)
+			s << ", ";
+	}
+	s << ") : ";
+
+	if(returnType() == 0)
+		s << "void";
+	else
+		s << returnType()->umlName();
+
+	return s.str();
 }
 

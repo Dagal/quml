@@ -41,38 +41,30 @@
 #include <string>
 #include "packageobject.hpp"
 #include "classobject.hpp"
+#include "operationobject.hpp"
+#include "parameterobject.hpp"
 
 using std::cout;
 using std::vector;
 
-
-
-int inverser(int a)
-{
-	return a + 1;
-}
-
-bool isOdd(int a)
-{
-	return (a%2 == 0);
-}
-
 int main(int /*argc*/, char ** /*argv*/)
 {
-	int ar[] = {1,2,3,4,5,6,7,8,9};
+	ClassObject * c = new ClassObject;
+	ClassObject * c2 = new ClassObject;
+	OperationObject * m = new OperationObject(c);
+//	OperationObject * m1 = new OperationObject(c);
+//	OperationObject * m2 = new OperationObject(c);
+//
+//	c->setName("Command");
+//	c2->setName("type");
+//	m->setName("execute");
+//	m1->setName("test");
+//	m2->setName("test2");
 
-	std::vector<int> a(ar, ar + sizeof(ar)/sizeof(int));
 
-	std::vector<int> b(a.size());
 
-	std::vector<int>::iterator it = stf::copy_transformed_if(
-			a.begin(),
-			a.end(),
-			b.begin(),
-			boost::bind<int>(inverser, _1),
-			isOdd);
 
-	if(it != b.end())
-		b.erase(b.end(), b.end());
+	delete c2;
+	delete c;
 }
 

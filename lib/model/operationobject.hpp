@@ -26,16 +26,29 @@
 #ifndef OPERATIONOBJECT_HPP
 #define OPERATIONOBJECT_HPP
 
-#include "parameterobject.hpp"
+#include "methodobject.hpp"
+#include "visibility.hpp"
 
-class OperationObject : public ElementObject
+class OperationObject : public MethodObject
 {
+	class OperationObjectPrivate;
+
 public:
 	enum { elementtype = Element_Operation };
 
 	OperationObject(ElementObject * parent = 0);
+	~OperationObject() {};
+
+	VisibilityType visibility() const;
+	void setVisibility(VisibilityType type);
+
+	virtual std::string umlName() const;
+
 
 	virtual ElementType type() const { return Element_Operation; }
+
+private:
+	boost::shared_ptr<OperationObjectPrivate> _dd;
 };
 
 #endif // OPERATIONOBJECT_HPP

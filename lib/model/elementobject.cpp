@@ -98,6 +98,11 @@ const string & ElementObject::name() const
 	return _dd->_name;
 }
 
+std::string ElementObject::umlName() const
+{
+	return name();
+}
+
 void ElementObject::setName(const string & newName)
 {
 	if(newName == name())
@@ -131,9 +136,9 @@ ElementObject * ElementObject::parent() const
 string ElementObject::qualifiedName() const
 {
 	if(parent())
-		return parent()->qualifiedName() + "::" + name();
+		return parent()->qualifiedName() + "::" + umlName();
 	else
-		return name();
+		return umlName();
 }
 
 UMLDiagram * ElementObject::umlDiagram() const

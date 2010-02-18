@@ -55,7 +55,7 @@ const std::vector<PropertyObject*> & ClassObject::properties() const
 	return _dd->_properties.vector();
 }
 
-virtual std::string ClassObject::umlName() const
+std::string ClassObject::umlName() const
 {
 	return name();
 }

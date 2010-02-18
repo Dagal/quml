@@ -54,8 +54,9 @@ public:
 	// getters and setters
 	void setName(const std::string & newName);
 	const std::string & name() const;
+
 	virtual std::string qualifiedName() const;
-	virtual std::string umlName() const = 0;
+	virtual std::string umlName() const;
 
 	virtual ElementType type() const = 0;
 

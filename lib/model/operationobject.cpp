@@ -24,9 +24,28 @@
 *******************************************************************/
 
 #include "operationobject.hpp"
+#include "_operationobject.hpp"
+#include <sstream>
 
 OperationObject::OperationObject(ElementObject * parent)
-	: ElementObject(parent)
+	: MethodObject(parent), _dd(new OperationObjectPrivate)
 {
+}
+
+std::string OperationObject::umlName() const
+{
+	std::stringstream s;
+	s << _dd->_visibility.umlNotation() << MethodObject::umlName();
+
+	return s.str();
+}
+
+VisibilityType OperationObject::visibility() const
+{
+	return _dd->_visibility.type();
+}
+void OperationObject::setVisibility(VisibilityType type)
+{
+	_dd->_visibility.setType(type);
 }
 

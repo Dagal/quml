@@ -26,7 +26,10 @@ HEADERS += model/elementobject.hpp \
     model/visibility.hpp \
     model/_methodobject.hpp \
     model/_propertyobject.hpp \
-    model/elementcontainer.hpp
+    model/elementcontainer.hpp \
+    control/command/icommand.hpp \
+    control/iactionlistener.hpp \
+    model/_operationobject.hpp
 SOURCES += model/elementobject.cpp \
     model/umldiagram.cpp \
     model/packageobject.cpp \
@@ -35,6 +38,8 @@ SOURCES += model/elementobject.cpp \
     model/operationobject.cpp \
     model/parameterobject.cpp \
     model/datatypeobject.cpp \
-    model/methodobject.cpp
+    model/methodobject.cpp \
+    control/command/icommand.cpp \
+    control/iactionlistener.cpp
 REL_PATH = 
 include($${REL_PATH}lib.pri)

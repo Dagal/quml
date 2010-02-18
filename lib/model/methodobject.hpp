@@ -36,6 +36,7 @@ public:
 	enum { elementtype = Element_Method };
 
 	MethodObject(ElementObject * parent = 0);
+	~MethodObject() {};
 
 	DatatypeObject * returnType() const;
 	void setReturnType(DatatypeObject * returnType);

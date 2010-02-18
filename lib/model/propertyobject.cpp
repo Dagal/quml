@@ -40,3 +40,5 @@ VisibilityType PropertyObject::visibility() const
 {
 	return _dd->_visibility.type();
 }
+
+
