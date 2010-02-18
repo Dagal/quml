@@ -26,9 +26,10 @@
 #include "parameterobject.hpp"
 #include "_parameterobject.hpp"
 #include "datatypeobject.hpp"
+#include <sstream>
 
-ParameterObject::ParameterObject(ElementObject * parent)
-	: ElementObject(parent), _dd(new ParameterObjectPrivate)
+ParameterObject::ParameterObject()
+	: ElementObject(), _dd(new ParameterObjectPrivate)
 {
 }
 
@@ -50,4 +51,17 @@ void ParameterObject::setDatatype(const DatatypeObject * datatype)
 void ParameterObject::setDefaultValue(const string & defaultValue)
 {
 	_dd->_defaultValue = defaultValue;
+}
+
+std::string ParameterObject::umlName() const
+{
+	std::stringstream s;
+
+	s << name() << ": ";
+	if(datatype())
+		s << datatype()->umlName();
+	else
+		s << "unknown";
+
+	return s.str();
 }

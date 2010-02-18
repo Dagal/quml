@@ -25,7 +25,7 @@
 
 #include "datatypeobject.hpp"
 
-DatatypeObject::DatatypeObject(ElementObject * parent)
-	: ElementObject(parent)
+DatatypeObject::DatatypeObject()
+	: ElementObject()
 {
 }

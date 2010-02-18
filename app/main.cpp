@@ -49,22 +49,35 @@ using std::vector;
 
 int main(int /*argc*/, char ** /*argv*/)
 {
+	PackageObject * p = new PackageObject;
 	ClassObject * c = new ClassObject;
 	ClassObject * c2 = new ClassObject;
-	OperationObject * m = new OperationObject(c);
-//	OperationObject * m1 = new OperationObject(c);
-//	OperationObject * m2 = new OperationObject(c);
-//
-//	c->setName("Command");
-//	c2->setName("type");
-//	m->setName("execute");
-//	m1->setName("test");
-//	m2->setName("test2");
+	OperationObject * m = new OperationObject();
+	OperationObject * m1 = new OperationObject();
+	OperationObject * m2 = new OperationObject();
 
+	m->setParent(c);
+	m1->setParent(c);
+	m2->setParent(c);
+	c->setName("Command");
+	p->setName("stf");
+	c2->setName("type");
+	m->setName("execute");
+	m1->setName("test");
+	m2->setName("test2");
+	m1->setReturnType(c2);
 
+	ParameterObject * param1 = new ParameterObject;
+	param1->setParent(m1);
+	param1->setDatatype(c2);
+	param1->setName("var1");
 
+	c->setParent(p);
+	c->setParent(p);
 
-	delete c2;
-	delete c;
+	std::cout << m1->qualifiedName();
+
+	delete p;
+
 }
 

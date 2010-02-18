@@ -45,10 +45,9 @@ int ElementObject::string_comparator::operator()(const ElementObject * element, 
 }
 
 
-ElementObject::ElementObject(ElementObject * parent)
+ElementObject::ElementObject()
 	: _dd(new ElementObjectPrivate)
 {
-	setParent(parent);
 }
 
 ElementObject::~ElementObject()

@@ -29,7 +29,9 @@ HEADERS += model/elementobject.hpp \
     model/elementcontainer.hpp \
     control/command/icommand.hpp \
     control/iactionlistener.hpp \
-    model/_operationobject.hpp
+    model/_operationobject.hpp \
+    control/command/classcommand.hpp \
+    control/command/classcommand.hpp
 SOURCES += model/elementobject.cpp \
     model/umldiagram.cpp \
     model/packageobject.cpp \
@@ -39,7 +41,6 @@ SOURCES += model/elementobject.cpp \
     model/parameterobject.cpp \
     model/datatypeobject.cpp \
     model/methodobject.cpp \
-    control/command/icommand.cpp \
-    control/iactionlistener.cpp
+    control/command/classcommand.cpp
 REL_PATH = 
 include($${REL_PATH}lib.pri)

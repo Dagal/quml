@@ -116,4 +116,3 @@ void UMLDiagram::UMLDiagramPrivate::resortElements()
 			  ElementObject::comparator());
 }
 
-

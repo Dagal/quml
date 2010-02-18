@@ -36,7 +36,7 @@ class PropertyObject : public ParameterObject
 public:
 	enum { elementtype = Element_Property };
 
-	PropertyObject(ElementObject * parent = 0);
+	PropertyObject();
 	void setVisibility(VisibilityType type);
 	VisibilityType visibility() const;
 

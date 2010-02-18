@@ -27,6 +27,7 @@
 #define UMLDIAGRAM_HPP
 
 #include "defines.hpp"
+#include "elementhelper.hpp"
 #include <vector>
 
 class UMLDiagram
@@ -39,10 +40,30 @@ public:
     UMLDiagram();
 
 	ElementObject * findElement(const std::string & qualifiedName) const;
+	template <typename ElementClass> ElementClass * findElement(const std::string & name, ElementObject * relativeObject) const;
 	std::vector<ElementObject *> elements() const;
 
 private:
 	boost::shared_ptr<UMLDiagramPrivate> _dd;
 };
+
+template <typename ElementClass> ElementClass * UMLDiagram::findElement(const std::string & name, ElementObject * relativeObject) const
+{
+	ElementObject * current = relativeObject;
+
+	// search in the family tree
+	while(current)
+	{
+		std::vector<ElementClass*> children = findChildren<ElementClass>(current, name);
+		if(children.size() > 0)
+			return children[0];
+
+		current = current->parent();
+	}
+
+	// find in this uml diagram
+	return element_cast<ElementClass>(findElement(name));
+}
+
 
 #endif // UMLDIAGRAM_HPP

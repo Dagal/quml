@@ -29,8 +29,8 @@
 #include "_classobject.hpp"
 #include "_elementhelper.hpp"
 
-ClassObject::ClassObject(ElementObject * parent)
-	: DatatypeObject(parent), _dd(new ClassObjectPrivate)
+ClassObject::ClassObject()
+	: DatatypeObject(), _dd(new ClassObjectPrivate)
 {
 }
 

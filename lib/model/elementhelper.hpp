@@ -30,12 +30,13 @@
 #include "algorithm.hpp"
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
+#include <iostream>
 
 template <typename ElementClass> ElementClass * element_cast(ElementObject * element)
 {
 	if(!element) return 0;
 
-	if((element->type() && ElementClass::elementtype) != ElementClass::elementtype)
+	if((element->type() & ElementClass::elementtype) != ElementClass::elementtype)
 		return 0;
 
 	return static_cast<ElementClass*>(element);
@@ -45,7 +46,7 @@ template <typename ElementClass> const ElementClass * element_cast(const Element
 {
 	if(!element) return 0;
 
-	if((element->type() && ElementClass::elementtype) != ElementClass::elementtype)
+	if((element->type() & ElementClass::elementtype) != ElementClass::elementtype)
 		return 0;
 
 	return static_cast<ElementClass*>(element);

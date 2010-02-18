@@ -102,7 +102,7 @@ template <typename T> bool ElementContainer<T>::removeElement(const std::string 
 
 template <typename T> inline bool ElementContainer<T>::hasElement(T * element) const
 {
-	return (std::find(_elements.begin(), _elements.end(), element) == _elements.end());
+	return (std::find(_elements.begin(), _elements.end(), element) != _elements.end());
 }
 
 template <typename T> T * ElementContainer<T>::findElement(const std::string & elementName) const

@@ -48,7 +48,7 @@ public:
 	enum { elementtype = Element };
 
 	// constructor & destructor
-	ElementObject(ElementObject * parent);
+	ElementObject();
 	virtual ~ElementObject() = 0;
 
 	// getters and setters

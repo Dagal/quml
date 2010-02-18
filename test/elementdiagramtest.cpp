@@ -46,16 +46,6 @@ void ElementDiagramTest::cleanup()
 	delete _diagram;
 }
 
-void ElementDiagramTest::parent_AddChildOnCreation()
-{
-	delete _child;
-	_child = new PackageObject(_parent);
-
-	QCOMPARE(_parent->children().size(), (unsigned int)1);
-	QCOMPARE(_parent->children()[0], _child);
-	QCOMPARE(_child->parent(), _parent);
-}
-
 void ElementDiagramTest::parent_AddChildAfterCreation()
 {
 	_child->setParent(_parent);
@@ -68,7 +58,7 @@ void ElementDiagramTest::parent_AddChildAfterCreation()
 void ElementDiagramTest::parent_findChildren()
 {
 	for(int i = 0; i < 10; i++)
-		new PackageObject(_parent);
+		(new PackageObject())->setParent(_parent);
 
 	QCOMPARE(_parent->children().size(), (unsigned int)10);
 	QCOMPARE(::findChildren<PackageObject>(_parent).size(), (unsigned int)10);

@@ -35,7 +35,7 @@ class MethodObject : public ElementObject
 public:
 	enum { elementtype = Element_Method };
 
-	MethodObject(ElementObject * parent = 0);
+	MethodObject();
 	~MethodObject() {};
 
 	DatatypeObject * returnType() const;
@@ -46,6 +46,10 @@ public:
 
 	virtual std::string umlName() const;
 	virtual ElementType type() const { return Element_Method; }
+
+protected:
+	virtual void onChildAdded(ElementObject * child);
+	virtual void onChildRemoved(ElementObject * child);
 
 private:
 	boost::shared_ptr<MethodObjectPrivate> _dd;

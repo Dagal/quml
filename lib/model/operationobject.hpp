@@ -36,12 +36,13 @@ class OperationObject : public MethodObject
 public:
 	enum { elementtype = Element_Operation };
 
-	OperationObject(ElementObject * parent = 0);
+	OperationObject();
 	~OperationObject() {};
 
 	VisibilityType visibility() const;
 	void setVisibility(VisibilityType type);
 
+	virtual std::string qualifiedName() const;
 	virtual std::string umlName() const;
 
 

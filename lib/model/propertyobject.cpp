@@ -26,8 +26,8 @@
 #include "propertyobject.hpp"
 #include "_propertyobject.hpp"
 
-PropertyObject::PropertyObject(ElementObject * parent)
-	: ParameterObject(parent), _dd(new PropertyObjectPrivate)
+PropertyObject::PropertyObject()
+	: ParameterObject(), _dd(new PropertyObjectPrivate)
 {
 }
 

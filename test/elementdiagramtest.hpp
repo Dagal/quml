@@ -37,7 +37,6 @@ class ElementDiagramTest : public QObject
 
 private slots:
 
-	void parent_AddChildOnCreation();
 	void parent_AddChildAfterCreation();
 	void parent_findChildren();
 	void parentchild_qualifiedName();

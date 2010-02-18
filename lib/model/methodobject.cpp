@@ -29,8 +29,8 @@
 #include "datatypeobject.hpp"
 #include <sstream>
 
-MethodObject::MethodObject(ElementObject * parent)
-	: ElementObject(parent), _dd(new MethodObjectPrivate)
+MethodObject::MethodObject()
+	: ElementObject(), _dd(new MethodObjectPrivate)
 {
 }
 
@@ -75,7 +75,7 @@ std::string MethodObject::umlName() const
 		if(i != parameters().size()-1)
 			s << ", ";
 	}
-	s << ") : ";
+	s << "): ";
 
 	if(returnType() == 0)
 		s << "void";
@@ -85,3 +85,13 @@ std::string MethodObject::umlName() const
 	return s.str();
 }
 
+void MethodObject::onChildAdded(ElementObject * child)
+{
+	_dd->_parameters.addElement(element_cast<ParameterObject>(child));
+
+}
+
+void MethodObject::onChildRemoved(ElementObject * child)
+{
+	_dd->_parameters.removeElement(element_cast<ParameterObject>(child));
+}
