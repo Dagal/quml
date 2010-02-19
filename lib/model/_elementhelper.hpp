@@ -27,6 +27,7 @@
 #define _ELEMENTHELPER_HPP
 
 #include "elementobject.hpp"
+#include "elementhelper.hpp"
 
 template <typename T> bool tryToAddToVector(ElementObject * child, std::vector<T*> & vct)
 {

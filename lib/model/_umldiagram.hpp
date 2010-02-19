@@ -33,10 +33,12 @@ struct UMLDiagram::UMLDiagramPrivate
 {
 	typedef std::vector<ElementObject *> elementvct;
 
-	UMLDiagramPrivate(UMLDiagram * umldiagram)
-		: _diagram(umldiagram)
+	UMLDiagramPrivate()
+		: _diagram(0), _emptyPackage(0)
 	{
 	}
+
+	void initialise(UMLDiagram * umldiagram);
 
 	void attachElementObject(ElementObject * element);
 	void detachElementObject(const std::string & qualifiedName);
@@ -49,6 +51,7 @@ struct UMLDiagram::UMLDiagramPrivate
 
 	elementvct _elements;
 	UMLDiagram * _diagram;
+	PackageObject * _emptyPackage;
 };
 
 #endif // _UMLDIAGRAM_HPP

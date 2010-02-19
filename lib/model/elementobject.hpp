@@ -79,6 +79,4 @@ private:
 	boost::shared_ptr<ElementObjectPrivate> _dd;
 };
 
-#include "elementhelper.hpp"
-
 #endif // ELEMENTOBJECT_HPP

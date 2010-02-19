@@ -20,7 +20,6 @@ HEADERS += model/elementobject.hpp \
     model/_parameterobject.hpp \
     model/datatypeobject.hpp \
     model/elementhelper.hpp \
-    model/elementhelper.hpp \
     model/_elementhelper.hpp \
     model/methodobject.hpp \
     model/visibility.hpp \
@@ -31,7 +30,8 @@ HEADERS += model/elementobject.hpp \
     control/iactionlistener.hpp \
     model/_operationobject.hpp \
     control/command/classcommand.hpp \
-    control/command/classcommand.hpp
+    control/command/classcommand.hpp \
+    control/command/elementcommand.hpp
 SOURCES += model/elementobject.cpp \
     model/umldiagram.cpp \
     model/packageobject.cpp \
@@ -41,6 +41,7 @@ SOURCES += model/elementobject.cpp \
     model/parameterobject.cpp \
     model/datatypeobject.cpp \
     model/methodobject.cpp \
-    control/command/classcommand.cpp
+    control/command/elementcommand.cpp \
+    model/elementhelper.cpp
 REL_PATH = 
 include($${REL_PATH}lib.pri)

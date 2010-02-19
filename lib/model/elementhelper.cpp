@@ -23,40 +23,49 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef DEFINES_HPP
-#define DEFINES_HPP
+#include "elementhelper.hpp"
+#include "classobject.hpp"
+#include "methodobject.hpp"
+#include "propertyobject.hpp"
+#include "parameterobject.hpp"
+#include "packageobject.hpp"
+#include "operationobject.hpp"
 
-#include <boost/shared_ptr.hpp>
 
-class UMLDiagram;
-class ClassObject;
-class PackageObject;
-class DatatypeObject;
-class ElementObject;
-class OperationObject;
-class ParameterObject;
-class PropertyObject;
-
-enum ElementType
+ElementObject * createElement(ElementType type, ElementObject * parent)
 {
-	Element = 0,
+	ElementObject * element = 0;
 
-	Element_Package = 1,
+	switch(type)
+	{
+	case Element_Class:
+		element = new ClassObject;
+		break;
 
-	Element_Datatype = 4 << 1,
-	Element_Primitive = 5 << 1,
-	Element_Class = 6 << 1,
+	case Element_Method:
+		element = new MethodObject;
+		break;
 
-	Element_Method = 2 << 4,
-	Element_Operation = 1 << 4,
+	case Element_Operation:
+		element = new OperationObject;
+		break;
 
-	Element_Parameter = 2 << 6,
-	Element_Property = 1 << 6,
+	case Element_Package:
+		element = new PackageObject;
+		break;
 
+	case Element_Property:
+		element = new PropertyObject;
+		break;
 
+	case Element_Parameter:
+		element = new ParameterObject;
+		break;
 
-};
+	default:
+		return 0;
+	}
 
-typedef boost::shared_ptr<ElementObject> ElementObjectPtr;
-
-#endif // DEFINES_HPP
+	element->setParent(parent);
+	return element;
+}

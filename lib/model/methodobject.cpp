@@ -27,6 +27,7 @@
 #include "_methodobject.hpp"
 #include "parameterobject.hpp"
 #include "datatypeobject.hpp"
+#include "elementhelper.hpp"
 #include <sstream>
 
 MethodObject::MethodObject()

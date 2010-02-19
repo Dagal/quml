@@ -23,40 +23,20 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef DEFINES_HPP
-#define DEFINES_HPP
+#ifndef _OPERATIONOBJECT_HPP
+#define _OPERATIONOBJECT_HPP
 
-#include <boost/shared_ptr.hpp>
+#include "operationobject.hpp"
+#include "visibility.hpp"
 
-class UMLDiagram;
-class ClassObject;
-class PackageObject;
-class DatatypeObject;
-class ElementObject;
-class OperationObject;
-class ParameterObject;
-class PropertyObject;
-
-enum ElementType
+struct OperationObject::OperationObjectPrivate
 {
-	Element = 0,
+	OperationObjectPrivate()
+		: _visibility(Visibility_Public)
+	{
+	}
 
-	Element_Package = 1,
-
-	Element_Datatype = 4 << 1,
-	Element_Primitive = 5 << 1,
-	Element_Class = 6 << 1,
-
-	Element_Method = 2 << 4,
-	Element_Operation = 1 << 4,
-
-	Element_Parameter = 2 << 6,
-	Element_Property = 1 << 6,
-
-
-
+	Visibility _visibility;
 };
 
-typedef boost::shared_ptr<ElementObject> ElementObjectPtr;
-
-#endif // DEFINES_HPP
+#endif // _OPERATIONOBJECT_HPP
