@@ -43,8 +43,6 @@ public:
 	template <typename ElementClass> ElementClass * findElement(const std::string & name, ElementObject * relativeObject) const;
 	std::vector<ElementObject *> elements() const;
 
-	PackageObject * emptyPackage()const;
-
 private:
 	boost::shared_ptr<UMLDiagramPrivate> _dd;
 };

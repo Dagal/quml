@@ -23,32 +23,30 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef _UMLDIAGRAM_HPP
-#define _UMLDIAGRAM_HPP
+#ifndef CONTROLLER_HPP
+#define CONTROLLER_HPP
 
-#include "umldiagram.hpp"
-#include <boost/unordered_map.hpp>
+#include "singleton.hpp"
+#include <boost/shared_ptr.hpp>
 
-struct UMLDiagram::UMLDiagramPrivate
+class ClassDiagramController;
+
+class Controller : public Singleton<Controller>
 {
-	typedef std::vector<ElementObject *> elementvct;
+	class ControllerPrivate;
 
-	UMLDiagramPrivate(UMLDiagram * umldiagram)
-		: _diagram(umldiagram)
-	{
-	}
+	friend class Singleton<Controller>;
 
-	void attachElementObject(ElementObject * element);
-	void detachElementObject(const std::string & qualifiedName);
-	void changeElementName(const std::string & oldName, const std::string & newName);
+	ClassDiagramController * classDiagramController() const;
+	ClassDiagramController * attachClassDiagramController(ClassDiagramController * newController);
 
-	elementvct::const_iterator findInElements(const std::string & name) const;
-	elementvct::iterator findInElements(const std::string & name);
-	void emptyLocation(const std::string & name);
-	void resortElements();
+private:
+    Controller();
 
-	elementvct _elements;
-	UMLDiagram * _diagram;
+	boost::shared_ptr<ControllerPrivate> _dd;
+
 };
 
-#endif // _UMLDIAGRAM_HPP
+void initialiseController();
+
+#endif // CONTROLLER_HPP

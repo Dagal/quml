@@ -31,9 +31,8 @@
 #include "packageobject.hpp"
 
 UMLDiagram::UMLDiagram()
-	: _dd(new UMLDiagramPrivate)
+	: _dd(new UMLDiagramPrivate(this))
 {
-	_dd->initialise(this);
 }
 
 
@@ -91,10 +90,6 @@ void UMLDiagram::UMLDiagramPrivate::attachElementObject(ElementObject * element)
 	// add the element
 	_elements.push_back(element);
 	resortElements();
-
-	// does the element already have a parent?
-	if(element->parent() == 0 && element != _emptyPackage)
-		element->setParent(_emptyPackage);
 }
 
 void UMLDiagram::UMLDiagramPrivate::detachElementObject(const std::string & qualifiedName)
@@ -122,14 +117,3 @@ void UMLDiagram::UMLDiagramPrivate::resortElements()
 			  ElementObject::comparator());
 }
 
-PackageObject * UMLDiagram::emptyPackage()const
-{
-	return _dd->_emptyPackage;
-}
-
-void UMLDiagram::UMLDiagramPrivate::initialise(UMLDiagram * umldiagram)
-{
-	_diagram = umldiagram;
-	_emptyPackage = new PackageObject;
-	_emptyPackage->setUMLDiagram(_diagram);
-}

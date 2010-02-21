@@ -30,6 +30,11 @@
 
 namespace stf
 {
+	template<typename _Functor, typename _CompareValue> bool is_equal(_Functor f, const _CompareValue & compareValue)
+	{
+		return (compareValue == f());
+	}
+
 	template<typename _ForwardIterator, typename _Compare> _ForwardIterator binary_find_if(_ForwardIterator __first, _ForwardIterator __last, _Compare __fan_comp)
 	{
 		typedef typename std::iterator_traits<_ForwardIterator>::value_type _ValueType;

@@ -23,32 +23,22 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef _UMLDIAGRAM_HPP
-#define _UMLDIAGRAM_HPP
+#ifndef ILISTENER_HPP
+#define ILISTENER_HPP
 
-#include "umldiagram.hpp"
-#include <boost/unordered_map.hpp>
+#include "iaction.hpp"
+#include <string>
 
-struct UMLDiagram::UMLDiagramPrivate
+class IActionListener
 {
-	typedef std::vector<ElementObject *> elementvct;
-
-	UMLDiagramPrivate(UMLDiagram * umldiagram)
-		: _diagram(umldiagram)
-	{
-	}
-
-	void attachElementObject(ElementObject * element);
-	void detachElementObject(const std::string & qualifiedName);
-	void changeElementName(const std::string & oldName, const std::string & newName);
-
-	elementvct::const_iterator findInElements(const std::string & name) const;
-	elementvct::iterator findInElements(const std::string & name);
-	void emptyLocation(const std::string & name);
-	void resortElements();
-
-	elementvct _elements;
-	UMLDiagram * _diagram;
+public:
+	void onActionExecuted(const IAction & action);
 };
 
-#endif // _UMLDIAGRAM_HPP
+class IErrorListener
+{
+public:
+	void onErrorMessage(const std::string & errorMessage);
+};
+
+#endif // ILISTENER_HPP

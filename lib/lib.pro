@@ -26,12 +26,16 @@ HEADERS += model/elementobject.hpp \
     model/_methodobject.hpp \
     model/_propertyobject.hpp \
     model/elementcontainer.hpp \
-    control/command/icommand.hpp \
-    control/iactionlistener.hpp \
     model/_operationobject.hpp \
-    control/command/classcommand.hpp \
-    control/command/classcommand.hpp \
-    control/command/elementcommand.hpp
+    control/classdiagramcontroller.hpp \
+    util/singleton.hpp \
+    control/controller.hpp \
+    control/_controller.hpp \
+    control/interface/iclassdiagramcontroller.hpp \
+    control/interface/idiagramcontroller.hpp \
+    control/interface/iaction.hpp \
+    control/interface/ilistener.hpp \
+    control/interface/_idiagramcontroller.hpp
 SOURCES += model/elementobject.cpp \
     model/umldiagram.cpp \
     model/packageobject.cpp \
@@ -41,7 +45,9 @@ SOURCES += model/elementobject.cpp \
     model/parameterobject.cpp \
     model/datatypeobject.cpp \
     model/methodobject.cpp \
-    control/command/elementcommand.cpp \
-    model/elementhelper.cpp
+    model/elementhelper.cpp \
+    control/classdiagramcontroller.cpp \
+    control/controller.cpp \
+    control/interface/idiagramcontroller.cpp
 REL_PATH = 
 include($${REL_PATH}lib.pri)

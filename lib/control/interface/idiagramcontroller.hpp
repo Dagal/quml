@@ -23,32 +23,32 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef _UMLDIAGRAM_HPP
-#define _UMLDIAGRAM_HPP
+#ifndef IDIAGRAMCONTROLLER_HPP
+#define IDIAGRAMCONTROLLER_HPP
 
-#include "umldiagram.hpp"
-#include <boost/unordered_map.hpp>
+#include <string>
+#include <boost/shared_ptr.hpp>
+#include "ilistener.hpp"
 
-struct UMLDiagram::UMLDiagramPrivate
+class IDiagramController
 {
-	typedef std::vector<ElementObject *> elementvct;
+	class IDiagramControllerPrivate;
 
-	UMLDiagramPrivate(UMLDiagram * umldiagram)
-		: _diagram(umldiagram)
-	{
-	}
+public:
+	void addActionListener(IActionListener * listener, int actionMask = 0xffff);
+	void removeActionListener(IActionListener * listener);
 
-	void attachElementObject(ElementObject * element);
-	void detachElementObject(const std::string & qualifiedName);
-	void changeElementName(const std::string & oldName, const std::string & newName);
+	void addErrorListener(IErrorListener * listener);
+	void removeErrorListener(IErrorListener * listener);
 
-	elementvct::const_iterator findInElements(const std::string & name) const;
-	elementvct::iterator findInElements(const std::string & name);
-	void emptyLocation(const std::string & name);
-	void resortElements();
 
-	elementvct _elements;
-	UMLDiagram * _diagram;
+	const std::string & errorMessage() const;
+
+protected:
+	void setErrorMessage(const std::string & newError);
+
+private:
+	boost::shared_ptr<IDiagramControllerPrivate> _dd;
 };
 
-#endif // _UMLDIAGRAM_HPP
+#endif // IDIAGRAMCONTROLLER_HPP

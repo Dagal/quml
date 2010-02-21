@@ -23,32 +23,19 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef _UMLDIAGRAM_HPP
-#define _UMLDIAGRAM_HPP
+#ifndef _CONTROLLER_HPP
+#define _CONTROLLER_HPP
 
-#include "umldiagram.hpp"
-#include <boost/unordered_map.hpp>
+#include "controller.hpp"
 
-struct UMLDiagram::UMLDiagramPrivate
+struct Controller::ControllerPrivate
 {
-	typedef std::vector<ElementObject *> elementvct;
-
-	UMLDiagramPrivate(UMLDiagram * umldiagram)
-		: _diagram(umldiagram)
+	ControllerPrivate()
+		: _classDiagramController(0)
 	{
 	}
 
-	void attachElementObject(ElementObject * element);
-	void detachElementObject(const std::string & qualifiedName);
-	void changeElementName(const std::string & oldName, const std::string & newName);
-
-	elementvct::const_iterator findInElements(const std::string & name) const;
-	elementvct::iterator findInElements(const std::string & name);
-	void emptyLocation(const std::string & name);
-	void resortElements();
-
-	elementvct _elements;
-	UMLDiagram * _diagram;
+	ClassDiagramController * _classDiagramController;
 };
 
-#endif // _UMLDIAGRAM_HPP
+#endif // _CONTROLLER_HPP

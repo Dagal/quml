@@ -43,19 +43,36 @@
 #include "classobject.hpp"
 #include "operationobject.hpp"
 #include "parameterobject.hpp"
-#include "elementcommand.hpp"
 #include "umldiagram.hpp"
+#include "classdiagramcontroller.hpp"
+#include <boost/unordered_set.hpp>
 
 using std::cout;
 using std::vector;
 
+class A
+{
+};
+
+class B
+{
+};
+
+bool operator==(const A & a, const B & b)
+{
+	std::cout << "called";
+
+	return true;
+}
+
 int main(int /*argc*/, char ** /*argv*/)
 {
-	UMLDiagram d;
 
-	CreateElementCommand c1(Element_Package, "stf", d.emptyPackage());
-	c1.redo();
-	c1.undo();
-	c1.redo();
+	boost::unordered_set<A> a(5);
+
+	std::find(
+			a.begin(),
+			a.end(),
+			B());
 }
 

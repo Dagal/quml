@@ -23,32 +23,41 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef _UMLDIAGRAM_HPP
-#define _UMLDIAGRAM_HPP
+#ifndef _IDIAGRAMCONTROLLER_HPP
+#define _IDIAGRAMCONTROLLER_HPP
 
-#include "umldiagram.hpp"
-#include <boost/unordered_map.hpp>
+#include "idiagramcontroller.hpp"
+#include <vector>
 
-struct UMLDiagram::UMLDiagramPrivate
+struct IDiagramController::IDiagramControllerPrivate
 {
-	typedef std::vector<ElementObject *> elementvct;
+	struct ActionListenerData
+	{
+		ActionListenerData(IActionListener * listener, int mask = 0xffff)
+			: _listener(listener), _mask(mask)
+		{}
 
-	UMLDiagramPrivate(UMLDiagram * umldiagram)
-		: _diagram(umldiagram)
+		IActionListener * _listener;
+		int _mask;
+	};
+
+
+	typedef std::vector<ActionListenerData> actionListenerVct;
+	typedef std::vector<IErrorListener*> errorListenerVct;
+
+	IDiagramControllerPrivate()
 	{
 	}
 
-	void attachElementObject(ElementObject * element);
-	void detachElementObject(const std::string & qualifiedName);
-	void changeElementName(const std::string & oldName, const std::string & newName);
+	void sendErrorMessage();
+	void sendAction(const IAction & action);
 
-	elementvct::const_iterator findInElements(const std::string & name) const;
-	elementvct::iterator findInElements(const std::string & name);
-	void emptyLocation(const std::string & name);
-	void resortElements();
-
-	elementvct _elements;
-	UMLDiagram * _diagram;
+	actionListenerVct _actionListeners;
+	errorListenerVct _errorListeners;
+	std::string _errorMessage;
 };
 
-#endif // _UMLDIAGRAM_HPP
+bool operator==(const IDiagramController::IDiagramControllerPrivate::ActionListenerData & first, IActionListener * second);
+
+
+#endif // _IDIAGRAMCONTROLLER_HPP
