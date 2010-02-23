@@ -32,13 +32,13 @@
 class IActionListener
 {
 public:
-	void onActionExecuted(const IAction & action);
+	virtual void onActionExecuted(const IAction & action) = 0;
 };
 
 class IErrorListener
 {
 public:
-	void onErrorMessage(const std::string & errorMessage);
+	virtual void onErrorMessage(const std::string & errorMessage) = 0;
 };
 
 #endif // ILISTENER_HPP

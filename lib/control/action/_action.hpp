@@ -23,29 +23,25 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef IACTION_HPP
-#define IACTION_HPP
+#ifndef _ACTION_HPP
+#define _ACTION_HPP
 
-#include <iostream>
-#include <cassert>
+#include <string>
 
-class IAction
+template <typename _Predicate> bool checkCondition(_Predicate __pred, std::string * errorMsgContainer, const std::string & error)
 {
-public:
-	virtual int type() const = 0;
+	if(__pred()) return true;
 
-	virtual bool canExecute(std::string * errorMsg = 0) const = 0;
-	void execute();
-
-private:
-
-	virtual void performExecution() = 0;
-};
-
-inline void IAction::execute()
-{
-	assert(canExecute());
-	performExecution();
+	if(errorMsgContainer != 0) errorMsgContainer->assign(error);
+	return false;
 }
 
-#endif // IACTION_HPP
+bool checkCondition(bool condition, std::string * errorMsgContainer, const std::string & error)
+{
+	if(condition) return true;
+
+	if(errorMsgContainer != 0) errorMsgContainer->assign(error);
+	return false;
+}
+
+#endif // _ACTION_HPP

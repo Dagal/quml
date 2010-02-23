@@ -27,10 +27,24 @@
 #define ICLASSDIAGRAMCONTROLLER_HPP
 
 #include "idiagramcontroller.hpp"
+#include <vector>
+
+class UMLDiagram;
+
 
 class IClassDiagramController : public IDiagramController
 {
+	// class diagram functions
+	virtual bool createClass(const std::string & diagramName, const std::string & name, const std::string & container);
+	virtual bool deleteClass(const std::string & diagramName, const std::string & name);
+	virtual bool renameClass(const std::string & diagramName, const std::string & oldName, const std::string & newName);
+	virtual bool moveClass(const std::string & diagramName, const std::string & name, const std::string & newContainer);
 
+
+
+	virtual void createUMLDiagram(const std::string & diagramName);
+	virtual UMLDiagram * getUMLDiagram(const std::string & diagramName) const;
+	virtual std::vector<std::string> allDiagramNames() const;
 };
 
 #endif // ICLASSDIAGRAMCONTROLLER_HPP

@@ -35,11 +35,16 @@ class IDiagramController
 	class IDiagramControllerPrivate;
 
 public:
+	virtual ~IDiagramController() = 0;
+
 	void addActionListener(IActionListener * listener, int actionMask = 0xffff);
 	void removeActionListener(IActionListener * listener);
+	bool hasActionListener(IActionListener * listener) const;
+
 
 	void addErrorListener(IErrorListener * listener);
 	void removeErrorListener(IErrorListener * listener);
+	bool hasErrorListener(IErrorListener * listener);
 
 
 	const std::string & errorMessage() const;

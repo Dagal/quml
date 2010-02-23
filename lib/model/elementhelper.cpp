@@ -69,3 +69,33 @@ ElementObject * createElement(ElementType type, ElementObject * parent)
 	element->setParent(parent);
 	return element;
 }
+
+std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name)
+{
+	typedef std::vector<ElementObject*> elementvct;
+	typedef elementvct::iterator elementvctit;
+
+	const std::vector<ElementObject * >	& children = element->children();
+	elementvct transf(children.size());
+
+	boost::function<bool (ElementObject*)> pred;
+	if(name.empty())
+		pred = boost::bind(checkForValidElement<ElementObject>, _1);
+	else
+		pred = boost::bind(checkForValidNamedElement<ElementObject>, _1, boost::cref(name));
+
+
+	elementvctit it = stf::copy_transformed_if(
+			children.begin(),
+			children.end(),
+			transf.begin(),
+			boost::bind<ElementObject*>(
+					element_cast<ElementObject>,
+					_1),
+			pred
+			);
+
+	transf.erase(it, transf.end());
+	return transf;
+}
+

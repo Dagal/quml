@@ -26,24 +26,23 @@
 #include "idiagramcontroller.hpp"
 #include "_idiagramcontroller.hpp"
 #include "algorithm.hpp"
+#include <boost/lambda/bind.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <boost/bind.hpp>
 
+IDiagramController::~IDiagramController()
+{
+}
 
 void IDiagramController::addActionListener(IActionListener * listener, int actionMask)
 {
-	_dd->_actionListeners.insert(IDiagramControllerPrivate::ActionListenerData(listener, actionMask));
+	removeActionListener(listener);
+	_dd->_actionListeners.push_back(ActionListenerData(listener, actionMask));
 }
 
 void IDiagramController::removeActionListener(IActionListener * listener)
 {
-	IDiagramControllerPrivate::actionListenerSet::iterator i = std::find_if(
-			_dd->_actionListeners.begin(),
-			_dd->_actionListeners.end(),
-			stf::is_equal(
-					boost::bind(&IDiagramControllerPrivate::ActionListenerData::_listener, _1),
-					listener
-					)
-			);
+	IDiagramControllerPrivate::actionListenerVct::iterator i = _dd->findActionListener(listener);
 
 	if(i != _dd->_actionListeners.end())
 		_dd->_actionListeners.erase(i);
@@ -51,21 +50,89 @@ void IDiagramController::removeActionListener(IActionListener * listener)
 
 void IDiagramController::addErrorListener(IErrorListener * listener)
 {
-	_dd->
+	removeErrorListener(listener);
+	_dd->_errorListeners.push_back(listener);
 }
 
-void IDiagramController::removeErrorListener(IErrorListener * listener);
+void IDiagramController::removeErrorListener(IErrorListener * listener)
+{
+	IDiagramControllerPrivate::errorListenerVct::iterator i = _dd->findErrorListener(listener);
 
-const std::string & IDiagramController::errorMessage() const;
+	if(i != _dd->_errorListeners.end())
+		_dd->_errorListeners.erase(i);
+}
 
-void IDiagramController::setErrorMessage(const std::string & newError);
+const std::string & IDiagramController::errorMessage() const
+{
+	return _dd->_errorMessage;
+}
 
-void IDiagramController::IDiagramControllerPrivate::sendErrorMessage();
-void IDiagramController::IDiagramControllerPrivate::sendAction(const IAction & action);
+void IDiagramController::setErrorMessage(const std::string & newError)
+{
+	if(newError == _dd->_errorMessage)
+		return;
 
+	_dd->_errorMessage = newError;
+	_dd->sendErrorMessage();
+}
 
-bool operator==(const IDiagramController::IDiagramControllerPrivate::ActionListenerData & first, IActionListener * second)
+void IDiagramController::IDiagramControllerPrivate::sendErrorMessage()
+{
+	std::for_each(
+			_errorListeners.begin(),
+			_errorListeners.end(),
+			boost::bind(&IErrorListener::onErrorMessage, _1, boost::cref(_errorMessage))
+			);
+}
+
+void IDiagramController::IDiagramControllerPrivate::sendAction(const IAction & action)
+{
+	std::for_each(
+			_actionListeners.begin(),
+			_actionListeners.end(),
+			boost::bind(&ActionListenerData::sendAction, _1, boost::cref(action))
+			);
+}
+
+bool IDiagramController::hasActionListener(IActionListener * listener) const
+{
+	return _dd->findActionListener(listener) != _dd->_actionListeners.end();
+}
+
+bool IDiagramController::hasErrorListener(IErrorListener * listener)
+{
+	return _dd->findErrorListener(listener) != _dd->_errorListeners.end();
+}
+
+bool test(IActionListener * data)
+{
+	return data != 0;
+}
+
+IDiagramController::IDiagramControllerPrivate::actionListenerVct::iterator IDiagramController::IDiagramControllerPrivate::findActionListener(IActionListener * listener)
+{
+	return std::find_if(
+				_actionListeners.begin(),
+				_actionListeners.end(),
+				boost::lambda::bind(&ActionListenerData::_listener, boost::lambda::_1) == listener
+				);
+}
+
+IDiagramController::IDiagramControllerPrivate::errorListenerVct::iterator IDiagramController::IDiagramControllerPrivate::findErrorListener(IErrorListener * listener)
+{
+	return std::find(
+			_errorListeners.begin(),
+			_errorListeners.end(),
+			listener);
+}
+
+bool operator==(const ActionListenerData & first, IActionListener * second)
 {
 	return first._listener == second;
 }
 
+void ActionListenerData::sendAction(const IAction & action)
+{
+	if((action.type() & _mask) != 0)
+		_listener->onActionExecuted(action);
+}

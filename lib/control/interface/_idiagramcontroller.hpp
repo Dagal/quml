@@ -29,18 +29,22 @@
 #include "idiagramcontroller.hpp"
 #include <vector>
 
+struct ActionListenerData
+{
+	ActionListenerData(IActionListener * listener, int mask = 0xffff)
+		: _listener(listener), _mask(mask)
+	{}
+
+	IActionListener * _listener;
+	int _mask;
+
+	void sendAction(const IAction & action);
+};
+
+bool operator==(const ActionListenerData & first, IActionListener * second);
+
 struct IDiagramController::IDiagramControllerPrivate
 {
-	struct ActionListenerData
-	{
-		ActionListenerData(IActionListener * listener, int mask = 0xffff)
-			: _listener(listener), _mask(mask)
-		{}
-
-		IActionListener * _listener;
-		int _mask;
-	};
-
 
 	typedef std::vector<ActionListenerData> actionListenerVct;
 	typedef std::vector<IErrorListener*> errorListenerVct;
@@ -52,12 +56,16 @@ struct IDiagramController::IDiagramControllerPrivate
 	void sendErrorMessage();
 	void sendAction(const IAction & action);
 
+	actionListenerVct::iterator findActionListener(IActionListener * listener);
+	errorListenerVct::iterator findErrorListener(IErrorListener * listener);
+
+
 	actionListenerVct _actionListeners;
 	errorListenerVct _errorListeners;
 	std::string _errorMessage;
 };
 
-bool operator==(const IDiagramController::IDiagramControllerPrivate::ActionListenerData & first, IActionListener * second);
+
 
 
 #endif // _IDIAGRAMCONTROLLER_HPP

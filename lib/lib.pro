@@ -35,7 +35,10 @@ HEADERS += model/elementobject.hpp \
     control/interface/idiagramcontroller.hpp \
     control/interface/iaction.hpp \
     control/interface/ilistener.hpp \
-    control/interface/_idiagramcontroller.hpp
+    control/interface/_idiagramcontroller.hpp \
+    control/action/classaction.hpp \
+    util/macro.hpp \
+    control/action/_action.hpp
 SOURCES += model/elementobject.cpp \
     model/umldiagram.cpp \
     model/packageobject.cpp \
@@ -48,6 +51,7 @@ SOURCES += model/elementobject.cpp \
     model/elementhelper.cpp \
     control/classdiagramcontroller.cpp \
     control/controller.cpp \
-    control/interface/idiagramcontroller.cpp
+    control/interface/idiagramcontroller.cpp \
+    control/action/classaction.cpp
 REL_PATH = 
 include($${REL_PATH}lib.pri)

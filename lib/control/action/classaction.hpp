@@ -23,29 +23,44 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef IACTION_HPP
-#define IACTION_HPP
+#ifndef CLASSACTION_HPP
+#define CLASSACTION_HPP
 
-#include <iostream>
-#include <cassert>
+#include "iaction.hpp"
+#include "macro.hpp"
 
-class IAction
+class UMLDiagram;
+class ElementObject;
+class ClassObject;
+
+class CreateClassAction : public IAction
 {
 public:
-	virtual int type() const = 0;
+	CreateClassAction(const std::string & className, ElementObject * parent);
 
-	virtual bool canExecute(std::string * errorMsg = 0) const = 0;
-	void execute();
+	virtual bool canExecute(std::string * errorMsg = 0) const;
 
 private:
+	virtual void performExecution();
 
-	virtual void performExecution() = 0;
+	PtrVarGet(ElementObject, parentObject);
+	PtrVarGet(ClassObject, classObject);
+	RefVarGet(std::string, className);
 };
 
-inline void IAction::execute()
+class RenameClassAction : public IAction
 {
-	assert(canExecute());
-	performExecution();
-}
+public:
+	RenameClassAction(ClassObject * classObject, const std::string & newName);
 
-#endif // IACTION_HPP
+	virtual bool canExecute(std::string * errorMsg = 0) const;
+
+private:
+	virtual void performExecution();
+
+private:
+	PtrVarGet(ClassObject, classObject);
+	RefVarGet(std::string, newName);
+};
+
+#endif // CLASSACTION_HPP

@@ -23,29 +23,15 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef IACTION_HPP
-#define IACTION_HPP
+#ifndef IACTIONLISTENER_HPP
+#define IACTIONLISTENER_HPP
 
-#include <iostream>
-#include <cassert>
-
-class IAction
+class IActionListener
 {
 public:
-	virtual int type() const = 0;
+    IActionListener();
 
-	virtual bool canExecute(std::string * errorMsg = 0) const = 0;
-	void execute();
-
-private:
-
-	virtual void performExecution() = 0;
+	virtual void onAction() = 0;
 };
 
-inline void IAction::execute()
-{
-	assert(canExecute());
-	performExecution();
-}
-
-#endif // IACTION_HPP
+#endif // IACTIONLISTENER_HPP
