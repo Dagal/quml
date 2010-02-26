@@ -36,7 +36,7 @@ public:
 	ParameterObjectPrivate()
 	{}
 
-	const DatatypeObject * _datatype;
+	string _datatype;
 	string _defaultValue;
 };
 

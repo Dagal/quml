@@ -38,7 +38,8 @@ HEADERS += model/elementobject.hpp \
     control/interface/_idiagramcontroller.hpp \
     control/action/classaction.hpp \
     util/macro.hpp \
-    control/action/_action.hpp
+    control/action/_action.hpp \
+    model/umldiagramhelper.hpp
 SOURCES += model/elementobject.cpp \
     model/umldiagram.cpp \
     model/packageobject.cpp \

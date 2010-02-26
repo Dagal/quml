@@ -23,30 +23,25 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef UMLDIAGRAM_HPP
-#define UMLDIAGRAM_HPP
+#ifndef UMLDIAGRAMHELPER_HPP
+#define UMLDIAGRAMHELPER_HPP
 
-#include "defines.hpp"
-#include "elementhelper.hpp"
-#include <vector>
-
-class UMLDiagram
+template <typename ElementClass> ElementClass * UMLDiagram::findElement(const std::string & name, ElementObject * relativeObject) const
 {
-	friend class ElementObject;
-	class UMLDiagramPrivate;
+	ElementObject * current = relativeObject;
 
-public:
-    UMLDiagram();
+	// search in the family tree
+	while(current)
+	{
+		std::vector<ElementClass*> children = findChildren<ElementClass>(current, name);
+		if(children.size() > 0)
+			return children[0];
 
-	std::vector<ElementObject *> findRelatedElements(const std::string & qualifiedName) const;
-	ElementObject * findElement(const std::string & qualifiedName) const;
-	template <typename ElementClass> ElementClass * findElement(const std::string & name, ElementObject * relativeObject) const;
-	std::vector<ElementObject *> elements() const;
+		current = current->parent();
+	}
 
-private:
-	boost::shared_ptr<UMLDiagramPrivate> _dd;
-};
+	// find in this uml diagram
+	return element_cast<ElementClass>(findElement(name));
+}
 
-#include "umldiagramhelper.hpp"
-
-#endif // UMLDIAGRAM_HPP
+#endif // UMLDIAGRAMHELPER_HPP

@@ -38,8 +38,9 @@ public:
 	MethodObject();
 	~MethodObject() {};
 
-	DatatypeObject * returnType() const;
-	void setReturnType(DatatypeObject * returnType);
+
+	const std::string & returnType() const;
+	void setReturnType(const std::string & returnType);
 	ParameterObject * removeParameter(const std::string & name);
 	const std::vector<ParameterObject*> & parameters() const;
 	ParameterObject * parameterAt(unsigned int position) const;

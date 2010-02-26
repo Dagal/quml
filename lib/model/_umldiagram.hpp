@@ -32,6 +32,7 @@
 struct UMLDiagram::UMLDiagramPrivate
 {
 	typedef std::vector<ElementObject *> elementvct;
+	typedef boost::unordered_map<std::string, boost::shared_ptr<elementvct> > relatedElementMap;
 
 	UMLDiagramPrivate(UMLDiagram * umldiagram)
 		: _diagram(umldiagram)
@@ -47,8 +48,12 @@ struct UMLDiagram::UMLDiagramPrivate
 	void emptyLocation(const std::string & name);
 	void resortElements();
 
+	void removeFromRelatedElements(ElementObject * object);
+	void addToRelatedElements(ElementObject * elementObject);
+
 	elementvct _elements;
 	UMLDiagram * _diagram;
+	relatedElementMap _relatedElements;
 };
 
 #endif // _UMLDIAGRAM_HPP

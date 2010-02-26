@@ -29,6 +29,8 @@
 #include <boost/bind.hpp>
 #include "algorithm.hpp"
 #include "packageobject.hpp"
+#include "methodobject.hpp"
+#include "parameterobject.hpp"
 
 UMLDiagram::UMLDiagram()
 	: _dd(new UMLDiagramPrivate(this))
@@ -90,11 +92,40 @@ void UMLDiagram::UMLDiagramPrivate::attachElementObject(ElementObject * element)
 	// add the element
 	_elements.push_back(element);
 	resortElements();
+
+	addToRelatedElements(element);
 }
 
 void UMLDiagram::UMLDiagramPrivate::detachElementObject(const std::string & qualifiedName)
 {
-	_elements.erase(findInElements(qualifiedName));
+	elementvct::iterator it = findInElements(qualifiedName);
+
+	// something usefull to do?
+	if(it == _elements.end())
+		return;
+
+	ElementObject * obj = *it;
+
+	// erase from the total list
+	_elements.erase(it);
+
+	// erase from the relators, value side
+	removeFromRelatedElements(obj);
+}
+
+void UMLDiagram::UMLDiagramPrivate::changeElementName(const std::string & oldName, const std::string & newName)
+{
+	// just update the complete list
+	resortElements();
+
+	relatedElementMap::iterator i = _relatedElements.find(oldName);
+	if(i == _relatedElements.end() || i->second == 0)
+		return;
+
+	boost::shared_ptr<elementvct> data = i->second;
+	_relatedElements.erase(i);
+
+	_relatedElements[newName] = data;
 }
 
 void UMLDiagram::UMLDiagramPrivate::emptyLocation(const std::string & name)
@@ -104,12 +135,6 @@ void UMLDiagram::UMLDiagramPrivate::emptyLocation(const std::string & name)
 		(*i)->setUMLDiagram(0);
 }
 
-void UMLDiagram::UMLDiagramPrivate::changeElementName(const std::string & /*oldName*/, const std::string & /*newName*/)
-{
-	// just update the complete list
-	resortElements();
-}
-
 void UMLDiagram::UMLDiagramPrivate::resortElements()
 {
 	std::sort(_elements.begin(),
@@ -117,3 +142,87 @@ void UMLDiagram::UMLDiagramPrivate::resortElements()
 			  ElementObject::comparator());
 }
 
+std::vector<ElementObject *> UMLDiagram::findRelatedElements(const std::string & qualifiedName) const
+{
+	std::vector<ElementObject*> vct;
+
+	UMLDiagramPrivate::relatedElementMap::iterator i = _dd->_relatedElements.find(qualifiedName);
+
+	if(i != _dd->_relatedElements.end())
+		vct.assign(i->second->begin(), i->second->end());
+
+	return vct;
+}
+
+std::string findRelatedElement(ElementObject * elementObject)
+{
+	switch(elementObject->type())
+	{
+	case Element_Method:
+	case Element_Operation:
+		{
+			MethodObject * methodObject = element_cast<MethodObject>(elementObject);
+			return methodObject->returnType();
+			break;
+		}
+
+	case Element_Parameter:
+	case Element_Property:
+		{
+			ParameterObject * parameterObject = element_cast<ParameterObject>(elementObject);
+			return parameterObject->datatype();
+			break;
+		}
+
+	default:
+		return std::string();
+	}
+}
+
+void UMLDiagram::UMLDiagramPrivate::removeFromRelatedElements(ElementObject * object)
+{
+
+
+	for(relatedElementMap::iterator i = _relatedElements.begin(); i != _relatedElements.end(); ++i)
+	{
+		if(i->second == 0)
+			_relatedElements.erase(i);
+		else
+		{
+			elementvct & vct = *(i->second);
+			elementvct::iterator j = std::find(vct.begin(),vct.end(), object);
+
+			if(j != vct.end())
+			{
+				vct.erase(j);
+
+				if(vct.empty())
+					_relatedElements.erase(i);
+			}
+		}
+	}
+}
+
+void UMLDiagram::UMLDiagramPrivate::addToRelatedElements(ElementObject * elementObject)
+{
+	std::string relatedElementName = findRelatedElement(elementObject);
+
+	if(relatedElementName.empty())
+		return;
+
+	relatedElementMap::iterator i = _relatedElements.find(relatedElementName);
+
+	boost::shared_ptr<elementvct> vctPtr;
+
+	if(i == _relatedElements.end() || i->second == 0)
+	{
+		vctPtr = boost::shared_ptr<elementvct>(new elementvct);
+		_relatedElements[relatedElementName] = vctPtr;
+	}
+	else
+	{
+		vctPtr = i->second;
+	}
+
+	vctPtr->push_back(elementObject);
+}

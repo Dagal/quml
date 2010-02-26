@@ -26,6 +26,7 @@
 #include "parameterobject.hpp"
 #include "_parameterobject.hpp"
 #include "datatypeobject.hpp"
+#include "_umldiagram.hpp"
 #include <sstream>
 
 ParameterObject::ParameterObject()
@@ -33,7 +34,7 @@ ParameterObject::ParameterObject()
 {
 }
 
-const DatatypeObject * ParameterObject::datatype() const
+const std::string & ParameterObject::datatype() const
 {
 	return _dd->_datatype;
 }
@@ -43,9 +44,14 @@ const string & ParameterObject::defaultValue() const
 	return _dd->_defaultValue;
 }
 
-void ParameterObject::setDatatype(const DatatypeObject * datatype)
+void ParameterObject::setDatatype(const std::string & datatype)
 {
+	if(_dd->_datatype == datatype)
+		return;
+
+	relatedElementAboutToChange();
 	_dd->_datatype = datatype;
+	relatedElementChanged();
 }
 
 void ParameterObject::setDefaultValue(const string & defaultValue)
@@ -57,11 +63,7 @@ std::string ParameterObject::umlName() const
 {
 	std::stringstream s;
 
-	s << name() << ": ";
-	if(datatype())
-		s << datatype()->umlName();
-	else
-		s << "unknown";
+	s << name() << ": " << datatype();
 
 	return s.str();
 }

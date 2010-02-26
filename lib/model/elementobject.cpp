@@ -178,6 +178,16 @@ void ElementObject::setUMLDiagram(UMLDiagram * diagram)
 			);
 }
 
+void ElementObject::relatedElementAboutToChange()
+{
+	if(umlDiagram()) umlDiagram()->_dd->removeFromRelatedElements(this);
+}
+
+void ElementObject::relatedElementChanged()
+{
+	if(umlDiagram()) umlDiagram()->_dd->addToRelatedElements(this);
+}
+
 const std::vector<ElementObject *> & ElementObject::children() const
 {
 	return _dd->_children;

@@ -28,6 +28,7 @@
 #include "parameterobject.hpp"
 #include "datatypeobject.hpp"
 #include "elementhelper.hpp"
+#include "_umldiagram.hpp"
 #include <sstream>
 
 MethodObject::MethodObject()
@@ -35,13 +36,18 @@ MethodObject::MethodObject()
 {
 }
 
-DatatypeObject * MethodObject::returnType() const
+const std::string & MethodObject::returnType() const
 {
 	return _dd->_returnType;
 }
-void MethodObject::setReturnType(DatatypeObject * returnType)
+void MethodObject::setReturnType(const std::string & returnType)
 {
+	if(_dd->_returnType == returnType)
+		return;
+
+	relatedElementAboutToChange();
 	_dd->_returnType = returnType;
+	relatedElementChanged();
 }
 
 ParameterObject * MethodObject::removeParameter(const std::string & name)
@@ -76,12 +82,8 @@ std::string MethodObject::umlName() const
 		if(i != parameters().size()-1)
 			s << ", ";
 	}
-	s << "): ";
 
-	if(returnType() == 0)
-		s << "void";
-	else
-		s << returnType()->umlName();
+	s << "): " << returnType();
 
 	return s.str();
 }

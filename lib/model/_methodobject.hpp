@@ -29,13 +29,15 @@
 #include "methodobject.hpp"
 #include "elementcontainer.hpp"
 
+using std::string;
+
 struct MethodObject::MethodObjectPrivate
 {
 	MethodObjectPrivate()
 	{
 	}
 
-	DatatypeObject * _returnType;
+	string _returnType;
 	ElementContainer<ParameterObject> _parameters;
 };
 

@@ -37,9 +37,9 @@ public:
 
 	ParameterObject();
 
-	const DatatypeObject * datatype() const;
+	const std::string & datatype() const;
 	const std::string & defaultValue() const;
-	void setDatatype(const DatatypeObject * datatype);
+	void setDatatype(const std::string & datatype);
 	void setDefaultValue(const std::string & defaultValue);
 
 	virtual ElementType type() const { return Element_Parameter; }
