@@ -23,60 +23,33 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef CLASSCOMMAND_HPP
-#define CLASSCOMMAND_HPP
+#ifndef ELEMENTCOMMAND_HPP
+#define ELEMENTCOMMAND_HPP
 
 #include "command.hpp"
 #include "macro.hpp"
+#include "defines.hpp"
 #include <string>
 
 
-class ClassObject;
-class ElementObject;
-class UMLDiagram;
-
-class CreateClassCommand : public Command
+class DeleteElementCommand : public Command
 {
 public:
-	CreateClassCommand(const std::string & umlDiagramName, const std::string & className, const std::string & parentName);
-	virtual ~CreateClassCommand();
+	DeleteElementCommand(const std::string & umlDiagram, const std::string & elementName);
+	~DeleteElementCommand();
 
 private:
 	virtual bool redoAction();
 	virtual bool undoAction();
 	virtual Error checkAction();
 
-	const std::string _umlDiagramName;
-	const std::string _className;
-	const std::string _parentName;
-	UMLDiagram * _umlDiagram;
-	PtrVarGet(ClassObject, classObject);
+	PtrVarGet(ElementObject, elementObject);
+
 	ElementObject * _parentObject;
+	UMLDiagram * _umlDiagram;
+	const std::string _umlDiagramName;
+	const std::string _elementName;
 	bool _isOwner;
 };
 
-class ChangeClassCommand : public Command
-{
-	ChangeClassCommand(const std::string & umlDiagramName, const std::string & className, const std::string & newName, const std::string & newUmlDiagram, const std::string & newParent);
-
-private:
-	virtual bool redoAction();
-	virtual bool undoAction();
-	virtual Error checkAction();
-
-	const std::string _oldUmlDiagramName;
-	const std::string _oldClassName;
-	const std::string _newName;
-	const std::string _newUmlDiagramName;
-	const std::string _newParentName;
-
-	UMLDiagram * _oldDiagram;
-	UMLDiagram * _newDiagram;
-	ClassObject * _classObject;
-	ElementObject * _oldParentObject;
-	ElementObject * _newParentObject;
-};
-
-
-#endif // CLASSCOMMAND_HPP
-
+#endif // ELEMENTCOMMAND_HPP

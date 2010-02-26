@@ -4,55 +4,59 @@ TARGET = quml
 unix:OBJECTS_DIR = .obj/
 unix:MOC_DIR = .obj/
 DESTDIR = /home/tfannes/programming/lib/
-HEADERS += model/elementobject.hpp \
-    model/_elementobject.hpp \
-    model/umldiagram.hpp \
-    model/_umldiagram.hpp \
-    model/defines.hpp \
-    model/packageobject.hpp \
-    util/algorithm.hpp \
-    util/elementcontainer.hpp \
-    model/classobject.hpp \
-    model/_classobject.hpp \
-    model/propertyobject.hpp \
-    model/operationobject.hpp \
-    model/parameterobject.hpp \
-    model/_parameterobject.hpp \
-    model/datatypeobject.hpp \
-    model/elementhelper.hpp \
-    model/_elementhelper.hpp \
-    model/methodobject.hpp \
-    model/visibility.hpp \
-    model/_methodobject.hpp \
-    model/_propertyobject.hpp \
-    model/elementcontainer.hpp \
-    model/_operationobject.hpp \
-    control/classdiagramcontroller.hpp \
-    util/singleton.hpp \
-    control/controller.hpp \
-    control/_controller.hpp \
-    control/interface/iclassdiagramcontroller.hpp \
-    control/interface/idiagramcontroller.hpp \
-    control/interface/iaction.hpp \
+HEADERS += control/command/event.hpp \
+    control/command/error.hpp \
+    control/command/command.hpp \
+    control/command/classcommand.hpp \
+    control/command/_command.hpp \
+    control/controller/diagramcontroller.hpp \
+    control/controller/controller.hpp \
+    control/controller/classdiagramcontroller.hpp \
+    control/controller/_diagramcontroller.hpp \
+    control/controller/_controller.hpp \
     control/interface/ilistener.hpp \
-    control/interface/_idiagramcontroller.hpp \
-    control/action/classaction.hpp \
+    model/visibility.hpp \
+    model/umldiagramhelper.hpp \
+    model/umldiagram.hpp \
+    model/propertyobject.hpp \
+    model/parameterobject.hpp \
+    model/packageobject.hpp \
+    model/operationobject.hpp \
+    model/methodobject.hpp \
+    model/elementobject.hpp \
+    model/elementhelper.hpp \
+    model/elementcontainer.hpp \
+    model/defines.hpp \
+    model/datatypeobject.hpp \
+    model/classobject.hpp \
+    model/_umldiagram.hpp \
+    model/_propertyobject.hpp \
+    model/_parameterobject.hpp \
+    model/_operationobject.hpp \
+    model/_methodobject.hpp \
+    model/_elementobject.hpp \
+    model/_elementhelper.hpp \
+    model/_classobject.hpp \
+    util/singleton.hpp \
     util/macro.hpp \
-    control/action/_action.hpp \
-    model/umldiagramhelper.hpp
-SOURCES += model/elementobject.cpp \
+    util/algorithm.hpp \
+    control/command/elementcommand.hpp
+SOURCES += control/command/command.cpp \
+    control/command/classcommand.cpp \
+    control/command/_command.cpp \
+    control/controller/diagramcontroller.cpp \
+    control/controller/controller.cpp \
+    control/controller/classdiagramcontroller.cpp \
     model/umldiagram.cpp \
-    model/packageobject.cpp \
-    model/classobject.cpp \
     model/propertyobject.cpp \
-    model/operationobject.cpp \
     model/parameterobject.cpp \
-    model/datatypeobject.cpp \
+    model/packageobject.cpp \
+    model/operationobject.cpp \
     model/methodobject.cpp \
+    model/elementobject.cpp \
     model/elementhelper.cpp \
-    control/classdiagramcontroller.cpp \
-    control/controller.cpp \
-    control/interface/idiagramcontroller.cpp \
-    control/action/classaction.cpp
+    model/datatypeobject.cpp \
+    model/classobject.cpp \
+    control/command/elementcommand.cpp
 REL_PATH = 
 include($${REL_PATH}lib.pri)

@@ -23,21 +23,56 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef ICLASSDIAGRAMCONTROLLER_HPP
-#define ICLASSDIAGRAMCONTROLLER_HPP
+#include "elementcommand.hpp"
+#include "elementobject.hpp"
+#include "umldiagram.hpp"
+#include "classdiagramcontroller.hpp"
+#include "controller.hpp"
 
-#include "diagramcontroller.hpp"
-#include <vector>
+DeleteElementCommand::DeleteElementCommand(const std::string & umlDiagram, const std::string & elementName)
+	: _elementObject(0),
+	_parentObject(0),
+	_umlDiagram(0),
+	_umlDiagramName(umlDiagram),
+	_elementName(elementName),
+	_isOwner(false)
 
-class UMLDiagram;
-
-class ClassDiagramController : public DiagramController
 {
-public:
+}
 
-	ClassDiagramController();
+DeleteElementCommand::~DeleteElementCommand()
+{
+	if(_isOwner) delete _elementObject;
+}
 
-	UMLDiagram * findUMLDiagram(const std::string & /*name*/) const { return 0;};
-};
 
-#endif // ICLASSDIAGRAMCONTROLLER_HPP
+bool DeleteElementCommand::redoAction()
+{
+	_isOwner = true;
+	_parentObject = _elementObject->parent();
+
+	_elementObject->setUMLDiagram(0);
+	_elementObject->setParent(0);
+
+	return true;
+}
+
+bool DeleteElementCommand::undoAction()
+{
+	_elementObject->setUMLDiagram(_umlDiagram);
+	_elementObject->setParent(_parentObject);
+
+	return true;
+}
+
+Error DeleteElementCommand::checkAction()
+{
+	_umlDiagram = Controller::Instance()->classDiagramController()->findUMLDiagram(_umlDiagramName);
+	if(!_umlDiagram) return Error_UndefinedUMLDiagram;
+
+	_elementObject = _umlDiagram->findElement(_elementName);
+	if(!_elementObject) return Error_ClassUndefined;
+
+	return Error_NoError;
+}
+
