@@ -23,30 +23,39 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef CONTROLLER_HPP
-#define CONTROLLER_HPP
+#ifndef COMMAND_HPP
+#define COMMAND_HPP
 
-#include "singleton.hpp"
+#include "error.hpp"
+#include "event.hpp"
 #include <boost/shared_ptr.hpp>
 
-class ClassDiagramController;
+class DiagramController;
 
-class Controller : public Singleton<Controller>
+class Command
 {
-	class ControllerPrivate;
+	class CommandPrivate;
 
-	friend class Singleton<Controller>;
+public:
+	Command();
+	virtual ~Command();
 
-	ClassDiagramController * classDiagramController() const;
-	ClassDiagramController * attachClassDiagramController(ClassDiagramController * newController);
+	bool redo();
+	bool undo();
+
+	bool initialise(DiagramController * controller);
+	Error initError() const;
+
+protected:
+	void sendEvent(const Event & event) const;
+	void sendError(const Event & event, Error error) const;
 
 private:
-    Controller();
+	virtual bool redoAction() = 0;
+	virtual bool undoAction() = 0;
+	virtual Error checkAction() = 0;
 
-	boost::shared_ptr<ControllerPrivate> _dd;
-
+	boost::shared_ptr<CommandPrivate> _dd;
 };
 
-void initialiseController();
-
-#endif // CONTROLLER_HPP
+#endif // COMMAND_HPP

@@ -23,49 +23,32 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef _IDIAGRAMCONTROLLER_HPP
-#define _IDIAGRAMCONTROLLER_HPP
+#ifndef CONTROLLER_HPP
+#define CONTROLLER_HPP
 
-#include "idiagramcontroller.hpp"
-#include <vector>
+#include "singleton.hpp"
+#include <boost/shared_ptr.hpp>
 
-struct ActionListenerData
+class ClassDiagramController;
+
+class Controller : public Singleton<Controller>
 {
-	ActionListenerData(IActionListener * listener, int mask = 0xffff)
-		: _listener(listener), _mask(mask)
-	{}
+	class ControllerPrivate;
 
-	IActionListener * _listener;
-	int _mask;
+	friend class Singleton<Controller>;
 
-	void sendAction(const IAction & action);
+public:
+
+	ClassDiagramController * classDiagramController() const;
+	ClassDiagramController * attachClassDiagramController(ClassDiagramController * newController);
+
+private:
+    Controller();
+
+	boost::shared_ptr<ControllerPrivate> _dd;
+
 };
 
-bool operator==(const ActionListenerData & first, IActionListener * second);
+void initialiseController();
 
-struct IDiagramController::IDiagramControllerPrivate
-{
-
-	typedef std::vector<ActionListenerData> actionListenerVct;
-	typedef std::vector<IErrorListener*> errorListenerVct;
-
-	IDiagramControllerPrivate()
-	{
-	}
-
-	void sendErrorMessage();
-	void sendAction(const IAction & action);
-
-	actionListenerVct::iterator findActionListener(IActionListener * listener);
-	errorListenerVct::iterator findErrorListener(IErrorListener * listener);
-
-
-	actionListenerVct _actionListeners;
-	errorListenerVct _errorListeners;
-	std::string _errorMessage;
-};
-
-
-
-
-#endif // _IDIAGRAMCONTROLLER_HPP
+#endif // CONTROLLER_HPP

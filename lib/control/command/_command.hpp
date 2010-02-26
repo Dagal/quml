@@ -23,13 +23,24 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef CLASSDIAGRAMCONTROLLER_HPP
-#define CLASSDIAGRAMCONTROLLER_HPP
+#ifndef _COMMAND_HPP
+#define _COMMAND_HPP
 
-class ClassDiagramController
+#include "command.hpp"
+#include <vector>
+
+struct Command::CommandPrivate
 {
-public:
-    ClassDiagramController();
+	typedef std::vector<Command*> vctCommand;
+
+	CommandPrivate()
+		: _controller(0), _initError(Error_CommandNotInitialised)
+	{
+	}
+
+	vctCommand _subCommands;
+	DiagramController * _controller;
+	Error _initError;
 };
 
-#endif // CLASSDIAGRAMCONTROLLER_HPP
+#endif // _COMMAND_HPP

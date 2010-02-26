@@ -23,28 +23,25 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef ICLASSDIAGRAMCONTROLLER_HPP
-#define ICLASSDIAGRAMCONTROLLER_HPP
+#ifndef EVENT_HPP
+#define EVENT_HPP
 
-#include "idiagramcontroller.hpp"
-#include <vector>
+#include "macro.hpp"
 
-class UMLDiagram;
-
-
-class IClassDiagramController : public IDiagramController
+enum EventType
 {
-	// class diagram functions
-	virtual bool createClass(const std::string & diagramName, const std::string & name, const std::string & container);
-	virtual bool deleteClass(const std::string & diagramName, const std::string & name);
-	virtual bool renameClass(const std::string & diagramName, const std::string & oldName, const std::string & newName);
-	virtual bool moveClass(const std::string & diagramName, const std::string & name, const std::string & newContainer);
-
-
-
-	virtual void createUMLDiagram(const std::string & diagramName);
-	virtual UMLDiagram * getUMLDiagram(const std::string & diagramName) const;
-	virtual std::vector<std::string> allDiagramNames() const;
+	Event_CommandInitialisation,
+	Event_ClassCreated,
+	Event_ClassToBeDeleted,
+	Event_GroupEventStarted,
+	Event_GroupEventStopped,
 };
 
-#endif // ICLASSDIAGRAMCONTROLLER_HPP
+struct Event
+{
+	Event(EventType type) : _type(type) {}
+
+	SimpleVarGet(EventType, type);
+};
+
+#endif // EVENT_HPP

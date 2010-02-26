@@ -23,15 +23,34 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef IACTIONLISTENER_HPP
-#define IACTIONLISTENER_HPP
+#ifndef IDIAGRAMCONTROLLER_HPP
+#define IDIAGRAMCONTROLLER_HPP
 
-class IActionListener
+#include <string>
+#include <boost/shared_ptr.hpp>
+#include "ilistener.hpp"
+
+class DiagramController
 {
-public:
-    IActionListener();
+	class DiagramControllerPrivate;
 
-	virtual void onAction() = 0;
+public:
+	virtual ~DiagramController() = 0;
+
+	void addEventListener(IEventListener * listener, int actionMask = 0xffff);
+	void removeEventListener(IEventListener * listener);
+	bool hasEventListener(IEventListener * listener) const;
+
+	void addErrorListener(IErrorListener * listener);
+	void removeErrorListener(IErrorListener * listener);
+	bool hasErrorListener(IErrorListener * listener);
+
+	void sendError(const Event & event, Error error) const;
+	void sendEvent(const Event & event) const;
+
+
+private:
+	boost::shared_ptr<DiagramControllerPrivate> _dd;
 };
 
-#endif // IACTIONLISTENER_HPP
+#endif // IDIAGRAMCONTROLLER_HPP

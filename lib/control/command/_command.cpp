@@ -23,29 +23,4 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef IACTION_HPP
-#define IACTION_HPP
-
-#include <iostream>
-#include <cassert>
-
-class IAction
-{
-public:
-	virtual int type() const = 0;
-
-	virtual bool canExecute(std::string * errorMsg = 0) const = 0;
-	void execute();
-
-private:
-
-	virtual void performExecution() = 0;
-};
-
-inline void IAction::execute()
-{
-	assert(canExecute());
-	performExecution();
-}
-
-#endif // IACTION_HPP
+#include "_command.hpp"

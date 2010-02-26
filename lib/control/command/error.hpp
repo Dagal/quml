@@ -23,24 +23,19 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef ILISTENER_HPP
-#define ILISTENER_HPP
+#ifndef ERROR_HPP
+#define ERROR_HPP
 
-#include <string>
-#include "error.hpp"
-
-class Event;
-
-class IEventListener
+enum Error
 {
-public:
-	virtual void onEvent(const Event & event) = 0;
+	Error_NoError,
+
+	Error_CommandNotInitialised,
+	Error_UndefinedUMLDiagram,
+	Error_ClassNameEmpty,
+	Error_ClassNameAlreadyUsed,
+	Error_ClassParentBadContainer,
+	Error_ClassUndefined,
 };
 
-class IErrorListener
-{
-public:
-	virtual void onError(const Event & event, Error error) = 0;
-};
-
-#endif // ILISTENER_HPP
+#endif // ERROR_HPP

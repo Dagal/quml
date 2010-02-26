@@ -23,25 +23,49 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef _ACTION_HPP
-#define _ACTION_HPP
+#ifndef _IDIAGRAMCONTROLLER_HPP
+#define _IDIAGRAMCONTROLLER_HPP
 
-#include <string>
+#include "diagramcontroller.hpp"
+#include <vector>
 
-template <typename _Predicate> bool checkCondition(_Predicate __pred, std::string * errorMsgContainer, const std::string & error)
+struct EventListenerData
 {
-	if(__pred()) return true;
+	EventListenerData(IEventListener * listener, int mask = 0xffff)
+		: _listener(listener), _mask(mask)
+	{}
 
-	if(errorMsgContainer != 0) errorMsgContainer->assign(error);
-	return false;
-}
+	IEventListener * _listener;
+	int _mask;
 
-bool checkCondition(bool condition, std::string * errorMsgContainer, const std::string & error)
+	void sendEvent(const Event & event);
+};
+
+bool operator==(const EventListenerData & first, IEventListener * second);
+
+struct DiagramController::DiagramControllerPrivate
 {
-	if(condition) return true;
 
-	if(errorMsgContainer != 0) errorMsgContainer->assign(error);
-	return false;
-}
+	typedef std::vector<EventListenerData> eventListenerVct;
+	typedef std::vector<IErrorListener*> errorListenerVct;
 
-#endif // _ACTION_HPP
+	DiagramControllerPrivate()
+	{
+	}
+
+	void sendError(const Error & error);
+	void sendEvent(const Event & event);
+
+	eventListenerVct::iterator findEventListener(IEventListener * listener);
+	errorListenerVct::iterator findErrorListener(IErrorListener * listener);
+
+
+	eventListenerVct _eventListeners;
+	errorListenerVct _errorListeners;
+	std::string _errorMessage;
+};
+
+
+
+
+#endif // _IDIAGRAMCONTROLLER_HPP

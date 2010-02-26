@@ -23,44 +23,61 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef CLASSACTION_HPP
-#define CLASSACTION_HPP
+#ifndef CLASSCOMMAND_HPP
+#define CLASSCOMMAND_HPP
 
-#include "iaction.hpp"
+#include "command.hpp"
 #include "macro.hpp"
+#include <string>
 
-class UMLDiagram;
-class ElementObject;
+
 class ClassObject;
+class ElementObject;
+class UMLDiagram;
 
-class CreateClassAction : public IAction
+class CreateClassCommand : public Command
 {
 public:
-	CreateClassAction(const std::string & className, ElementObject * parent);
-
-	virtual bool canExecute(std::string * errorMsg = 0) const;
+	CreateClassCommand(const std::string & umlDiagramName, const std::string & className, const std::string & parentName);
+	virtual ~CreateClassCommand();
 
 private:
-	virtual void performExecution();
+	virtual bool redoAction();
+	virtual bool undoAction();
+	virtual Error checkAction();
 
-	PtrVarGet(ElementObject, parentObject);
+	const std::string _umlDiagramName;
+	const std::string _className;
+	const std::string _parentName;
+	UMLDiagram * _umlDiagram;
 	PtrVarGet(ClassObject, classObject);
-	RefVarGet(std::string, className);
+	ElementObject * _parentObject;
+	bool _isOwner;
 };
 
-class RenameClassAction : public IAction
+class ChangeClassCommand : public Command
 {
-public:
-	RenameClassAction(ClassObject * classObject, const std::string & newName);
-
-	virtual bool canExecute(std::string * errorMsg = 0) const;
+	ChangeClassCommand(const std::string & umlDiagramName, const std::string & className, const std::string & newName, const std::string & newUmlDiagram, const std::string & newParent);
 
 private:
-	virtual void performExecution();
+	virtual bool redoAction();
+	virtual bool undoAction();
+	virtual Error checkAction();
 
-private:
-	PtrVarGet(ClassObject, classObject);
-	RefVarGet(std::string, newName);
+	const std::string _oldUmlDiagramName;
+	const std::string _oldClassName;
+	const std::string _newName;
+	const std::string _newUmlDiagramName;
+	const std::string _newParentName;
+
+	UMLDiagram * _oldDiagram;
+	UMLDiagram * _newDiagram;
+	ClassObject * _classObject;
+	ElementObject * _oldParentObject;
+	ElementObject * _newParentObject;
 };
 
-#endif // CLASSACTION_HPP
+
+
+#endif // CLASSCOMMAND_HPP
+

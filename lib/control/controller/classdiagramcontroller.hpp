@@ -23,37 +23,21 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef IDIAGRAMCONTROLLER_HPP
-#define IDIAGRAMCONTROLLER_HPP
+#ifndef ICLASSDIAGRAMCONTROLLER_HPP
+#define ICLASSDIAGRAMCONTROLLER_HPP
 
-#include <string>
-#include <boost/shared_ptr.hpp>
-#include "ilistener.hpp"
+#include "diagramcontroller.hpp"
+#include <vector>
 
-class IDiagramController
+class UMLDiagram;
+
+class ClassDiagramController : public DiagramController
 {
-	class IDiagramControllerPrivate;
-
 public:
-	virtual ~IDiagramController() = 0;
 
-	void addActionListener(IActionListener * listener, int actionMask = 0xffff);
-	void removeActionListener(IActionListener * listener);
-	bool hasActionListener(IActionListener * listener) const;
+	ClassDiagramController();
 
-
-	void addErrorListener(IErrorListener * listener);
-	void removeErrorListener(IErrorListener * listener);
-	bool hasErrorListener(IErrorListener * listener);
-
-
-	const std::string & errorMessage() const;
-
-protected:
-	void setErrorMessage(const std::string & newError);
-
-private:
-	boost::shared_ptr<IDiagramControllerPrivate> _dd;
+	UMLDiagram * findUMLDiagram(const std::string & name) const { return 0;};
 };
 
-#endif // IDIAGRAMCONTROLLER_HPP
+#endif // ICLASSDIAGRAMCONTROLLER_HPP
