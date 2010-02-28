@@ -23,33 +23,38 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef ELEMENTCOMMAND_HPP
-#define ELEMENTCOMMAND_HPP
+#ifndef UMLDIAGRAM_HPP
+#define UMLDIAGRAM_HPP
 
-#include "command.hpp"
-#include "macro.hpp"
 #include "defines.hpp"
-#include <string>
+#include <vector>
+#include "error.hpp"
 
-
-class DeleteElementCommand : public Command
+class UMLDiagram
 {
+	friend class ElementObject;
+
+	class UMLDiagramPrivate;
+
 public:
-	DeleteElementCommand(const std::string & umlDiagram, const std::string & elementName);
-	~DeleteElementCommand();
+	UMLDiagram();
+
+	// attachment & detachment functions
+	Error attachElement(ElementObject * elementObject);
+	Error attachElement(boost::shared_ptr<ElementObject> elementObject);
+	boost::shared_ptr<ElementObject> detachElement(const std::string & qualifiedName);
+
+	// change parent & change name functions
+	Error changeParent(ElementObject * element, ElementObject * parent, const std::string & newElementName);
+	Error changeName(ElementObject * element, const std::string & newElementName);
+
+	// element "find" functions
+	ElementObject * findElement(const std::string & qualifiedName) const;
+	std::vector<ElementObject*> allElements() const;
+	std::vector<ElementObject *> findRelatedElements(const std::string & qualifiedName) const;
 
 private:
-	virtual bool redoAction();
-	virtual bool undoAction();
-	virtual Error checkAction();
-
-	PtrVarGet(ElementObject, elementObject);
-
-	ElementObject * _parentObject;
-	UMLDiagram * _umlDiagram;
-	const std::string _umlDiagramName;
-	const std::string _elementName;
-	bool _isOwner;
+	boost::shared_ptr<UMLDiagramPrivate> _dd;
 };
 
-#endif // ELEMENTCOMMAND_HPP
+#endif // UMLDIAGRAM_HPP

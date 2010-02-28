@@ -1,4 +1,5 @@
 MY_INCLUDEPATH += model \
+	model/element \
     view \
     view/graphicsview \
     control \

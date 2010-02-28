@@ -23,8 +23,49 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "classdiagramcontroller.hpp"
+#ifndef ELEMENTOBJECT_HPP
+#define ELEMENTOBJECT_HPP
 
-ClassDiagramController::ClassDiagramController()
+#include "defines.hpp"
+#include <string>
+#include <vector>
+
+
+class ElementObject
 {
-}
+	friend class UMLDiagram;
+	class ElementObjectPrivate;
+
+public:
+	// enum hack (for template functions)
+	enum { elementtype = Element };
+
+	// constructor & destructor
+	ElementObject();
+	virtual ~ElementObject() = 0;
+
+	// simple getters
+	const std::string & name() const;
+	ElementObject * parent() const;
+	UMLDiagram * umlDiagram() const;
+	const std::vector<ElementObject *> & children() const;
+
+	// virtual functions
+	virtual std::string qualifiedName() const;
+	virtual std::string umlName() const;
+	virtual ElementType type() const = 0;
+
+protected:
+	virtual void onChildAdded(ElementObject * child);
+	virtual void onChildRemoved(ElementObject * child);
+	virtual void onChildNameChanged(const std::string & oldName, ElementObject * /*child*/);
+
+
+	void relatedElementAboutToChange();
+	void relatedElementChanged();
+
+private:
+	boost::shared_ptr<ElementObjectPrivate> _dd;
+};
+
+#endif // ELEMENTOBJECT_HPP

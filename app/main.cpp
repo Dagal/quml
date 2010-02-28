@@ -39,40 +39,30 @@
 #include <boost/lambda/bind.hpp>
 #include "algorithm.hpp"
 #include <string>
-#include "packageobject.hpp"
-#include "classobject.hpp"
-#include "operationobject.hpp"
-#include "parameterobject.hpp"
-#include "umldiagram.hpp"
-#include "classdiagramcontroller.hpp"
 #include <boost/unordered_set.hpp>
+#include <memory>
 
 using std::cout;
 using std::vector;
 
 class A
 {
+public:
+	A(int i): _i(i) { std::cout << "constructor " << _i << std::endl; }
+	~A() { std::cout << "destructor " << _i << std::endl; }
+
+	int _i;
 };
-
-class B
-{
-};
-
-bool operator==(const A & a, const B & b)
-{
-	std::cout << "called";
-
-	return true;
-}
 
 int main(int /*argc*/, char ** /*argv*/)
 {
+	A * a = new A(0);
 
-	boost::unordered_set<A> a(5);
 
-	std::find(
-			a.begin(),
-			a.end(),
-			B());
+
+	boost::shared_ptr<A> a1(new A(1));
+	std::auto_ptr<A> a2(new A(2));
+
+	a1 = a2;
 }
 
