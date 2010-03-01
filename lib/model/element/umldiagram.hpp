@@ -29,6 +29,7 @@
 #include "defines.hpp"
 #include <vector>
 #include "error.hpp"
+#include <string>
 
 class UMLDiagram
 {
@@ -40,12 +41,11 @@ public:
 	UMLDiagram();
 
 	// attachment & detachment functions
-	Error attachElement(ElementObject * elementObject);
-	Error attachElement(boost::shared_ptr<ElementObject> elementObject);
+	Error attachElement(boost::shared_ptr<ElementObject> elementObject, const std::string & parentQualifiedName);
 	boost::shared_ptr<ElementObject> detachElement(const std::string & qualifiedName);
 
 	// change parent & change name functions
-	Error changeParent(ElementObject * element, ElementObject * parent, const std::string & newElementName);
+	Error changeParent(ElementObject * element, const std::string & newParentQualifiedName, const std::string & newElementName = std::string());
 	Error changeName(ElementObject * element, const std::string & newElementName);
 
 	// element "find" functions

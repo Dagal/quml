@@ -37,7 +37,7 @@ public:
 	enum { elementtype = Element_Operation };
 
 	OperationObject();
-	~OperationObject() {};
+	~OperationObject() {}
 
 	VisibilityType visibility() const;
 	void setVisibility(VisibilityType type);

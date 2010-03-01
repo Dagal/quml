@@ -31,45 +31,6 @@
 #include "packageobject.hpp"
 #include "operationobject.hpp"
 
-
-ElementObject * createElement(ElementType type, ElementObject * parent)
-{
-	ElementObject * element = 0;
-
-	switch(type)
-	{
-	case Element_Class:
-		element = new ClassObject;
-		break;
-
-	case Element_Method:
-		element = new MethodObject;
-		break;
-
-	case Element_Operation:
-		element = new OperationObject;
-		break;
-
-	case Element_Package:
-		element = new PackageObject;
-		break;
-
-	case Element_Property:
-		element = new PropertyObject;
-		break;
-
-	case Element_Parameter:
-		element = new ParameterObject;
-		break;
-
-	default:
-		return 0;
-	}
-
-	element->setParent(parent);
-	return element;
-}
-
 std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name)
 {
 	typedef std::vector<ElementObject*> elementvct;

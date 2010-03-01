@@ -45,19 +45,8 @@ void MethodObject::setReturnType(const std::string & returnType)
 	if(_dd->_returnType == returnType)
 		return;
 
-	relatedElementAboutToChange();
+	relatedElementChanged(_dd->_returnType, returnType);
 	_dd->_returnType = returnType;
-	relatedElementChanged();
-}
-
-ParameterObject * MethodObject::removeParameter(const std::string & name)
-{
-	ParameterObject * param = _dd->_parameters.findElement(name);
-	if(!param)
-		return 0;
-
-	param->setParent(0);
-	return param;
 }
 
 const std::vector<ParameterObject*> & MethodObject::parameters() const

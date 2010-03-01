@@ -58,11 +58,8 @@ public:
 protected:
 	virtual void onChildAdded(ElementObject * child);
 	virtual void onChildRemoved(ElementObject * child);
-	virtual void onChildNameChanged(const std::string & oldName, ElementObject * /*child*/);
 
-
-	void relatedElementAboutToChange();
-	void relatedElementChanged();
+	void relatedElementChanged(const std::string & oldRelatedElementQualifiedName, const std::string & newRelatedElementQualifiedName);
 
 private:
 	boost::shared_ptr<ElementObjectPrivate> _dd;

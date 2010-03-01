@@ -51,8 +51,6 @@ template <typename ElementClass> const ElementClass * element_cast(const Element
 	return static_cast<ElementClass*>(element);
 }
 
-
-
 template <typename T> bool checkForValidNamedElement(T * element, const std::string & name)
 {
 	return (element && element->name() == name);
@@ -73,9 +71,9 @@ template <typename ElementClass> std::vector<ElementClass*> findChildren(Element
 
 	boost::function<bool (ElementClass*)> pred;
 	if(name.empty())
-		pred = boost::bind(checkForValidElement<ElementClass>, _1);
+		pred = boost::bind(checkForValidElement<ElementClass>(), _1);
 	else
-		pred = boost::bind(checkForValidNamedElement<ElementClass>, _1, boost::cref(name));
+		pred = boost::bind(checkForValidNamedElement<ElementClass>(), _1, boost::cref(name));
 
 
 	elementvctit it = stf::copy_transformed_if(
@@ -93,6 +91,5 @@ template <typename ElementClass> std::vector<ElementClass*> findChildren(Element
 }
 
 std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name = std::string());
-ElementObject * createElement(ElementType type, ElementObject * parent = 0);
 
 #endif // ELEMENTHELPER_HPP

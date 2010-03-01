@@ -49,9 +49,8 @@ void ParameterObject::setDatatype(const std::string & datatype)
 	if(_dd->_datatype == datatype)
 		return;
 
-	relatedElementAboutToChange();
+	relatedElementChanged(_dd->_datatype, datatype);
 	_dd->_datatype = datatype;
-	relatedElementChanged();
 }
 
 void ParameterObject::setDefaultValue(const string & defaultValue)
