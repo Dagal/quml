@@ -35,7 +35,7 @@ class ParameterObject : public ElementObject
 public:
 	enum { elementtype = Element_Parameter };
 
-	ParameterObject();
+	ParameterObject(const std::string & name);
 
 	const std::string & datatype() const;
 	const std::string & defaultValue() const;
@@ -45,6 +45,9 @@ public:
 	virtual ElementType type() const { return Element_Parameter; }
 
 	virtual std::string umlName() const;
+
+private:
+	virtual void onRelatedElementChanged(const std::string & oldRelatedElementQualifiedName, const std::string & newRelatedElementQualifiedName);
 
 private:
 	boost::shared_ptr<ParameterObjectPrivate> _dd;

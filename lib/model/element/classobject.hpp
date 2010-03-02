@@ -35,7 +35,7 @@ class ClassObject : public DatatypeObject
 public:
 	enum { elementtype = Element_Class };
 
-	ClassObject();
+	ClassObject(const std::string & name);
 
 	const std::vector<OperationObject*> & operations() const;
 	const std::vector<PropertyObject*> & properties() const;

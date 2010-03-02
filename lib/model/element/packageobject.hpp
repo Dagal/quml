@@ -33,7 +33,7 @@ class PackageObject : public ElementObject
 public:
 	enum { elementtype = Element_Package };
 
-	PackageObject();
+	PackageObject(const std::string & name);
 	~PackageObject() {};
 
 	virtual ElementType type() const { return Element_Package; }

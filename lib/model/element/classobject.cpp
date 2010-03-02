@@ -29,8 +29,8 @@
 #include "_classobject.hpp"
 #include "_elementhelper.hpp"
 
-ClassObject::ClassObject()
-	: DatatypeObject(), _dd(new ClassObjectPrivate)
+ClassObject::ClassObject(const std::string & name)
+	: DatatypeObject(name), _dd(new ClassObjectPrivate)
 {
 }
 

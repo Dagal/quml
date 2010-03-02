@@ -29,8 +29,8 @@
 #include "_umldiagram.hpp"
 #include <sstream>
 
-ParameterObject::ParameterObject()
-	: ElementObject(), _dd(new ParameterObjectPrivate)
+ParameterObject::ParameterObject(const std::string & name)
+	: ElementObject(name), _dd(new ParameterObjectPrivate)
 {
 }
 
@@ -65,4 +65,9 @@ std::string ParameterObject::umlName() const
 	s << name() << ": " << datatype();
 
 	return s.str();
+}
+
+void ParameterObject::onRelatedElementChanged(const std::string & /*oldRelatedElementQualifiedName*/, const std::string & newRelatedElementQualifiedName)
+{
+	_dd->_datatype = newRelatedElementQualifiedName;
 }

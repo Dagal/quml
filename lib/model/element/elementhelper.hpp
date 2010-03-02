@@ -71,9 +71,9 @@ template <typename ElementClass> std::vector<ElementClass*> findChildren(Element
 
 	boost::function<bool (ElementClass*)> pred;
 	if(name.empty())
-		pred = boost::bind(checkForValidElement<ElementClass>(), _1);
+		pred = boost::bind(checkForValidElement<ElementClass>, _1);
 	else
-		pred = boost::bind(checkForValidNamedElement<ElementClass>(), _1, boost::cref(name));
+		pred = boost::bind(checkForValidNamedElement<ElementClass>, _1, boost::cref(name));
 
 
 	elementvctit it = stf::copy_transformed_if(

@@ -24,6 +24,7 @@
 *******************************************************************/
 
 #include "elementdiagramtest.hpp"
+#include "elementhelper.hpp"
 #include "packageobject.hpp"
 #include "umldiagram.hpp"
 #include "classobject.hpp"
@@ -33,134 +34,40 @@
 void ElementDiagramTest::init()
 {
 	_diagram = new UMLDiagram;
-	_parent = new PackageObject;
-	_parent->setName("parent");
-	_child = new PackageObject;
-	_child->setName("child");
+	_parent = new PackageObject("parent");
+	_child = new PackageObject("child");
+
+	_diagram->attachElement(boost::shared_ptr<ElementObject>(_parent));
+	_diagram->attachElement(boost::shared_ptr<ElementObject>(_child),_parent->qualifiedName());
 }
 
 void ElementDiagramTest::cleanup()
 {
-	delete _child;
-	delete _parent;
 	delete _diagram;
 }
 
-void ElementDiagramTest::parent_AddChildAfterCreation()
+void ElementDiagramTest::checkBasics()
 {
-	_child->setParent(_parent);
-
+	QCOMPARE(_diagram->allElements().size(), (unsigned int)2);
+	QVERIFY(_parent->qualifiedName() == "parent");
+	QVERIFY(_child->qualifiedName() == "parent::child");
+	QCOMPARE(_diagram->findElement(_parent->qualifiedName()), _parent);
+	QCOMPARE(_diagram->findElement(_child->qualifiedName()), _child);
 	QCOMPARE(_parent->children().size(), (unsigned int)1);
 	QCOMPARE(_parent->children()[0], _child);
-	QCOMPARE(_child->parent(), _parent);
 }
 
-void ElementDiagramTest::parent_findChildren()
+void ElementDiagramTest::removeChild()
 {
-	for(int i = 0; i < 10; i++)
-		(new PackageObject())->setParent(_parent);
-
-	QCOMPARE(_parent->children().size(), (unsigned int)10);
-	QCOMPARE(::findChildren<PackageObject>(_parent).size(), (unsigned int)10);
-	QCOMPARE(::findChildren<ElementObject>(_parent).size(), (unsigned int)10);
-	QCOMPARE(::findChildren<ClassObject>(_parent).size(), (unsigned int)0);
-}
-
-void ElementDiagramTest::parentchild_qualifiedName()
-{
-	_child->setParent(_parent);
-
-	QCOMPARE(_parent->qualifiedName(), std::string("parent"));
-	QCOMPARE(_child->qualifiedName(), std::string("parent::child"));
-}
-
-void ElementDiagramTest::parentchild_setnameQualifiedName()
-{
-	_child->setParent(_parent);
-	_parent->setName("parent_new");
-	_child->setName("child_new");
-
-	QCOMPARE(_parent->name(), std::string("parent_new"));
-	QCOMPARE(_child->name(), std::string("child_new"));
-	QCOMPARE(_child->qualifiedName(), std::string("parent_new::child_new"));
-}
-
-void ElementDiagramTest::parent_AddToDiagram()
-{
-	_parent->setUMLDiagram(_diagram);
-
-	QCOMPARE(_diagram->elements().size(), (unsigned int)1);
-	QCOMPARE(_diagram->elements()[0], _parent);
-	QCOMPARE(_diagram->findElement(_parent->qualifiedName()), _parent);
-}
-
-void ElementDiagramTest::parentChild_RemoveChildParent()
-{
-	_child->setParent(_parent);
-
-	delete _child;
-	_child = 0;
-
+	_diagram->detachElement(_child->qualifiedName());
+	QCOMPARE(_diagram->allElements().size(), (unsigned int)1);
+	QCOMPARE(_diagram->allElements()[0], _parent);
+	QCOMPARE(_child->umlDiagram(), (UMLDiagram*)0);
+	QCOMPARE(_child->parent(), (ElementObject*)0);
 	QCOMPARE(_parent->children().size(), (unsigned int)0);
 }
 
-void ElementDiagramTest::parentChild_AddParentToDiagram()
+void ElementDiagramTest::removeParent()
 {
-	_child->setParent(_parent);
-	_parent->setUMLDiagram(_diagram);
 
-	QCOMPARE(_parent->umlDiagram(), _diagram);
-	QCOMPARE(_child->umlDiagram(), _diagram);
-	QCOMPARE(_diagram->elements().size(), (unsigned int)2);
-}
-
-void ElementDiagramTest::parentChild_AddChildToDiagram()
-{
-	_child->setParent(_parent);
-	_child->setUMLDiagram(_diagram);
-
-	QVERIFY(_parent->umlDiagram() == 0);
-	QCOMPARE(_child->umlDiagram(), _diagram);
-	QVERIFY(_child->parent() == 0);
-
-}
-
-void ElementDiagramTest::parentDiagram_AddChildToParent()
-{
-	_parent->setUMLDiagram(_diagram);
-	_child->setParent(_parent);
-
-	QCOMPARE(_child->umlDiagram(), _diagram);
-}
-
-void ElementDiagramTest::parentChildDiagram_RemoveChildDiagram()
-{
-	_parent->setUMLDiagram(_diagram);
-	_child->setParent(_parent);
-
-	_child->setUMLDiagram(0);
-	QVERIFY(_child->umlDiagram() == 0);
-	QVERIFY(_child->parent() == 0);
-	QCOMPARE(_parent->umlDiagram(), _diagram);
-}
-
-void ElementDiagramTest::parentChildDiagram_RemoveParentDiagram()
-{
-	_parent->setUMLDiagram(_diagram);
-	_child->setParent(_parent);
-
-	_parent->setUMLDiagram(0);
-	QVERIFY(_child->umlDiagram() == 0);
-	QVERIFY(_child->parent() == _parent);
-	QVERIFY(_parent->umlDiagram() == 0);
-}
-
-void ElementDiagramTest::parentChildDiagram_nameChange()
-{
-	_child->setParent(_parent);
-	_parent->setUMLDiagram(_diagram);
-	_parent->setName("parent_new");
-
-	QCOMPARE(_diagram->findElement(_child->qualifiedName()), _child);
-	QCOMPARE(_diagram->findElement(_parent->qualifiedName()), _parent);
 }

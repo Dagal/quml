@@ -36,19 +36,10 @@ class ElementDiagramTest : public QObject
 	Q_OBJECT
 
 private slots:
+	void checkBasics();
+	void removeChild();
+	void removeParent();
 
-	void parent_AddChildAfterCreation();
-	void parent_findChildren();
-	void parentchild_qualifiedName();
-	void parentchild_setnameQualifiedName();
-	void parent_AddToDiagram();
-	void parentChild_RemoveChildParent();
-	void parentChild_AddParentToDiagram();
-	void parentChild_AddChildToDiagram();
-	void parentDiagram_AddChildToParent();
-	void parentChildDiagram_RemoveChildDiagram();
-	void parentChildDiagram_RemoveParentDiagram();
-	void parentChildDiagram_nameChange();
 
 	void cleanup();
 	void init();

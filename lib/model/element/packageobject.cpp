@@ -25,7 +25,7 @@
 
 #include "packageobject.hpp"
 
-PackageObject::PackageObject()
-	: ElementObject()
+PackageObject::PackageObject(const std::string & name)
+	: ElementObject(name)
 {
 }

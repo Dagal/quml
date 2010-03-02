@@ -36,6 +36,9 @@ std::vector<ElementObject*> findChildren(ElementObject * element, const std::str
 	typedef std::vector<ElementObject*> elementvct;
 	typedef elementvct::iterator elementvctit;
 
+	if(!element)
+		return elementvct();
+
 	const std::vector<ElementObject * >	& children = element->children();
 	elementvct transf(children.size());
 

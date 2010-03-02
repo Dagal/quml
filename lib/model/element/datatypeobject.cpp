@@ -25,7 +25,7 @@
 
 #include "datatypeobject.hpp"
 
-DatatypeObject::DatatypeObject()
-	: ElementObject()
+DatatypeObject::DatatypeObject(const std::string & name)
+	: ElementObject(name)
 {
 }

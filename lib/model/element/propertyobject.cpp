@@ -26,8 +26,8 @@
 #include "propertyobject.hpp"
 #include "_propertyobject.hpp"
 
-PropertyObject::PropertyObject()
-	: ParameterObject(), _dd(new PropertyObjectPrivate)
+PropertyObject::PropertyObject(const std::string & name)
+	: ParameterObject(name), _dd(new PropertyObjectPrivate)
 {
 }
 

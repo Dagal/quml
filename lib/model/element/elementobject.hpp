@@ -41,7 +41,7 @@ public:
 	enum { elementtype = Element };
 
 	// constructor & destructor
-	ElementObject();
+	ElementObject(const std::string & name);
 	virtual ~ElementObject() = 0;
 
 	// simple getters
@@ -56,10 +56,12 @@ public:
 	virtual ElementType type() const = 0;
 
 protected:
+	void relatedElementChanged(const std::string & oldRelatedElementQualifiedName, const std::string & newRelatedElementQualifiedName);
+
+private:
 	virtual void onChildAdded(ElementObject * child);
 	virtual void onChildRemoved(ElementObject * child);
-
-	void relatedElementChanged(const std::string & oldRelatedElementQualifiedName, const std::string & newRelatedElementQualifiedName);
+	virtual void onRelatedElementChanged(const std::string & oldRelatedElementQualifiedName, const std::string & newRelatedElementQualifiedName);
 
 private:
 	boost::shared_ptr<ElementObjectPrivate> _dd;

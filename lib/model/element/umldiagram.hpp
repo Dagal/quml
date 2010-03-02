@@ -41,7 +41,7 @@ public:
 	UMLDiagram();
 
 	// attachment & detachment functions
-	Error attachElement(boost::shared_ptr<ElementObject> elementObject, const std::string & parentQualifiedName);
+	Error attachElement(boost::shared_ptr<ElementObject> elementObject, const std::string & parentQualifiedName = std::string());
 	boost::shared_ptr<ElementObject> detachElement(const std::string & qualifiedName);
 
 	// change parent & change name functions

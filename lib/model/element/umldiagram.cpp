@@ -47,13 +47,13 @@ std::string elementToRelatedQualifiedName(ElementObject * element)
 	if(element == 0)
 		return std::string();
 
-//	// is it a method?
-//	MethodObject * method = element_cast<MethodObject>(element);
-//	if(method) return method->returnType();
-//
-//	// is it a parameter?
-//	ParameterObject * param = element_cast<ParameterObject>(element);
-//	if(param) return param->datatype();
+	// is it a method?
+	MethodObject * method = element_cast<MethodObject>(element);
+	if(method) return method->returnType();
+
+	// is it a parameter?
+	ParameterObject * param = element_cast<ParameterObject>(element);
+	if(param) return param->datatype();
 
 	return std::string();
 }
@@ -87,11 +87,54 @@ Error UMLDiagram::attachElement(boost::shared_ptr<ElementObject> elementObject, 
 	elementObject->_dd->_parent = 0;
 	elementObject->_dd->_name = "";
 	Error error;
-	if((error = changeParent(elementObject.get(), parentQualifiedName, elementName)) != Error_NoError)
+
+	// try to add the new element
+	if( (error = _dd->updateParent(elementObject.get(), findElement(parentQualifiedName), elementName)) != Error_NoError)
+	{
+		elementObject->_dd->_name = elementName;
+		elementObject->_dd->_diagram = 0;
 		return error;
+	}
 
 	// add the new element to the list
 	_dd->addNewElement(elementObject);
+
+	return Error_NoError;
+}
+
+Error UMLDiagram::UMLDiagramPrivate::updateParent(ElementObject * element, ElementObject * newParent, const std::string & newElementName)
+{
+	if(element == 0)
+		return Error_ElementUndefined;
+
+	std::string realElementName = newElementName;
+
+	// name changed?
+	if(realElementName.empty())
+		realElementName = element->name();
+
+	// can we add the element here?
+	if(!findChildren(newParent, realElementName).empty())
+		return Error_ElementNameAlreadyUsed;
+
+	// store the oldName, to update the relatedElements[KEY] (qualified name will changed)
+	std::string oldQualifiedName = element->qualifiedName();
+	ElementObject * oldParent = element->parent();
+
+	// set the new parent & change the name
+	element->_dd->_name = realElementName;
+	element->_dd->_parent = newParent;
+
+	// remove from old parent
+	if(oldParent) oldParent->_dd->removeChild(element);
+	if(newParent) newParent->_dd->addChild(element);
+
+	// send the messages
+	if(oldParent) oldParent->onChildRemoved(element);
+	if(newParent) newParent->onChildAdded(element);
+
+	// update the related elements, KEY side
+	updateRelatedKeyElement(oldQualifiedName, element->qualifiedName());
 
 	return Error_NoError;
 }
@@ -125,30 +168,7 @@ Error UMLDiagram::changeParent(ElementObject * element, const std::string & newP
 	if(element->parent() == newParent)
 		return Error_NoError;
 
-	std::string realElementName = newElementName;
-
-	// name changed?
-	if(realElementName.empty())
-		realElementName = element->name();
-
-	// can we add the element here?
-	if(!findChildren(newParent, realElementName).empty())
-		return Error_ElementNameAlreadyUsed;
-
-	// store the oldName, to update the relatedElements[KEY];
-	std::string oldQualifiedName = element->qualifiedName();
-	ElementObject * oldParent = element->parent();
-
-	// set the new parent & change the name
-	element->_dd->_name = realElementName;
-	element->_dd->_parent = newParent;
-
-	// send the messages
-	if(oldParent) oldParent->onChildRemoved(element);
-	if(newParent) newParent->onChildAdded(element);
-
-	// update the related elements, KEY side
-	_dd->updateRelatedKeyElement(oldQualifiedName, element->qualifiedName());
+	_dd->updateParent(element, newParent, newElementName);
 
 	return Error_NoError;
 }
@@ -190,6 +210,7 @@ std::vector<ElementObject*> UMLDiagram::allElements() const
 {
 	std::vector<ElementObject*> elements(_dd->_elements.size());
 
+	// copy the contained object in the element list
 	std::transform(
 			_dd->_elements.begin(),
 			_dd->_elements.end(),
@@ -201,6 +222,7 @@ std::vector<ElementObject*> UMLDiagram::allElements() const
 
 std::vector<ElementObject *> UMLDiagram::findRelatedElements(const std::string & qualifiedName) const
 {
+	// a list of all the element that are attached to this qualified name
 	UMLDiagramPrivate::relatedElements_map::iterator i = _dd->_relatedElements.find(qualifiedName);
 	if(i == _dd->_relatedElements.end())
 		return std::vector<ElementObject*>();
@@ -269,6 +291,18 @@ void UMLDiagram::UMLDiagramPrivate::updateRelatedKeyElement(const std::string & 
 
 	// insert into list
 	_relatedElements[newQualifiedName] = ptr;
+
+	// update all the related elements
+	std::for_each(
+			ptr->begin(),
+			ptr->end(),
+			boost::bind(
+					&ElementObject::onRelatedElementChanged,
+					_1,
+					boost::cref(oldQualifiedName),
+					boost::cref(newQualifiedName)
+					)
+			);
 }
 
 UMLDiagram::UMLDiagramPrivate::element_vector::iterator UMLDiagram::UMLDiagramPrivate::findElement(const std::string & qualifiedName)

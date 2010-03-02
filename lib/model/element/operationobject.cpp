@@ -27,8 +27,8 @@
 #include "_operationobject.hpp"
 #include <sstream>
 
-OperationObject::OperationObject()
-	: MethodObject(), _dd(new OperationObjectPrivate)
+OperationObject::OperationObject(const std::string & name)
+	: MethodObject(name), _dd(new OperationObjectPrivate)
 {
 }
 

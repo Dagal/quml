@@ -36,7 +36,7 @@ class OperationObject : public MethodObject
 public:
 	enum { elementtype = Element_Operation };
 
-	OperationObject();
+	OperationObject(const std::string & name);
 	~OperationObject() {}
 
 	VisibilityType visibility() const;

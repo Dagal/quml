@@ -31,8 +31,8 @@
 #include "_umldiagram.hpp"
 #include <sstream>
 
-MethodObject::MethodObject()
-	: ElementObject(), _dd(new MethodObjectPrivate)
+MethodObject::MethodObject(const std::string & name)
+	: ElementObject(name), _dd(new MethodObjectPrivate)
 {
 }
 
@@ -86,4 +86,9 @@ void MethodObject::onChildAdded(ElementObject * child)
 void MethodObject::onChildRemoved(ElementObject * child)
 {
 	_dd->_parameters.removeElement(element_cast<ParameterObject>(child));
+}
+
+void MethodObject::onRelatedElementChanged(const std::string & /*oldRelatedElementQualifiedName*/, const std::string & newRelatedElementQualifiedName)
+{
+	_dd->_returnType = newRelatedElementQualifiedName;
 }

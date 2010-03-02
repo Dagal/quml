@@ -44,6 +44,7 @@ struct ElementObject::ElementObjectPrivate
 	std::vector<ElementObject *> _children;
 
 	void removeChild(ElementObject * child);
+	void addChild(ElementObject * chid);
 };
 
 

@@ -49,6 +49,8 @@ struct UMLDiagram::UMLDiagramPrivate
 	void updateRelatedKeyElement(const std::string & oldQualifiedName, const std::string & newQualifiedName);
 	element_vector::iterator findElement(const std::string & qualifiedName);
 
+	Error updateParent(ElementObject * element, ElementObject * newParent, const std::string & newElementName);
+
 private:
 	void resortElements();
 	void removeRelatedValueElement(const std::string & oldQualifiedName, ElementObject * element);

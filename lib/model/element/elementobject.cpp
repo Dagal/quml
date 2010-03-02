@@ -33,16 +33,17 @@ template<typename T> void deleter(T * element)
 {
 	delete element;
 }
-ElementObject::ElementObject()
+ElementObject::ElementObject(const std::string & name)
 	: _dd(new ElementObjectPrivate)
 {
+	_dd->_name = name;
 }
 
 ElementObject::~ElementObject()
 {
-//	setUMLDiagram(0);
-//	setParent(0);
-//
+	if(umlDiagram() != 0)
+		return;
+
 	std::vector<ElementObject*> childrenCopy = children();
 
 	std::for_each(
@@ -68,6 +69,11 @@ void ElementObject::onChildAdded(ElementObject * /*child*/)
 
 void ElementObject::onChildRemoved(ElementObject * /*child*/)
 {
+}
+
+void ElementObject::onRelatedElementChanged(const std::string & /*oldRelatedElementQualifiedName*/, const std::string & /*newRelatedElementQualifiedName*/)
+{
+
 }
 
 ElementObject * ElementObject::parent() const
@@ -97,4 +103,21 @@ void ElementObject::relatedElementChanged(const std::string & oldRelatedElementQ
 {
 	if(umlDiagram())
 		umlDiagram()->_dd->updateRelatedValueElement(this, oldRelatedElementQualifiedName, newRelatedElementQualifiedName);
+}
+
+void ElementObject::ElementObjectPrivate::removeChild(ElementObject * child)
+{
+	std::vector<ElementObject*>::iterator i = std::find(
+			_children.begin(),
+			_children.end(),
+			child);
+
+	if(i != _children.end())
+		_children.erase(i);
+}
+
+void ElementObject::ElementObjectPrivate::addChild(ElementObject * child)
+{
+	if(child)
+		_children.push_back(child);
 }

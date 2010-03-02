@@ -45,24 +45,7 @@
 using std::cout;
 using std::vector;
 
-class A
-{
-public:
-	A(int i): _i(i) { std::cout << "constructor " << _i << std::endl; }
-	~A() { std::cout << "destructor " << _i << std::endl; }
-
-	int _i;
-};
-
 int main(int /*argc*/, char ** /*argv*/)
 {
-	A * a = new A(0);
-
-
-
-	boost::shared_ptr<A> a1(new A(1));
-	std::auto_ptr<A> a2(new A(2));
-
-	a1 = a2;
 }
 

@@ -33,7 +33,7 @@ class DatatypeObject : public ElementObject
 public:
 	enum { elementtype = Element_Datatype };
 
-	DatatypeObject();
+	DatatypeObject(const std::string & name);
 };
 
 #endif // DATATYPE_HPP
