@@ -98,26 +98,3 @@ const std::vector<ElementObject *> & ElementObject::children() const
 {
 	return _dd->_children;
 }
-
-void ElementObject::relatedElementChanged(const std::string & oldRelatedElementQualifiedName, const std::string & newRelatedElementQualifiedName)
-{
-	if(umlDiagram())
-		umlDiagram()->_dd->updateRelatedValueElement(this, oldRelatedElementQualifiedName, newRelatedElementQualifiedName);
-}
-
-void ElementObject::ElementObjectPrivate::removeChild(ElementObject * child)
-{
-	std::vector<ElementObject*>::iterator i = std::find(
-			_children.begin(),
-			_children.end(),
-			child);
-
-	if(i != _children.end())
-		_children.erase(i);
-}
-
-void ElementObject::ElementObjectPrivate::addChild(ElementObject * child)
-{
-	if(child)
-		_children.push_back(child);
-}

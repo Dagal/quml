@@ -38,7 +38,7 @@ namespace stf
 		// concept requirements
 		__glibcxx_function_requires(_ForwardIteratorConcept<_ForwardIterator>)
 
-		_DistanceType __len = std::distance(__first, __last);
+				_DistanceType __len = std::distance(__first, __last);
 		_DistanceType __half;
 		_ForwardIterator __middle;
 
@@ -90,6 +90,31 @@ namespace stf
 			if(__pred_on_transformed(tmp))
 			{
 				*__result = tmp;
+				__result++;
+			}
+		}
+
+		return __result;
+	}
+
+	template <
+			typename _InputIterator,
+			typename _OutputIterator,
+			typename _UnaryPredicate>
+			_OutputIterator copy_if(
+					_InputIterator __first,
+					_InputIterator __last,
+					_OutputIterator __result,
+					_UnaryPredicate __pred)
+	{
+		__glibcxx_function_requires(_InputIteratorConcept<_InputIterator>);
+		__glibcxx_requires_valid_range(__first, __last);
+
+		for(; __first != __last; ++__first)
+		{
+			if(__pred(*__first))
+			{
+				*__result = *__first;
 				__result++;
 			}
 		}

@@ -32,8 +32,8 @@
 
 struct UMLDiagram::UMLDiagramPrivate
 {
-	typedef std::vector<boost::shared_ptr<ElementObject> > element_vector;
-	typedef boost::unordered_map<std::string, boost::shared_ptr<std::vector<ElementObject*> > > relatedElements_map;
+	typedef std::vector<ElementObject* > element_vector;
+	typedef boost::unordered_map<ElementObject*, boost::shared_ptr<element_vector> > relatedElements_map;
 
 	UMLDiagramPrivate()
 	{
@@ -41,20 +41,10 @@ struct UMLDiagram::UMLDiagramPrivate
 
 	element_vector _elements;
 	relatedElements_map _relatedElements;
+	UMLDiagram * _diagram;
 
-	void addNewElement(boost::shared_ptr<ElementObject> elementObject);
-	boost::shared_ptr<ElementObject> removeElement(const std::string & qualifiedName);
-
-	void updateRelatedValueElement(ElementObject * elementObject, const std::string & oldQualifiedName, const std::string & newQualifiedName);
-	void updateRelatedKeyElement(const std::string & oldQualifiedName, const std::string & newQualifiedName);
-	element_vector::iterator findElement(const std::string & qualifiedName);
-
-	Error updateParent(ElementObject * element, ElementObject * newParent, const std::string & newElementName);
-
-private:
-	void resortElements();
-	void removeRelatedValueElement(const std::string & oldQualifiedName, ElementObject * element);
-	void addRelatedValueElement(const std::string & newQualifiedName, ElementObject * element);
+	void INT_attachElement(ElementObject * object);
+	void INT_detachElement(ElementObject * object);
 };
 
 #endif // _UMLDIAGRAM_HPP

@@ -41,17 +41,13 @@ public:
 	UMLDiagram();
 
 	// attachment & detachment functions
-	Error attachElement(boost::shared_ptr<ElementObject> elementObject, const std::string & parentQualifiedName = std::string());
-	boost::shared_ptr<ElementObject> detachElement(const std::string & qualifiedName);
-
-	// change parent & change name functions
-	Error changeParent(ElementObject * element, const std::string & newParentQualifiedName, const std::string & newElementName = std::string());
-	Error changeName(ElementObject * element, const std::string & newElementName);
+	void attachElement(ElementObject * elementObject);
+	void detachElement(ElementObject * elementObject);
 
 	// element "find" functions
-	ElementObject * findElement(const std::string & qualifiedName) const;
+	std::vector<ElementObject*> findElements(const std::string & qualifiedName) const;
 	std::vector<ElementObject*> allElements() const;
-	std::vector<ElementObject *> findRelatedElements(const std::string & qualifiedName) const;
+	std::vector<ElementObject *> findRelatedElements(ElementObject * elementObject) const;
 
 private:
 	boost::shared_ptr<UMLDiagramPrivate> _dd;

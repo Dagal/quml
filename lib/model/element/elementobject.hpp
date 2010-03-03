@@ -55,8 +55,8 @@ public:
 	virtual std::string umlName() const;
 	virtual ElementType type() const = 0;
 
-protected:
-	void relatedElementChanged(const std::string & oldRelatedElementQualifiedName, const std::string & newRelatedElementQualifiedName);
+	void setName(const std::string & name);
+	void setParent(ElementObject * parent);
 
 private:
 	virtual void onChildAdded(ElementObject * child);
