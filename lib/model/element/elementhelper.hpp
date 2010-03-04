@@ -30,6 +30,7 @@
 #include "algorithm.hpp"
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
+#include <iostream>
 
 template <typename ElementClass> ElementClass * element_cast(ElementObject * element)
 {
@@ -91,5 +92,6 @@ template <typename ElementClass> std::vector<ElementClass*> findChildren(Element
 }
 
 std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name = std::string());
+ElementObject * findRelatedElement(ElementObject * elementObject);
 
 #endif // ELEMENTHELPER_HPP

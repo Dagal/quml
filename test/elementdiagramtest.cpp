@@ -30,15 +30,16 @@
 #include "classobject.hpp"
 #include <iostream>
 #include <algorithm>
+#include "propertyobject.hpp"
 
 void ElementDiagramTest::init()
 {
 	_diagram = new UMLDiagram;
 	_parent = new PackageObject("parent");
-	_child = new PackageObject("child");
+	_child = new ClassObject("child");
 
-	_diagram->attachElement(boost::shared_ptr<ElementObject>(_parent));
-	_diagram->attachElement(boost::shared_ptr<ElementObject>(_child),_parent->qualifiedName());
+	_parent->setUMLDiagram(_diagram);
+	_child->setParent(_parent);
 }
 
 void ElementDiagramTest::cleanup()
@@ -59,12 +60,26 @@ void ElementDiagramTest::checkBasics()
 
 void ElementDiagramTest::removeChild()
 {
-	_diagram->detachElement(_child->qualifiedName());
+	_child->setUMLDiagram(0);
+
 	QCOMPARE(_diagram->allElements().size(), (unsigned int)1);
 	QCOMPARE(_diagram->allElements()[0], _parent);
 	QCOMPARE(_child->umlDiagram(), (UMLDiagram*)0);
 	QCOMPARE(_child->parent(), (ElementObject*)0);
 	QCOMPARE(_parent->children().size(), (unsigned int)0);
+}
+
+void ElementDiagramTest::methodTest()
+{
+	PropertyObject * prop = new PropertyObject("testNaam");
+	prop->setParent(_parent);
+	prop->setDatatype((ClassObject*)_child);
+
+	QCOMPARE(_diagram->findRelatedElements(_child).size(), (unsigned int)1);
+
+	_parent->setUMLDiagram(0);
+
+	QCOMPARE(prop->datatype(), (DatatypeObject*)_child);
 }
 
 void ElementDiagramTest::removeParent()

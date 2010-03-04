@@ -34,9 +34,11 @@ class ParameterObject::ParameterObjectPrivate
 {
 public:
 	ParameterObjectPrivate()
-	{}
+		: _datatype(0)
+	{
+	}
 
-	string _datatype;
+	DatatypeObject * _datatype;
 	string _defaultValue;
 };
 

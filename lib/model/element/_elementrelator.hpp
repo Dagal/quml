@@ -23,31 +23,29 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef PARAMETEROBJECT_HPP
-#define PARAMETEROBJECT_HPP
+#ifndef ELEMENTRELATOR_HPP
+#define ELEMENTRELATOR_HPP
 
 #include "elementobject.hpp"
-#include "datatypeobject.hpp"
+#include <boost/unordered_map.hpp>
+#include <boost/shared_ptr.hpp>
 
-class ParameterObject : public ElementObject
+class ElementRelator
 {
-	class ParameterObjectPrivate;
-
 public:
-	enum { elementtype = Element_Parameter };
+	ElementRelator();
 
-	ParameterObject(const std::string & name);
-
-	DatatypeObject * datatype() const;
-	const std::string & defaultValue() const;
-	void setDatatype(DatatypeObject * datatype);
-	void setDefaultValue(const std::string & defaultValue);
-
-	virtual ElementType type() const { return Element_Parameter; }
-	virtual std::string umlName() const;
+	std::vector<ElementObject *> findElementsRelatedTo(ElementObject * relatedElement);
+	void updateElementObject(ElementObject * elementObject, ElementObject * oldRelatedElement);
+	void removeElementObject(ElementObject * elementObject);
+	void addElementObject(ElementObject * elementObject);
 
 private:
-	boost::shared_ptr<ParameterObjectPrivate> _dd;
+	typedef boost::unordered_map<ElementObject*, boost::shared_ptr<std::vector<ElementObject*> > > relatedElements_map;
+	relatedElements_map _relatedElements;
+
+	void removeElementFromRelator(ElementObject * key, ElementObject * value);
+	void addElementToRelator(ElementObject * key, ElementObject * value);
 };
 
-#endif // PARAMETEROBJECT_HPP
+#endif // _ELEMENTRELATOR_HPP

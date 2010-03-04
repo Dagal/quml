@@ -39,13 +39,10 @@ class UMLDiagram
 
 public:
 	UMLDiagram();
-
-	// attachment & detachment functions
-	void attachElement(ElementObject * elementObject);
-	void detachElement(ElementObject * elementObject);
+	~UMLDiagram();
 
 	// element "find" functions
-	std::vector<ElementObject*> findElements(const std::string & qualifiedName) const;
+	ElementObject * findElement(const std::string & qualifiedName) const;
 	std::vector<ElementObject*> allElements() const;
 	std::vector<ElementObject *> findRelatedElements(ElementObject * elementObject) const;
 

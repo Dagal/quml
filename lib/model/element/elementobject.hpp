@@ -53,15 +53,19 @@ public:
 	// virtual functions
 	virtual std::string qualifiedName() const;
 	virtual std::string umlName() const;
-	virtual ElementType type() const = 0;
+	virtual ElementType type() const  = 0;
 
+	// setters
 	void setName(const std::string & name);
 	void setParent(ElementObject * parent);
+	void setUMLDiagram(UMLDiagram * diagram);
 
 private:
 	virtual void onChildAdded(ElementObject * child);
 	virtual void onChildRemoved(ElementObject * child);
-	virtual void onRelatedElementChanged(const std::string & oldRelatedElementQualifiedName, const std::string & newRelatedElementQualifiedName);
+
+protected:
+	void relatedElementChanged(ElementObject * oldRelatedElement);
 
 private:
 	boost::shared_ptr<ElementObjectPrivate> _dd;

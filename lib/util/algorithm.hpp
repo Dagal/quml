@@ -30,6 +30,18 @@
 
 namespace stf
 {
+	template <typename T> struct comparator
+	{
+		typedef int result_type;
+
+		int operator()(const T & a, const T & b) const
+		{
+			if(a < b)		return -1;
+			else if(b < a)	return 1;
+			else			return 0;
+		}
+	};
+
 	template<typename _ForwardIterator, typename _Compare> _ForwardIterator binary_find_if(_ForwardIterator __first, _ForwardIterator __last, _Compare __fan_comp)
 	{
 		typedef typename std::iterator_traits<_ForwardIterator>::value_type _ValueType;

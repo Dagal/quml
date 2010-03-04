@@ -40,6 +40,8 @@ private slots:
 	void removeChild();
 	void removeParent();
 
+	void methodTest();
+
 
 	void cleanup();
 	void init();

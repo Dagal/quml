@@ -42,77 +42,44 @@ int elementFinder(boost::shared_ptr<ElementObject> element, const std::string & 
 	return element->qualifiedName().compare(qualifiedName);
 }
 
-std::string elementToRelatedQualifiedName(ElementObject * element)
+void checkForDetaching(ElementObject * elementObject)
 {
-	if(element == 0)
-		return std::string();
+	MethodObject * method = element_cast<MethodObject>(elementObject);
+	if(method && method->returnType() != 0 && method->returnType()->umlDiagram() != elementObject->umlDiagram())
+			method->setReturnType(0);
 
-	// is it a method?
-	MethodObject * method = element_cast<MethodObject>(element);
-	if(method) return method->returnType();
-
-	// is it a parameter?
-	ParameterObject * param = element_cast<ParameterObject>(element);
-	if(param) return param->datatype();
-
-	return std::string();
+	ParameterObject * param = element_cast<ParameterObject>(elementObject);
+	if(param && param->datatype() != 0 && param->datatype()->umlDiagram() != elementObject->umlDiagram())
+		param->setDatatype(0);
 }
 
 UMLDiagram::UMLDiagram()
-		: _dd(new UMLDiagram::UMLDiagramPrivate)
+	: _dd(new UMLDiagram::UMLDiagramPrivate)
 {
 	_dd->_diagram = this;
 }
 
-void UMLDiagram::attachElement(ElementObject * elementObject)
+UMLDiagram::~UMLDiagram()
 {
-	// is this element existing?
-	if(elementObject == 0)
-		return;
+	// remove all the elements
+	while(!_dd->_elements.empty())
+	{
+		ElementObject * curElement = _dd->_elements[0];
+		curElement->setUMLDiagram(0);
+		curElement->setParent(0);
 
-	// attached to this diagram?
-	if(elementObject->umlDiagram() == this)
-		return;
-
-	// attached to another diagram?
-	if(elementObject->umlDiagram() != 0)
-		elementObject->umlDiagram()->detachElement(elementObject);
-
-	// make sure it is not attached to a parent
-	elementObject->setParent(0);
-
-	_dd->INT_attachElement(elementObject);
+		delete curElement;
+	}
 }
 
-void UMLDiagram::detachElement(ElementObject * elementObject)
+ElementObject* UMLDiagram::findElement(const std::string & qualifiedName) const
 {
-	// is this element existing?
-	if(elementObject == 0)
-		return;
+	std::vector<ElementObject*>::iterator i = _dd->findElement(qualifiedName);
 
-	_dd->INT_detachElement(elementObject);
-}
-
-std::vector<ElementObject*> UMLDiagram::findElements(const std::string & qualifiedName) const
-{
-	// get the memory
-	std::vector<ElementObject*> foundElements(_dd->_elements.size());
-
-	// copy if the name matches
-	std::vector<ElementObject*>::iterator i = stf::copy_if(
-			_dd->_elements.begin(),
-			_dd->_elements.end(),
-			foundElements.begin(),
-			boost::bind(
-					std::equal_to<const std::string &>(),
-					boost::cref(qualifiedName),
-					boost::bind(&ElementObject::qualifiedName, _1)
-					)
-			);
-
-	foundElements.erase(i, foundElements.end());
-
-	return foundElements;
+	if(i == _dd->_elements.end())
+		return 0;
+	else
+		return *i;
 }
 
 std::vector<ElementObject*> UMLDiagram::allElements() const
@@ -122,47 +89,147 @@ std::vector<ElementObject*> UMLDiagram::allElements() const
 
 std::vector<ElementObject *> UMLDiagram::findRelatedElements(ElementObject * elementObject) const
 {
-	UMLDiagramPrivate::relatedElements_map::iterator i = _dd->_relatedElements.find(elementObject);
-	if(i == _dd->_relatedElements.end())
-			return std::vector<ElementObject *>();
-	else
-		return *(i->second);
+	return _dd->_elementRelator.findElementsRelatedTo(elementObject);
 }
 
-void UMLDiagram::UMLDiagramPrivate::INT_attachElement(ElementObject * elementObject)
+void UMLDiagram::UMLDiagramPrivate::attachElement(ElementObject * elementObject)
 {
-	// set the diagram
-	elementObject->_dd->_diagram = _diagram;
+	// add this and children to diagram
+	INT_recursiveAttachElement(elementObject);
 
-	// attach this object
-	_elements.push_back(elementObject);
+	// check this element for "strange" links
+	INT_recursiveRemoveStrangeAttachedElements(elementObject);
 
-	// attach all the children
-	const element_vector & children = elementObject->children();
-	std::for_each(
-			children.begin(),
-			children.end(),
-			boost::bind(&UMLDiagram::UMLDiagramPrivate::INT_attachElement, this, _1)
+	// resort the list
+	resortElements();
+}
+
+void UMLDiagram::UMLDiagramPrivate::detachElement(ElementObject * elementObject)
+{
+	// remove this and children from diagram
+	INT_recursiveDetachElement(elementObject);
+
+	// check this element for "strange" links
+	INT_recursiveRemoveStrangeAttachedElements(elementObject);
+
+	// resort the list
+	resortElements();
+}
+
+void UMLDiagram::UMLDiagramPrivate::resortElements()
+{
+	std::sort(
+			_elements.begin(),
+			_elements.end(),
+			boost::bind(&ElementObject::qualifiedName, _1) < boost::bind(&ElementObject::qualifiedName, _2)
 			);
 }
 
-void UMLDiagram::UMLDiagramPrivate::INT_detachElement(ElementObject * elementObject)
+std::vector<ElementObject*>::iterator UMLDiagram::UMLDiagramPrivate::findElement(const std::string & qualifiedName)
 {
-	// detach this object
-	element_vector::iterator i = std::find(_elements.begin(), _elements.end(), elementObject);
-	if(i == _elements.end())
-		return;
+	return stf::binary_find_if(
+			_elements.begin(),
+			_elements.end(),
+			boost::bind(
+					stf::comparator<std::string>(),
+					boost::bind(&ElementObject::qualifiedName, _1),
+					boost::cref(qualifiedName)
+					)
+			);
+}
 
-	_elements.erase(i);
+std::vector<ElementObject*>::iterator UMLDiagram::UMLDiagramPrivate::findElement(ElementObject * elementObject)
+{
+	if(elementObject == 0)
+		return _elements.end();
+	else
+		return findElement(elementObject->qualifiedName());
 
-	// remove the diagram
+}
+
+void UMLDiagram::UMLDiagramPrivate::INT_recursiveAttachElement(ElementObject * elementObject)
+{
+	// set the diagram pointer
+	elementObject->_dd->_diagram = _diagram;
+
+	// add to the lists
+	INT_addElementToLists(elementObject);
+
+	// attach the children
+	const std::vector<ElementObject*> & vct = elementObject->children();
+	std::for_each(
+			vct.begin(),
+			vct.end(),
+			boost::bind(&UMLDiagram::UMLDiagramPrivate::INT_recursiveAttachElement, this, _1));
+}
+
+void UMLDiagram::UMLDiagramPrivate::INT_recursiveDetachElement(ElementObject * elementObject)
+{
+	// detach this element
 	elementObject->_dd->_diagram = 0;
 
-	// detach all the children
-	const element_vector & children = elementObject->children();
+	// remove from the lists
+	INT_removeElementFromLists(elementObject);
+
+	// detach the children
+	const std::vector<ElementObject*> & vct = elementObject->children();
 	std::for_each(
-			children.begin(),
-			children.end(),
-			boost::bind(&UMLDiagram::UMLDiagramPrivate::INT_attachElement, this, _1)
+			vct.begin(),
+			vct.end(),
+			boost::bind(&UMLDiagram::UMLDiagramPrivate::INT_recursiveDetachElement, this, _1)
+			);
+}
+
+void UMLDiagram::UMLDiagramPrivate::INT_removeElementFromLists(ElementObject * elementObject)
+{
+	// remove from elements
+	std::vector<ElementObject*>::iterator i = std::find(
+			_elements.begin(),
+			_elements.end(),
+			elementObject);
+
+	if(i != _elements.end())
+		_elements.erase(i);
+}
+
+void UMLDiagram::UMLDiagramPrivate::INT_addElementToLists(ElementObject * elementObject)
+{
+	// is there already an element with this name?
+	element_vector::iterator i = findElement(elementObject->qualifiedName());
+	if(i != _elements.end())
+	{
+		if(*i == elementObject)
+			return;
+
+		// delete the other elements
+		ElementObject * toBeDeleted = *i;
+		toBeDeleted->setUMLDiagram(0);
+		toBeDeleted->setParent(0);
+
+		delete toBeDeleted;
+	}
+
+	_elements.push_back(elementObject);
+}
+
+void UMLDiagram::UMLDiagramPrivate::INT_recursiveRemoveStrangeAttachedElements(ElementObject * elementObject)
+{
+	// check for detaching of this element
+	checkForDetaching(elementObject);
+
+	// check for detaching of attached elements
+	std::vector<ElementObject*> attachedVct = _elementRelator.findElementsRelatedTo(elementObject);
+	std::for_each(
+			attachedVct.begin(),
+			attachedVct.end(),
+			boost::bind(checkForDetaching, _1)
+			);
+
+	// recursive on children
+	const std::vector<ElementObject*> & vct = elementObject->children();
+	std::for_each(
+			vct.begin(),
+			vct.end(),
+			boost::bind(&UMLDiagram::UMLDiagramPrivate::INT_recursiveRemoveStrangeAttachedElements, this, _1)
 			);
 }

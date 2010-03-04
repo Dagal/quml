@@ -34,7 +34,7 @@ ParameterObject::ParameterObject(const std::string & name)
 {
 }
 
-const std::string & ParameterObject::datatype() const
+DatatypeObject * ParameterObject::datatype() const
 {
 	return _dd->_datatype;
 }
@@ -44,13 +44,18 @@ const string & ParameterObject::defaultValue() const
 	return _dd->_defaultValue;
 }
 
-void ParameterObject::setDatatype(const std::string & datatype)
+void ParameterObject::setDatatype(DatatypeObject * datatype)
 {
+	if(datatype != 0 && datatype->umlDiagram() != umlDiagram())
+		datatype = 0;
+
 	if(_dd->_datatype == datatype)
 		return;
 
-	relatedElementChanged(_dd->_datatype, datatype);
+
+	DatatypeObject * oldData = _dd->_datatype;
 	_dd->_datatype = datatype;
+	relatedElementChanged(oldData);
 }
 
 void ParameterObject::setDefaultValue(const string & defaultValue)
@@ -65,9 +70,4 @@ std::string ParameterObject::umlName() const
 	s << name() << ": " << datatype();
 
 	return s.str();
-}
-
-void ParameterObject::onRelatedElementChanged(const std::string & /*oldRelatedElementQualifiedName*/, const std::string & newRelatedElementQualifiedName)
-{
-	_dd->_datatype = newRelatedElementQualifiedName;
 }

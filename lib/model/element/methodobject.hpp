@@ -27,6 +27,7 @@
 #define METHODOBJECT_HPP
 
 #include "elementobject.hpp"
+#include "datatypeobject.hpp"
 
 class MethodObject : public ElementObject
 {
@@ -39,8 +40,8 @@ public:
 	~MethodObject() {}
 
 
-	const std::string & returnType() const;
-	void setReturnType(const std::string & returnType);
+	DatatypeObject * returnType() const;
+	void setReturnType(DatatypeObject * returnType);
 	const std::vector<ParameterObject*> & parameters() const;
 	ParameterObject * parameterAt(unsigned int position) const;
 
@@ -50,9 +51,6 @@ public:
 private:
 	virtual void onChildAdded(ElementObject * child);
 	virtual void onChildRemoved(ElementObject * child);
-	virtual void onRelatedElementChanged(const std::string & oldRelatedElementQualifiedName, const std::string & newRelatedElementQualifiedName);
-
-
 
 private:
 	boost::shared_ptr<MethodObjectPrivate> _dd;

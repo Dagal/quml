@@ -40,12 +40,62 @@
 #include "algorithm.hpp"
 #include <string>
 #include <boost/unordered_set.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <memory>
 
 using std::cout;
 using std::vector;
 
+
+template <typename T> struct comparator
+{
+	typedef T result_type;
+
+	int operator()(const T & a, const T & b) const
+	{
+		if(a < b)		return -1;
+		else if(b < a)	return 1;
+		else			return 0;
+	}
+};
+
+struct A
+{
+	A(int i) : j(i) {}
+
+	int getJ() const { return j; }
+
+	int j;
+};
+
+bool testje(const A & a, int b)
+{
+	return a.getJ() < b;
+}
+
 int main(int /*argc*/, char ** /*argv*/)
 {
+	std::vector<A> vct;
+	vct.push_back(A(7));
+	vct.push_back(A(1));
+	vct.push_back(A(3));
+	vct.push_back(A(6));
+	vct.push_back(A(4));
+
+	std::sort(
+			vct.begin(),
+			vct.end(),
+			boost::bind(&A::getJ, _1) < boost::bind(&A::getJ, _2)
+			);
+
+	std::vector<A>::iterator i = stf::binary_find_if(
+			vct.begin(),
+			vct.end(),
+			boost::bind(
+					stf::comparator<int>(),
+					boost::bind(&A::getJ, _1),
+					5
+					)
+			);
 }
 

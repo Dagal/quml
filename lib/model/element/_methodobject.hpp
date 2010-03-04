@@ -34,10 +34,11 @@ using std::string;
 struct MethodObject::MethodObjectPrivate
 {
 	MethodObjectPrivate()
+		: _returnType(0)
 	{
 	}
 
-	string _returnType;
+	DatatypeObject * _returnType;
 	ElementContainer<ParameterObject> _parameters;
 };
 

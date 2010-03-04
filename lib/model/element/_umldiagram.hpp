@@ -27,24 +27,39 @@
 #define _UMLDIAGRAM_HPP
 
 #include "umldiagram.hpp"
-#include <boost/unordered_map.hpp>
-#include <boost/shared_ptr.hpp>
+#include "_elementrelator.hpp"
+
+struct AttachedElement
+{
+	ElementObject * elementObject;
+	ElementObject * relatedElement;
+};
 
 struct UMLDiagram::UMLDiagramPrivate
 {
 	typedef std::vector<ElementObject* > element_vector;
-	typedef boost::unordered_map<ElementObject*, boost::shared_ptr<element_vector> > relatedElements_map;
 
 	UMLDiagramPrivate()
 	{
 	}
 
 	element_vector _elements;
-	relatedElements_map _relatedElements;
 	UMLDiagram * _diagram;
+	ElementRelator _elementRelator;
 
-	void INT_attachElement(ElementObject * object);
-	void INT_detachElement(ElementObject * object);
+	void attachElement(ElementObject * elementObject);
+	void detachElement(ElementObject * elementObject);
+	void resortElements();
+	std::vector<ElementObject*>::iterator findElement(const std::string & qualifiedName);
+	std::vector<ElementObject*>::iterator findElement(ElementObject * elementObject);
+
+
+private:
+	void INT_recursiveAttachElement(ElementObject * elementObject);
+	void INT_recursiveDetachElement(ElementObject * elementObject);
+	void INT_recursiveRemoveStrangeAttachedElements(ElementObject * elementObject);
+	void INT_removeElementFromLists(ElementObject * elementObject);
+	void INT_addElementToLists(ElementObject * elementObject);
 };
 
 #endif // _UMLDIAGRAM_HPP

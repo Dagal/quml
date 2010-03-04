@@ -32,19 +32,27 @@ using std::string;
 
 struct ElementObject::ElementObjectPrivate
 {
-	ElementObjectPrivate()
+	ElementObjectPrivate(ElementObject * elementObject)
 		: _parent(0)
-	 , _diagram(0)
+		, _diagram(0)
+		, _element(elementObject)
 	{
 	}
 
 	string _name;
 	ElementObject * _parent;
 	UMLDiagram * _diagram;
+	ElementObject * _element;
 	std::vector<ElementObject *> _children;
 
-	void removeChild(ElementObject * child);
-	void addChild(ElementObject * chid);
+	void detachFromParent();
+	void detachFromUML();
+	void attachToParentInSameUML(ElementObject * parent);
+	void attachToParentInDifferentUML(ElementObject * parent);
+
+private:
+	void INT_removeChild(ElementObject * child);
+	void INT_addChild(ElementObject * chid);
 };
 
 

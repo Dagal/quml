@@ -36,17 +36,21 @@ MethodObject::MethodObject(const std::string & name)
 {
 }
 
-const std::string & MethodObject::returnType() const
+DatatypeObject * MethodObject::returnType() const
 {
 	return _dd->_returnType;
 }
-void MethodObject::setReturnType(const std::string & returnType)
+void MethodObject::setReturnType(DatatypeObject * returnType)
 {
+	if(returnType != 0 && returnType->umlDiagram() != umlDiagram())
+		returnType = 0;
+
 	if(_dd->_returnType == returnType)
 		return;
 
-	relatedElementChanged(_dd->_returnType, returnType);
+	DatatypeObject * oldData = _dd->_returnType;
 	_dd->_returnType = returnType;
+	relatedElementChanged(oldData);
 }
 
 const std::vector<ParameterObject*> & MethodObject::parameters() const
@@ -88,7 +92,3 @@ void MethodObject::onChildRemoved(ElementObject * child)
 	_dd->_parameters.removeElement(element_cast<ParameterObject>(child));
 }
 
-void MethodObject::onRelatedElementChanged(const std::string & /*oldRelatedElementQualifiedName*/, const std::string & newRelatedElementQualifiedName)
-{
-	_dd->_returnType = newRelatedElementQualifiedName;
-}

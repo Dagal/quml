@@ -63,3 +63,16 @@ std::vector<ElementObject*> findChildren(ElementObject * element, const std::str
 	return transf;
 }
 
+ElementObject * findRelatedElement(ElementObject * elementObject)
+{
+	if(elementObject == 0)
+		return 0;
+
+	MethodObject * method = element_cast<MethodObject>(elementObject);
+	if(method) return method->returnType();
+
+	ParameterObject * param = element_cast<ParameterObject>(elementObject);
+	if(param) return param->datatype();
+
+	else return 0;
+}

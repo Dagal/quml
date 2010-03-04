@@ -48,10 +48,10 @@ enum ElementType
 	Element_Class = 6 << 1,
 
 	Element_Method = 2 << 4,
-	Element_Operation = 1 << 4,
+	Element_Operation = 3 << 4,
 
 	Element_Parameter = 2 << 6,
-	Element_Property = 1 << 6,
+	Element_Property = 3 << 6,
 
 
 
