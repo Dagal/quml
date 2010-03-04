@@ -27,8 +27,9 @@
 #define UMLDIAGRAM_HPP
 
 #include "defines.hpp"
+#include "algorithm.hpp"
+#include "elementhelper.hpp"
 #include <vector>
-#include "error.hpp"
 #include <string>
 
 class UMLDiagram
@@ -41,13 +42,38 @@ public:
 	UMLDiagram();
 	~UMLDiagram();
 
+	// create & add functions
+	ElementObject * createElement(ElementType type, const std::string & name, const std::string & parentName);
+
 	// element "find" functions
 	ElementObject * findElement(const std::string & qualifiedName) const;
-	std::vector<ElementObject*> allElements() const;
+	const std::vector<ElementObject*> & allElements() const;
 	std::vector<ElementObject *> findRelatedElements(ElementObject * elementObject) const;
+	template <typename T> std::vector<T *> findElements() const;
 
 private:
 	boost::shared_ptr<UMLDiagramPrivate> _dd;
 };
+
+template <typename T> std::vector<T*> UMLDiagram::findElements() const
+{
+	std::vector<T*> vct(allElements().size());
+
+	typename std::vector<T*>::iterator i = stf::copy_transformed_if(
+			allElements().begin(),
+			allElements().end(),
+			vct.begin(),
+			boost::bind<T*>(
+					element_cast<T>,
+					_1),
+			boost::bind(
+					std::not_equal_to<T*>(),
+					_1,
+					(T*)0)
+			);
+
+	vct.erase(i, vct.end());
+	return vct;
+}
 
 #endif // UMLDIAGRAM_HPP

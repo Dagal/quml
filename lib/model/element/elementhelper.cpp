@@ -30,6 +30,7 @@
 #include "parameterobject.hpp"
 #include "packageobject.hpp"
 #include "operationobject.hpp"
+#include "primitiveobject.hpp"
 
 std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name)
 {
@@ -75,4 +76,27 @@ ElementObject * findRelatedElement(ElementObject * elementObject)
 	if(param) return param->datatype();
 
 	else return 0;
+}
+
+ElementObject * createElementObject(ElementType type, const std::string & name)
+{
+	switch(type)
+	{
+	case Element_Class:
+		return new ClassObject(name);
+	case Element_Method:
+		return new MethodObject(name);
+	case Element_Operation:
+		return new OperationObject(name);
+	case Element_Package:
+		return new PackageObject(name);
+	case Element_Parameter:
+		return new ParameterObject(name);
+	case Element_Primitive:
+		return new PrimitiveObject(name);
+	case Element_Property:
+		return new PropertyObject(name);
+	default:
+		return 0;
+	}
 }

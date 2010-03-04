@@ -23,39 +23,19 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "classobject.hpp"
-#include "propertyobject.hpp"
-#include "operationobject.hpp"
-#include "_classobject.hpp"
-#include "elementhelper.hpp"
+#ifndef PRIMITIVEOBJECT_HPP
+#define PRIMITIVEOBJECT_HPP
 
-ClassObject::ClassObject(const std::string & name)
-	: DatatypeObject(name), _dd(new ClassObjectPrivate)
-{
-}
+#include "datatypeobject.hpp"
 
-void ClassObject::onChildAdded(ElementObject * child)
+class PrimitiveObject : public DatatypeObject
 {
-	_dd->_operations.addElement(element_cast<OperationObject>(child));
-	_dd->_properties.addElement(element_cast<PropertyObject>(child));
-}
+public:
+	enum { elementtype = Element_Primitive };
 
-void ClassObject::onChildRemoved(ElementObject * child)
-{
-	_dd->_operations.removeElement(element_cast<OperationObject>(child));
-	_dd->_properties.removeElement(element_cast<PropertyObject>(child));
-}
+	PrimitiveObject(const std::string & name);
 
-const std::vector<OperationObject*> & ClassObject::operations() const
-{
-	return _dd->_operations.vector();
-}
-const std::vector<PropertyObject*> & ClassObject::properties() const
-{
-	return _dd->_properties.vector();
-}
+	virtual ElementType type() const { return Element_Primitive; }
+};
 
-std::string ClassObject::umlName() const
-{
-	return name();
-}
+#endif // PRIMITIVEOBJECT_HPP

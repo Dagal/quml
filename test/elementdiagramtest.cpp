@@ -56,6 +56,7 @@ void ElementDiagramTest::checkBasics()
 	QCOMPARE(_diagram->findElement(_child->qualifiedName()), _child);
 	QCOMPARE(_parent->children().size(), (unsigned int)1);
 	QCOMPARE(_parent->children()[0], _child);
+	QCOMPARE(_diagram->findElements<ClassObject>().size(), (unsigned int)1);
 }
 
 void ElementDiagramTest::removeChild()

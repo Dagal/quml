@@ -72,6 +72,17 @@ UMLDiagram::~UMLDiagram()
 	}
 }
 
+ElementObject * UMLDiagram::createElement(ElementType type, const std::string & name, const std::string & parentQualifiedName)
+{
+	ElementObject * element = createElementObject(type, name);
+	ElementObject * parent = findElement(parentQualifiedName);
+
+	element->setParent(parent);
+	element->setUMLDiagram(this);
+
+	return element;
+}
+
 ElementObject* UMLDiagram::findElement(const std::string & qualifiedName) const
 {
 	std::vector<ElementObject*>::iterator i = _dd->findElement(qualifiedName);
@@ -82,7 +93,7 @@ ElementObject* UMLDiagram::findElement(const std::string & qualifiedName) const
 		return *i;
 }
 
-std::vector<ElementObject*> UMLDiagram::allElements() const
+const std::vector<ElementObject*> &  UMLDiagram::allElements() const
 {
 	return _dd->_elements;
 }

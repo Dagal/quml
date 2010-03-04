@@ -41,6 +41,7 @@ ElementObject::ElementObject(const std::string & name)
 
 ElementObject::~ElementObject()
 {
+
 	if(umlDiagram() != 0)
 		return;
 

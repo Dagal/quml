@@ -23,39 +23,19 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "classobject.hpp"
-#include "propertyobject.hpp"
-#include "operationobject.hpp"
-#include "_classobject.hpp"
-#include "elementhelper.hpp"
+#ifndef _CLASSDIAGRAMCONTROLLER_HPP
+#define _CLASSDIAGRAMCONTROLLER_HPP
 
-ClassObject::ClassObject(const std::string & name)
-	: DatatypeObject(name), _dd(new ClassObjectPrivate)
-{
-}
+#include "classdiagramcontroller.hpp"
 
-void ClassObject::onChildAdded(ElementObject * child)
+struct ClassDiagramController::ClassDiagramControllerPrivate
 {
-	_dd->_operations.addElement(element_cast<OperationObject>(child));
-	_dd->_properties.addElement(element_cast<PropertyObject>(child));
-}
+	ClassDiagramControllerPrivate(UMLDiagram * diagram)
+		: _diagram(diagram)
+	{
+	}
 
-void ClassObject::onChildRemoved(ElementObject * child)
-{
-	_dd->_operations.removeElement(element_cast<OperationObject>(child));
-	_dd->_properties.removeElement(element_cast<PropertyObject>(child));
-}
+	UMLDiagram * const _diagram;
+};
 
-const std::vector<OperationObject*> & ClassObject::operations() const
-{
-	return _dd->_operations.vector();
-}
-const std::vector<PropertyObject*> & ClassObject::properties() const
-{
-	return _dd->_properties.vector();
-}
-
-std::string ClassObject::umlName() const
-{
-	return name();
-}
+#endif // _CLASSDIAGRAMCONTROLLER_HPP

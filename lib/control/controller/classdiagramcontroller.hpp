@@ -23,39 +23,37 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "classobject.hpp"
-#include "propertyobject.hpp"
-#include "operationobject.hpp"
-#include "_classobject.hpp"
-#include "elementhelper.hpp"
+#ifndef CLASSDIAGRAMCONTROLLER_HPP
+#define CLASSDIAGRAMCONTROLLER_HPP
 
-ClassObject::ClassObject(const std::string & name)
-	: DatatypeObject(name), _dd(new ClassObjectPrivate)
-{
-}
+#include "diagramcontroller.hpp"
 
-void ClassObject::onChildAdded(ElementObject * child)
-{
-	_dd->_operations.addElement(element_cast<OperationObject>(child));
-	_dd->_properties.addElement(element_cast<PropertyObject>(child));
-}
+class UMLDiagram;
+class ElementObject;
 
-void ClassObject::onChildRemoved(ElementObject * child)
+class ClassDiagramController : public DiagramController
 {
-	_dd->_operations.removeElement(element_cast<OperationObject>(child));
-	_dd->_properties.removeElement(element_cast<PropertyObject>(child));
-}
+	class ClassDiagramControllerPrivate;
 
-const std::vector<OperationObject*> & ClassObject::operations() const
-{
-	return _dd->_operations.vector();
-}
-const std::vector<PropertyObject*> & ClassObject::properties() const
-{
-	return _dd->_properties.vector();
-}
+public:
+	ClassDiagramController(UMLDiagram * diagram);
 
-std::string ClassObject::umlName() const
-{
-	return name();
-}
+	// simple getters
+	UMLDiagram * diagram() const;
+
+	// element methods
+	Error deleteElement(const std::string & qualifiedElementName);
+	Error renameElement(const std::string & qualifiedElementName, const std::string & newName);
+
+	// class methods
+	Error createClass(const std::string & className, const std::string & qualifiedParentName);
+	Error moveClass(const std::string & classQualifiedName, const std::string & newParentQualifiedName);
+
+	// pointer methods
+	ElementObject * getElement(const std::string & qualifiedName) const;
+
+private:
+	boost::shared_ptr<ClassDiagramControllerPrivate> _dd;
+};
+
+#endif // CLASSDIAGRAMCONTROLLER_HPP

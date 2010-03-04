@@ -23,36 +23,9 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef _ELEMENTHELPER_HPP
-#define _ELEMENTHELPER_HPP
+#include "primitiveobject.hpp"
 
-#include "elementobject.hpp"
-#include "elementhelper.hpp"
-
-template <typename T> bool tryToAddToVector(ElementObject * child, std::vector<T*> & vct)
+PrimitiveObject::PrimitiveObject(const std::string & name)
+	: DatatypeObject(name)
 {
-	if(!child)
-		return false;
-
-	T * element = element_cast<T>(child);
-	if(!element)
-		return false;
-
-	vct.push_back(element);
-	return true;
 }
-
-template <typename T> bool tryToRemoveFromVector(ElementObject * child, std::vector<T*> & vct)
-{
-	if(!child)
-		return false;
-
-	T * element = element_cast<T>(child);
-	if(!element)
-		return false;
-
-	vct.erase(std::find(vct.begin(), vct.end(), element));
-	return true;
-}
-
-#endif // _ELEMENTHELPER_HPP

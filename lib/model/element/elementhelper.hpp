@@ -93,5 +93,6 @@ template <typename ElementClass> std::vector<ElementClass*> findChildren(Element
 
 std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name = std::string());
 ElementObject * findRelatedElement(ElementObject * elementObject);
+ElementObject * createElementObject(ElementType type, const std::string & name);
 
 #endif // ELEMENTHELPER_HPP

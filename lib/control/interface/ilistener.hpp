@@ -23,25 +23,24 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef UMLDIAGRAMHELPER_HPP
-#define UMLDIAGRAMHELPER_HPP
+#ifndef ILISTENER_HPP
+#define ILISTENER_HPP
 
-template <typename ElementClass> ElementClass * UMLDiagram::findElement(const std::string & name, ElementObject * relativeObject) const
+#include <string>
+#include "error.hpp"
+
+class Event;
+
+class IEventListener
 {
-	ElementObject * current = relativeObject;
+public:
+	virtual void onEvent(const Event & event) = 0;
+};
 
-	// search in the family tree
-	while(current)
-	{
-		std::vector<ElementClass*> children = findChildren<ElementClass>(current, name);
-		if(children.size() > 0)
-			return children[0];
+class IErrorListener
+{
+public:
+	virtual void onError(const Event & event, Error error) = 0;
+};
 
-		current = current->parent();
-	}
-
-	// find in this uml diagram
-	return element_cast<ElementClass>(findElement(name));
-}
-
-#endif // UMLDIAGRAMHELPER_HPP
+#endif // ILISTENER_HPP

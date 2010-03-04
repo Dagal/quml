@@ -23,39 +23,25 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "classobject.hpp"
-#include "propertyobject.hpp"
-#include "operationobject.hpp"
-#include "_classobject.hpp"
-#include "elementhelper.hpp"
+#ifndef EVENT_HPP
+#define EVENT_HPP
 
-ClassObject::ClassObject(const std::string & name)
-	: DatatypeObject(name), _dd(new ClassObjectPrivate)
-{
-}
+#include "macro.hpp"
 
-void ClassObject::onChildAdded(ElementObject * child)
+enum EventType
 {
-	_dd->_operations.addElement(element_cast<OperationObject>(child));
-	_dd->_properties.addElement(element_cast<PropertyObject>(child));
-}
+	Event_CommandInitialisation,
+	Event_ClassCreated,
+	Event_ClassToBeDeleted,
+	Event_GroupEventStarted,
+	Event_GroupEventStopped,
+};
 
-void ClassObject::onChildRemoved(ElementObject * child)
+struct Event
 {
-	_dd->_operations.removeElement(element_cast<OperationObject>(child));
-	_dd->_properties.removeElement(element_cast<PropertyObject>(child));
-}
+	Event(EventType type) : _type(type) {}
 
-const std::vector<OperationObject*> & ClassObject::operations() const
-{
-	return _dd->_operations.vector();
-}
-const std::vector<PropertyObject*> & ClassObject::properties() const
-{
-	return _dd->_properties.vector();
-}
+	SimpleVarGet(EventType, type);
+};
 
-std::string ClassObject::umlName() const
-{
-	return name();
-}
+#endif // EVENT_HPP

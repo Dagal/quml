@@ -23,39 +23,34 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "classobject.hpp"
-#include "propertyobject.hpp"
-#include "operationobject.hpp"
-#include "_classobject.hpp"
-#include "elementhelper.hpp"
+#ifndef IDIAGRAMCONTROLLER_HPP
+#define IDIAGRAMCONTROLLER_HPP
 
-ClassObject::ClassObject(const std::string & name)
-	: DatatypeObject(name), _dd(new ClassObjectPrivate)
-{
-}
+#include <string>
+#include <boost/shared_ptr.hpp>
+#include "ilistener.hpp"
 
-void ClassObject::onChildAdded(ElementObject * child)
+class DiagramController
 {
-	_dd->_operations.addElement(element_cast<OperationObject>(child));
-	_dd->_properties.addElement(element_cast<PropertyObject>(child));
-}
+	class DiagramControllerPrivate;
 
-void ClassObject::onChildRemoved(ElementObject * child)
-{
-	_dd->_operations.removeElement(element_cast<OperationObject>(child));
-	_dd->_properties.removeElement(element_cast<PropertyObject>(child));
-}
+public:
+	virtual ~DiagramController() = 0;
 
-const std::vector<OperationObject*> & ClassObject::operations() const
-{
-	return _dd->_operations.vector();
-}
-const std::vector<PropertyObject*> & ClassObject::properties() const
-{
-	return _dd->_properties.vector();
-}
+	void addEventListener(IEventListener * listener, int actionMask = 0xffff);
+	void removeEventListener(IEventListener * listener);
+	bool hasEventListener(IEventListener * listener) const;
 
-std::string ClassObject::umlName() const
-{
-	return name();
-}
+	void addErrorListener(IErrorListener * listener);
+	void removeErrorListener(IErrorListener * listener);
+	bool hasErrorListener(IErrorListener * listener);
+
+	void sendError(const Event & event, Error error) const;
+	void sendEvent(const Event & event) const;
+
+
+private:
+	boost::shared_ptr<DiagramControllerPrivate> _dd;
+};
+
+#endif // IDIAGRAMCONTROLLER_HPP

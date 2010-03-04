@@ -23,39 +23,49 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "classobject.hpp"
-#include "propertyobject.hpp"
-#include "operationobject.hpp"
-#include "_classobject.hpp"
-#include "elementhelper.hpp"
+#ifndef _IDIAGRAMCONTROLLER_HPP
+#define _IDIAGRAMCONTROLLER_HPP
 
-ClassObject::ClassObject(const std::string & name)
-	: DatatypeObject(name), _dd(new ClassObjectPrivate)
-{
-}
+#include "diagramcontroller.hpp"
+#include <vector>
 
-void ClassObject::onChildAdded(ElementObject * child)
+struct EventListenerData
 {
-	_dd->_operations.addElement(element_cast<OperationObject>(child));
-	_dd->_properties.addElement(element_cast<PropertyObject>(child));
-}
+	EventListenerData(IEventListener * listener, int mask = 0xffff)
+		: _listener(listener), _mask(mask)
+	{}
 
-void ClassObject::onChildRemoved(ElementObject * child)
-{
-	_dd->_operations.removeElement(element_cast<OperationObject>(child));
-	_dd->_properties.removeElement(element_cast<PropertyObject>(child));
-}
+	IEventListener * _listener;
+	int _mask;
 
-const std::vector<OperationObject*> & ClassObject::operations() const
-{
-	return _dd->_operations.vector();
-}
-const std::vector<PropertyObject*> & ClassObject::properties() const
-{
-	return _dd->_properties.vector();
-}
+	void sendEvent(const Event & event);
+};
 
-std::string ClassObject::umlName() const
+bool operator==(const EventListenerData & first, IEventListener * second);
+
+struct DiagramController::DiagramControllerPrivate
 {
-	return name();
-}
+
+	typedef std::vector<EventListenerData> eventListenerVct;
+	typedef std::vector<IErrorListener*> errorListenerVct;
+
+	DiagramControllerPrivate()
+	{
+	}
+
+	void sendError(const Error & error);
+	void sendEvent(const Event & event);
+
+	eventListenerVct::iterator findEventListener(IEventListener * listener);
+	errorListenerVct::iterator findErrorListener(IErrorListener * listener);
+
+
+	eventListenerVct _eventListeners;
+	errorListenerVct _errorListeners;
+	std::string _errorMessage;
+};
+
+
+
+
+#endif // _IDIAGRAMCONTROLLER_HPP
