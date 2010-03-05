@@ -23,53 +23,16 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef ELEMENTOBJECT_HPP
-#define ELEMENTOBJECT_HPP
+#ifndef COMMAND_HPP
+#define COMMAND_HPP
 
-#include "defines.hpp"
-#include <string>
-#include <vector>
-
-
-class ElementObject
+class ICommand
 {
-	friend class UMLDiagram;
-	class ElementObjectPrivate;
-
 public:
-	// enum hack (for template functions)
-	enum { elementtype = Element };
+	virtual ~ICommand() {};
 
-	// constructor & destructor
-	ElementObject(const std::string & name);
-	virtual ~ElementObject() = 0;
-
-	// simple getters
-	const std::string & name() const;
-	ElementObject * parent() const;
-	UMLDiagram * umlDiagram() const;
-	const std::vector<ElementObject *> & children() const;
-	std::vector<const ElementObject*> ancestors() const;
-
-	// virtual functions
-	virtual std::string qualifiedName() const;
-	virtual std::string umlName() const;
-	virtual ElementType type() const  = 0;
-
-	// setters
-	void setName(const std::string & name);
-	void setParent(ElementObject * parent);
-	void setUMLDiagram(UMLDiagram * diagram);
-
-private:
-	virtual void onChildAdded(ElementObject * child);
-	virtual void onChildRemoved(ElementObject * child);
-
-protected:
-	void relatedElementChanged(ElementObject * oldRelatedElement);
-
-private:
-	boost::shared_ptr<ElementObjectPrivate> _dd;
+	virtual void redo() = 0;
+	virtual void undo() = 0;
 };
 
-#endif // ELEMENTOBJECT_HPP
+#endif // COMMAND_HPP

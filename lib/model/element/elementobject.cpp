@@ -268,3 +268,17 @@ void ElementObject::relatedElementChanged(ElementObject * oldRelatedElement)
 		umlDiagram()->_dd->_elementRelator.updateElementObject(this, oldRelatedElement);
 }
 
+std::vector<const ElementObject*> ElementObject::ancestors() const
+{
+	std::vector<const ElementObject*> ancestors;
+
+	const ElementObject * curElement = this;
+
+	while(curElement != 0)
+	{
+		ancestors.push_back(curElement);
+		curElement = curElement->parent();
+	}
+
+	return ancestors;
+}

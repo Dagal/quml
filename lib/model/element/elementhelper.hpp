@@ -32,11 +32,16 @@
 #include <boost/function.hpp>
 #include <iostream>
 
+template <typename ElementClass> bool element_castable(const ElementObject * element)
+{
+	if(!element) return false;
+
+	return ((element->type() & ElementClass::elementtype) == ElementClass::elementtype);
+}
+
 template <typename ElementClass> ElementClass * element_cast(ElementObject * element)
 {
-	if(!element) return 0;
-
-	if((element->type() & ElementClass::elementtype) != ElementClass::elementtype)
+	if(!element_castable<ElementClass>(element))
 		return 0;
 
 	return static_cast<ElementClass*>(element);
@@ -44,12 +49,10 @@ template <typename ElementClass> ElementClass * element_cast(ElementObject * ele
 
 template <typename ElementClass> const ElementClass * element_cast(const ElementObject * element)
 {
-	if(!element) return 0;
-
-	if((element->type() & ElementClass::elementtype) != ElementClass::elementtype)
+	if(!element_castable<ElementClass>(element))
 		return 0;
 
-	return static_cast<ElementClass*>(element);
+	return static_cast<const ElementClass*>(element);
 }
 
 template <typename T> bool checkForValidNamedElement(T * element, const std::string & name)

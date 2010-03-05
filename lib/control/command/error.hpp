@@ -32,13 +32,16 @@ enum Error
 	Error_ElementUndefined,
 	Error_ElementNameAlreadyUsed,
 	Error_ElementNameEmpty,
+	Error_ElementParentRecursion,
+	Error_ElementParentBadContainer,
+
 	Error_UMLDiagramWrong,
 
 	Error_CommandNotInitialised,
 	Error_UndefinedUMLDiagram,
 	Error_ClassNameEmpty,
 	Error_ClassNameAlreadyUsed,
-	Error_ClassParentBadContainer,
+
 	Error_ClassUndefined,
 };
 

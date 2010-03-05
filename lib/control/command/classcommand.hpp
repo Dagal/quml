@@ -23,53 +23,47 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef ELEMENTOBJECT_HPP
-#define ELEMENTOBJECT_HPP
+#ifndef CLASSCOMMAND_HPP
+#define CLASSCOMMAND_HPP
 
-#include "defines.hpp"
+#include "icommand.hpp"
+#include "macro.hpp"
 #include <string>
-#include <vector>
 
+class ClassObject;
+class ClassDiagramController;
 
-class ElementObject
+class CreateClassCommand : public ICommand
 {
-	friend class UMLDiagram;
-	class ElementObjectPrivate;
-
 public:
-	// enum hack (for template functions)
-	enum { elementtype = Element };
+	CreateClassCommand(ClassDiagramController * controller, const std::string & className, const std::string & parentQualifiedName);
 
-	// constructor & destructor
-	ElementObject(const std::string & name);
-	virtual ~ElementObject() = 0;
-
-	// simple getters
-	const std::string & name() const;
-	ElementObject * parent() const;
-	UMLDiagram * umlDiagram() const;
-	const std::vector<ElementObject *> & children() const;
-	std::vector<const ElementObject*> ancestors() const;
-
-	// virtual functions
-	virtual std::string qualifiedName() const;
-	virtual std::string umlName() const;
-	virtual ElementType type() const  = 0;
-
-	// setters
-	void setName(const std::string & name);
-	void setParent(ElementObject * parent);
-	void setUMLDiagram(UMLDiagram * diagram);
+	virtual void redo();
+	virtual void undo();
 
 private:
-	virtual void onChildAdded(ElementObject * child);
-	virtual void onChildRemoved(ElementObject * child);
+	ClassDiagramController * _controller;
 
-protected:
-	void relatedElementChanged(ElementObject * oldRelatedElement);
-
-private:
-	boost::shared_ptr<ElementObjectPrivate> _dd;
+	RefVarGet(std::string, className);
+	RefVarGet(std::string, parentQualifiedName);
+	PtrVarGet(ClassObject, classObject);
 };
 
-#endif // ELEMENTOBJECT_HPP
+class MoveClassCommand : public ICommand
+{
+public:
+	MoveClassCommand(ClassDiagramController * controller, const std::string & oldclassQualifiedName, const std::string & newparentQualifiedName);
+
+	virtual void redo();
+	virtual void undo();
+
+private:
+	ClassDiagramController * _controller;
+
+	RefVarGet(std::string, oldclassQualifiedName);
+	RefVarGet(std::string, newclassQualifiedName);
+	RefVarGet(std::string, newparentQualifiedName);
+	RefVarGet(std::string, oldparentQualifiedName);
+};
+
+#endif // CLASSCOMMAND_HPP

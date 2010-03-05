@@ -27,6 +27,8 @@
 #define CLASSDIAGRAMCONTROLLER_HPP
 
 #include "diagramcontroller.hpp"
+#include "elementhelper.hpp"
+#include <vector>
 
 class UMLDiagram;
 class ElementObject;
@@ -43,17 +45,33 @@ public:
 
 	// element methods
 	Error deleteElement(const std::string & qualifiedElementName);
+	Error detachElement(const std::string & qualifiedElementName, ElementObject ** elementObject = 0);
 	Error renameElement(const std::string & qualifiedElementName, const std::string & newName);
 
 	// class methods
-	Error createClass(const std::string & className, const std::string & qualifiedParentName);
+	Error createClass(const std::string & className, const std::string & qualifiedParentName, ClassObject ** elementObject = 0);
 	Error moveClass(const std::string & classQualifiedName, const std::string & newParentQualifiedName);
 
-	// pointer methods
+	// package methods
+	Error createPackage(const std::string & packageName, const std::string & newParentQualifiedName, PackageObject ** elementObject = 0);
+	Error movePackage(const std::string & packageQualifiedName, const std::string & newParentQualifiedName);
+
+	// find/get methods
 	ElementObject * getElement(const std::string & qualifiedName) const;
+	template <typename T> T * getElement(const std::string & qualifiedName) const;
+	std::vector<ElementObject *> getElements(const std::string & name, const std::string & parentQualifiedName) const;
+	std::vector<ElementObject *> getElements(const std::string & name, ElementObject * parentObject) const;
+
+protected:
+	bool checkNameAgainstSiblings(ElementObject * element, const std::string & newName, ElementObject * parentObject) const;
 
 private:
 	boost::shared_ptr<ClassDiagramControllerPrivate> _dd;
 };
+
+template <typename T> T * ClassDiagramController::getElement(const std::string & qualifiedName) const
+{
+	return element_cast<T>(getElement(qualifiedName));
+}
 
 #endif // CLASSDIAGRAMCONTROLLER_HPP

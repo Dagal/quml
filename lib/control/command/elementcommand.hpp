@@ -23,53 +23,46 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef ELEMENTOBJECT_HPP
-#define ELEMENTOBJECT_HPP
+#ifndef ELEMENTCOMMAND_HPP
+#define ELEMENTCOMMAND_HPP
 
-#include "defines.hpp"
+#include "icommand.hpp"
 #include <string>
-#include <vector>
 
+class ClassDiagramController;
+class ElementObject;
 
-class ElementObject
+class DeleteElementCommand : public ICommand
 {
-	friend class UMLDiagram;
-	class ElementObjectPrivate;
-
 public:
-	// enum hack (for template functions)
-	enum { elementtype = Element };
+	DeleteElementCommand(ClassDiagramController * controller, const std::string & elementQualifiedName);
+	~DeleteElementCommand();
 
-	// constructor & destructor
-	ElementObject(const std::string & name);
-	virtual ~ElementObject() = 0;
-
-	// simple getters
-	const std::string & name() const;
-	ElementObject * parent() const;
-	UMLDiagram * umlDiagram() const;
-	const std::vector<ElementObject *> & children() const;
-	std::vector<const ElementObject*> ancestors() const;
-
-	// virtual functions
-	virtual std::string qualifiedName() const;
-	virtual std::string umlName() const;
-	virtual ElementType type() const  = 0;
-
-	// setters
-	void setName(const std::string & name);
-	void setParent(ElementObject * parent);
-	void setUMLDiagram(UMLDiagram * diagram);
+	virtual void redo();
+	virtual void undo();
 
 private:
-	virtual void onChildAdded(ElementObject * child);
-	virtual void onChildRemoved(ElementObject * child);
-
-protected:
-	void relatedElementChanged(ElementObject * oldRelatedElement);
-
-private:
-	boost::shared_ptr<ElementObjectPrivate> _dd;
+	ClassDiagramController * _controller;
+	std::string _elementQualifiedName;
+	std::string _parentQualifiedName;
+	ElementObject * _element;
 };
 
-#endif // ELEMENTOBJECT_HPP
+
+class RenameElementCommand : public ICommand
+{
+public:
+	RenameElementCommand(ClassDiagramController * controller, const std::string & elementQualifiedName, const std::string & newName);
+
+	virtual void redo();
+	virtual void undo();
+
+private:
+	ClassDiagramController * _controller;
+	std::string _oldElementQualifiedName;
+	std::string _newElementQualifiedName;
+	std::string _oldName;
+	std::string _newName;
+};
+
+#endif // ELEMENTCOMMAND_HPP
