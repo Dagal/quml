@@ -93,10 +93,3 @@ void RenameElementCommand::undo()
 
 	_controller->renameElement(_newElementQualifiedName, _oldName);
 }
-
-private:
-ClassDiagramController * _controller;
-std::string _oldElementQualifiedName;
-std::string _newElementQualifiedName;
-std::string _oldName;
-std::string _newName;
