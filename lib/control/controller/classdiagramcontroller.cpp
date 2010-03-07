@@ -63,7 +63,6 @@ UMLDiagram * ClassDiagramController::diagram() const
 Error ClassDiagramController::detachElement(const std::string & qualifiedElementName, ElementObject ** elementObject)
 {
 	ElementObject * element = getElement(qualifiedElementName);
-
 	if(elementObject != 0) *elementObject = element;
 
 	if(!element) return Error_ElementUndefined;
@@ -72,17 +71,6 @@ Error ClassDiagramController::detachElement(const std::string & qualifiedElement
 	element->setParent(0);
 
 	return Error_NoError;
-}
-
-Error ClassDiagramController::deleteElement(const std::string & qualifiedElementName)
-{
-	ElementObject * element;
-	Error error = detachElement(qualifiedElementName, &element);
-
-	if(error == Error_NoError)
-		delete element;
-
-	return error;
 }
 
 Error ClassDiagramController::renameElement(const std::string & qualifiedElementName, const std::string & newName)
@@ -118,13 +106,13 @@ Error ClassDiagramController::createClass(const std::string & className, const s
 		return Error_ElementParentBadContainer;
 
 	// perform the operation
-	ClassObject * classObject = new ClassObject(className);
-	classObject->setParent(parentElement);
-	classObject->setUMLDiagram(diagram());
+	ClassObject * element = new ClassObject(className);
+	element->setParent(parentElement);
+	element->setUMLDiagram(diagram());
 
 	// should we hand over the pointer?
 	if(elementObject != 0)
-		(*elementObject) = classObject;
+		(*elementObject) = element;
 
 	return Error_NoError;
 }

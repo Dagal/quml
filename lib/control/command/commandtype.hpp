@@ -23,16 +23,15 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include <QApplication>
-#include "mainwindow.hpp"
+#ifndef COMMANDTYPE_HPP
+#define COMMANDTYPE_HPP
 
-int main(int argc, char ** argv)
+enum CommandType
 {
-	QApplication a(argc, argv);
+	Command_CreateElement,
+	Command_MoveElement,
+	Command_RenameElement,
+	Command_DetachElement,
+};
 
-	MainWindow w;
-	w.show();
-
-	return a.exec();
-}
-
+#endif // COMMANDTYPE_HPP

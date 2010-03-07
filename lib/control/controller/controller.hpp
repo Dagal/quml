@@ -23,34 +23,26 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef IDIAGRAMCONTROLLER_HPP
-#define IDIAGRAMCONTROLLER_HPP
+#ifndef CONTROLLER_HPP
+#define CONTROLLER_HPP
 
-#include <string>
-#include <boost/shared_ptr.hpp>
-#include "ilistener.hpp"
+#include "singleton.hpp"
+#include "notifier.hpp"
+#include "macro.hpp"
 
-class DiagramController
+class Event;
+
+class Controller : public Singleton<Controller>
 {
-	class DiagramControllerPrivate;
+	friend class Singleton<Controller>;
 
-public:
-	virtual ~DiagramController() = 0;
-
-	void addEventListener(IEventListener * listener, int actionMask = 0xffff);
-	void removeEventListener(IEventListener * listener);
-	bool hasEventListener(IEventListener * listener) const;
-
-	void addErrorListener(IErrorListener * listener);
-	void removeErrorListener(IErrorListener * listener);
-	bool hasErrorListener(IErrorListener * listener);
-
-	void sendError(const Event & event, Error error) const;
-	void sendEvent(const Event & event) const;
-
+	class ControllerPrivate;
 
 private:
-	boost::shared_ptr<DiagramControllerPrivate> _dd;
+    Controller();
+	~Controller();
+
+	RefVarGetAcc(Notifier<Event>, eventNotifier);
 };
 
-#endif // IDIAGRAMCONTROLLER_HPP
+#endif // CONTROLLER_HPP

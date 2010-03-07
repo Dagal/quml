@@ -26,13 +26,22 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
+#include "commandtype.hpp"
+#include "error.hpp"
+
 class ICommand
 {
 public:
-	virtual ~ICommand() {};
+	ICommand(CommandType type) : _type(type) {}
+	virtual ~ICommand() {}
 
-	virtual void redo() = 0;
-	virtual void undo() = 0;
+	virtual Error redo() = 0;
+	virtual Error undo() = 0;
+
+	CommandType type() const { return _type; }
+
+private:
+	CommandType _type;
 };
 
 #endif // COMMAND_HPP

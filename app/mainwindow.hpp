@@ -23,16 +23,32 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include <QApplication>
-#include "mainwindow.hpp"
+#ifndef MAINWINDOW_HPP
+#define MAINWINDOW_HPP
 
-int main(int argc, char ** argv)
+#include <QMainWindow>
+
+namespace Ui
 {
-	QApplication a(argc, argv);
-
-	MainWindow w;
-	w.show();
-
-	return a.exec();
+    class MainWindow;
 }
 
+class ClassObject;
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    MainWindow(QWidget *parent = 0);
+    ~MainWindow();
+
+protected:
+    void changeEvent(QEvent *e);
+
+private:
+    Ui::MainWindow *ui;
+	ClassObject * classObject;
+};
+
+#endif // MAINWINDOW_HPP

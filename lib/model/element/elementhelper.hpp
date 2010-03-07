@@ -38,7 +38,6 @@ template <typename ElementClass> bool element_castable(const ElementObject * ele
 
 	return ((element->type() & ElementClass::elementtype) == ElementClass::elementtype);
 }
-
 template <typename ElementClass> ElementClass * element_cast(ElementObject * element)
 {
 	if(!element_castable<ElementClass>(element))
@@ -46,7 +45,6 @@ template <typename ElementClass> ElementClass * element_cast(ElementObject * ele
 
 	return static_cast<ElementClass*>(element);
 }
-
 template <typename ElementClass> const ElementClass * element_cast(const ElementObject * element)
 {
 	if(!element_castable<ElementClass>(element))
@@ -54,17 +52,14 @@ template <typename ElementClass> const ElementClass * element_cast(const Element
 
 	return static_cast<const ElementClass*>(element);
 }
-
 template <typename T> bool checkForValidNamedElement(T * element, const std::string & name)
 {
 	return (element && element->name() == name);
 }
-
 template <typename T> bool checkForValidElement(T * element)
 {
 	return (element);
 }
-
 template <typename ElementClass> std::vector<ElementClass*> findChildren(ElementObject * element, const std::string & name = std::string())
 {
 	typedef std::vector<ElementClass*> elementvct;

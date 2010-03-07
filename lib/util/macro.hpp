@@ -86,10 +86,132 @@ public:																			\
 private:																		\
 	type * _##name
 
+#define PtrVarGetAcc(type, name)								\
+public:																			\
+			type * name() const { return _##name; }					\
+			type* & name() { return _##name; }					\
+private:																		\
+	type * _##name
+
+
+#define PtrVarGetAccSet(type, name, capitalisedName)								\
+public:																			\
+			type * name() const { return _##name; }					\
+			type* & name() { return _##name; }					\
+			void set##capitalisedName(type * name) { _##name = name; }			\
+private:																		\
+	type * _##name
+
 #define PtrVarGet(type, name)								\
 public:																			\
 			type * name() const { return _##name; }					\
 private:																		\
 	type * _##name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#define SimpleVarGetProtectedSet(type, name, capitalisedName)							\
+public:																			\
+			type name() const { return _##name; }					\
+protected:\
+			void set##capitalisedName(type name) { _##name = name; }			\
+private:																		\
+	type _##name
+
+#define SimpleVarGetProtectedAcc(type, name)							\
+public:																			\
+			type name() const { return _##name; }					\
+		protected: \
+			type & name() { return _##name; }                             \
+private:																		\
+	type _##name
+
+
+#define RefVarGetProtectedSet(type, name, capitalisedName)								\
+public:																			\
+			const type & name() const { return _##name; }			\\
+		protected: \
+			void set##capitalisedName(const type & name) { _##name = name; }	\
+private:																		\
+	type _##name
+
+#define RefVarGetProtectedAcc(type, name)								\
+public:																			\
+			const type & name() const { return _##name; }						\
+		protected: \
+			type & name() { return _##name; }									\
+private:																		\
+	type _##name
+
+
+#define RefVarGetProtectedAccSet(type, name, capitalisedName)								\
+public:																			\
+			const type & name() const { return _##name; }						\
+		protected: \
+			type & name() { return _##name; }									\
+			void set##capitalisedName(const type & name) { _##name = name; }	\
+private:																		\
+	type _##name
+
+
+
+#define PtrVarGetProtectedSet(type, name, capitalisedName)								\
+public:																			\
+			type * name() const { return _##name; }					\
+		protected: \
+			void set##capitalisedName(type * name) { _##name = name; }			\
+private:																		\
+	type * _##name
+
+#define PtrVarGetProtectedAcc(type, name)								\
+public:																			\
+			type * name() const { return _##name; }					\
+		protected: \
+			type* & name() { return _##name; }					\
+private:																		\
+	type * _##name
+
+
+#define PtrVarGetProtectedAccSet(type, name, capitalisedName)								\
+public:																			\
+			type * name() const { return _##name; }					\
+		protected: \
+			type* & name() { return _##name; }					\
+			void set##capitalisedName(type * name) { _##name = name; }			\
+private:																		\
+	type * _##name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif // UTIL_HPP

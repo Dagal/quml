@@ -27,21 +27,28 @@
 #define EVENT_HPP
 
 #include "macro.hpp"
+#include "error.hpp"
 
-enum EventType
-{
-	Event_CommandInitialisation,
-	Event_ClassCreated,
-	Event_ClassToBeDeleted,
-	Event_GroupEventStarted,
-	Event_GroupEventStopped,
-};
+class Command;
 
 struct Event
 {
-	Event(EventType type) : _type(type) {}
 
-	SimpleVarGet(EventType, type);
 };
+
+struct CommandEvent : public Event
+{
+	CommandEvent(const Command * command, Error error, bool redo)
+		: _command(command),
+		_error(error),
+		_redo(redo)
+	{}
+
+
+	PtrVarGet(const Command, command);
+	SimpleVarGet(Error, error);
+	SimpleVarGet(bool, redo);
+};
+
 
 #endif // EVENT_HPP

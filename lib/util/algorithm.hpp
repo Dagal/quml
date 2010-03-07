@@ -30,6 +30,14 @@
 
 namespace stf
 {
+	template <typename T> struct generator
+	{
+		T operator()() const
+		{
+			return T();
+		}
+	};
+
 	template <typename T> struct comparator
 	{
 		typedef int result_type;

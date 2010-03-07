@@ -23,16 +23,51 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include <QApplication>
-#include "mainwindow.hpp"
+#ifndef GRAPHICSITEMCLASS_HPP
+#define GRAPHICSITEMCLASS_HPP
 
-int main(int argc, char ** argv)
+#include <QGraphicsItem>
+#include <QFont>
+
+class ClassObject;
+
+class GraphicsItemClass : public QGraphicsItem
 {
-	QApplication a(argc, argv);
+public:
+	GraphicsItemClass(ClassObject * classObject);
 
-	MainWindow w;
-	w.show();
+public:
+	virtual QRectF boundingRect() const;
+	virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 
-	return a.exec();
+	static const QFont & DefaultFont();
+	static void SetDefaultFont(const QFont & font);
+
+protected:
+	void calculateBoundingRect();
+
+private:
+	QRectF _boundingRect;
+	ClassObject * _classObject;
+
+	static QFont _DefaultFont;
+	static const qreal LINE_SKIP;
+	static const qreal BORDER_SKIP;
+};
+
+
+
+
+
+
+inline const QFont & GraphicsItemClass::DefaultFont()
+{
+	return _DefaultFont;
 }
 
+inline void GraphicsItemClass::SetDefaultFont(const QFont & font)
+{
+	_DefaultFont = font;
+}
+
+#endif // GRAPHICSITEMCLASS_HPP

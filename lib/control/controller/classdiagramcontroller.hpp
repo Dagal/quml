@@ -26,14 +26,14 @@
 #ifndef CLASSDIAGRAMCONTROLLER_HPP
 #define CLASSDIAGRAMCONTROLLER_HPP
 
-#include "diagramcontroller.hpp"
 #include "elementhelper.hpp"
+#include "error.hpp"
 #include <vector>
 
 class UMLDiagram;
 class ElementObject;
 
-class ClassDiagramController : public DiagramController
+class ClassDiagramController
 {
 	class ClassDiagramControllerPrivate;
 
@@ -44,7 +44,6 @@ public:
 	UMLDiagram * diagram() const;
 
 	// element methods
-	Error deleteElement(const std::string & qualifiedElementName);
 	Error detachElement(const std::string & qualifiedElementName, ElementObject ** elementObject = 0);
 	Error renameElement(const std::string & qualifiedElementName, const std::string & newName);
 

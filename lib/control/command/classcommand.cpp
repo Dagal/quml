@@ -28,46 +28,60 @@
 #include "classobject.hpp"
 
 CreateClassCommand::CreateClassCommand(ClassDiagramController * controller, const std::string & className, const std::string & parentQualifiedName)
-	: _controller(controller),
-	_className(className),
-	_parentQualifiedName(parentQualifiedName),
-	_classObject(0)
+	: CreateElementCommand(className, parentQualifiedName),
+	_controller(controller)
 {
 }
 
-void CreateClassCommand::redo()
+Error CreateClassCommand::redo()
 {
-	_classObject = 0;
-	_controller->createClass(className(), parentQualifiedName(), &_classObject);
+	elementObject() = 0;
+	ClassObject * classObject = 0;
+
+	Error error = _controller->createClass(elementName(), parentQualifiedName(), &classObject);
+	elementObject() = classObject;
+
+	return error;
 }
 
-void CreateClassCommand::undo()
+Error CreateClassCommand::undo()
 {
-	delete _classObject;
-	_classObject = 0;
+	delete elementObject();
+	elementObject() = 0;
+
+	return Error_NoError;
 }
 
+ClassObject * CreateClassCommand::classObject() const
+{
+	return element_cast<ClassObject>(elementObject());
+}
 
-MoveClassCommand::MoveClassCommand(ClassDiagramController * controller, const std::string & oldclassQualifiedName, const std::string & newparentQualifiedName)
-	: _controller(controller),
-	_oldclassQualifiedName(oldclassQualifiedName),
-	_newparentQualifiedName(newparentQualifiedName)
+MoveClassCommand::MoveClassCommand(ClassDiagramController * controller, const std::string & classQualifiedName, const std::string & parentNewQualifiedName)
+	: MoveElementCommand(classQualifiedName, parentNewQualifiedName),
+	_controller(controller)
 {
 }
 
-void MoveClassCommand::redo()
+Error MoveClassCommand::redo()
 {
-	ClassObject * classObject = _controller->getElement<ClassObject>(oldclassQualifiedName());
+	ClassObject * classObject = _controller->getElement<ClassObject>(elementOldQualifiedName());
 
-	if(classObject) _oldparentQualifiedName = classObject->parent()->qualifiedName();
+	if(classObject == 0)
+		return Error_ElementUndefined;
 
-	_controller->moveClass(oldclassQualifiedName(), newparentQualifiedName());
+	if(classObject->parent())
+		parentOldQualifiedName() = classObject->parent()->qualifiedName();
 
-	if(classObject) _newclassQualifiedName = classObject->qualifiedName();
+	Error error = _controller->moveClass(elementOldQualifiedName(), parentNewQualifiedName());
+
+	elementNewQualifiedName() = classObject->qualifiedName();
+
+	return error;
 }
 
-void MoveClassCommand::undo()
+Error MoveClassCommand::undo()
 {
-	if(!_oldparentQualifiedName.empty())
-		_controller->moveClass(_newclassQualifiedName, _oldparentQualifiedName);
+	return _controller->moveClass(elementNewQualifiedName(), parentOldQualifiedName());
 }
+

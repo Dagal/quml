@@ -23,16 +23,12 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include <QApplication>
-#include "mainwindow.hpp"
+#ifndef LISTENER_HPP
+#define LISTENER_HPP
 
-int main(int argc, char ** argv)
+template <typename T> class Listener
 {
-	QApplication a(argc, argv);
+	virtual void messageReceived(const T & message) = 0;
+};
 
-	MainWindow w;
-	w.show();
-
-	return a.exec();
-}
-
+#endif // LISTENER_HPP

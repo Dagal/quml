@@ -23,49 +23,13 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef _IDIAGRAMCONTROLLER_HPP
-#define _IDIAGRAMCONTROLLER_HPP
+#include "controller.hpp"
 
-#include "diagramcontroller.hpp"
-#include <vector>
-
-struct EventListenerData
+Controller::Controller()
 {
-	EventListenerData(IEventListener * listener, int mask = 0xffff)
-		: _listener(listener), _mask(mask)
-	{}
+}
 
-	IEventListener * _listener;
-	int _mask;
-
-	void sendEvent(const Event & event);
-};
-
-bool operator==(const EventListenerData & first, IEventListener * second);
-
-struct DiagramController::DiagramControllerPrivate
+Controller::~Controller()
 {
 
-	typedef std::vector<EventListenerData> eventListenerVct;
-	typedef std::vector<IErrorListener*> errorListenerVct;
-
-	DiagramControllerPrivate()
-	{
-	}
-
-	void sendError(const Error & error);
-	void sendEvent(const Event & event);
-
-	eventListenerVct::iterator findEventListener(IEventListener * listener);
-	errorListenerVct::iterator findErrorListener(IErrorListener * listener);
-
-
-	eventListenerVct _eventListeners;
-	errorListenerVct _errorListeners;
-	std::string _errorMessage;
-};
-
-
-
-
-#endif // _IDIAGRAMCONTROLLER_HPP
+}

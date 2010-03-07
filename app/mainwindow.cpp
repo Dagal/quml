@@ -23,16 +23,40 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include <QApplication>
 #include "mainwindow.hpp"
+#include "ui_mainwindow.h"
+#include "classobject.hpp"
+#include "graphicsview/graphicsitemclass.hpp"
 
-int main(int argc, char ** argv)
+MainWindow::MainWindow(QWidget *parent)
+	: QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
-	QApplication a(argc, argv);
+    ui->setupUi(this);
 
-	MainWindow w;
-	w.show();
+	classObject = new ClassObject("testnaam");
 
-	return a.exec();
+	QGraphicsScene * scene = new QGraphicsScene(this);
+	scene->addItem(new GraphicsItemClass(classObject));
+
+	ui->mainView->setScene(scene);
 }
 
+MainWindow::~MainWindow()
+{
+	delete classObject;
+    delete ui;
+}
+
+void MainWindow::changeEvent(QEvent *e)
+{
+    QMainWindow::changeEvent(e);
+	switch (e->type())
+	{
+    case QEvent::LanguageChange:
+        ui->retranslateUi(this);
+        break;
+    default:
+        break;
+    }
+}
