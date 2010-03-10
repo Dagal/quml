@@ -31,7 +31,7 @@
 #include <QKeyEvent>
 
 GraphicsItemConnection::GraphicsItemConnection(QGraphicsItem * parent)
-	: QGraphicsPolygonItem(parent),
+	: QGraphicsPathItem(parent),
 	_shiftDown(false)
 {
 }
@@ -39,12 +39,15 @@ GraphicsItemConnection::GraphicsItemConnection(QGraphicsItem * parent)
 
 void GraphicsItemConnection::updateConnection()
 {
-	QPolygonF poly;
+	if(_points.size() == 0)
+		setPath(QPainterPath());
 
-	foreach(GraphicsItemConnectionPoint * point, _points)
-		poly << point->pos();
+	QPainterPath p(_points[0]->pos());
 
-	setPolygon(poly);
+	for(int i = 0; i < _points.size(); i++)
+		p.lineTo(_points[i]->pos());
+
+	setPath(p);
 }
 
 void GraphicsItemConnection::attachPoint(GraphicsItemConnectionPoint * point, int position)
@@ -174,10 +177,3 @@ bool GraphicsItemConnection::filterMouseMovement(GraphicsItemConnectionPoint * p
 	return true;
 }
 
-void GraphicsItemConnection::paint(QPainter * painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
-{
-
-	painter->setBrush(brush());
-	painter->setPen(pen());
-	painter->drawPolyline(polygon());
-}

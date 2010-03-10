@@ -45,22 +45,18 @@ MainWindow::MainWindow(QWidget *parent)
 	GraphicsItemConnectionPoint * p2 = new GraphicsItemConnectionPoint(c);
 	GraphicsItemConnectionPoint * p3 = new GraphicsItemConnectionPoint(c);
 	GraphicsItemConnectionPoint * p4 = new GraphicsItemConnectionPoint(c);
+	GraphicsItemConnectionPoint * p5 = new GraphicsItemConnectionPoint(c);
 
 	p1->setPos(10,10);
 	p2->setPos(50,20);
 	p3->setPos(40,40);
 	p4->setPos(70,70);
+	p5->setPos(70,170);
 
-	QGraphicsPathItem path;
-	QGraphicsPolygonItem poly;
-
-	QGraphicsItem::GraphicsItemFlags flags =  path.flags() ^ poly.flags();
-
-	for(int i = 1; i <= 0x400; i  = i << 1)
-	{
-		qDebug() << path.flags().testFlag((QGraphicsItem::GraphicsItemFlag)i) << poly.flags().testFlag((QGraphicsItem::GraphicsItemFlag)i);
-	}
-
+	QGraphicsPathItem * path = new QGraphicsPathItem(0, scene);
+	QPainterPath p(QPointF(10,10));
+	p.lineTo(30,30);
+	path->setPath(p);
 
 	scene->addItem(c);
 

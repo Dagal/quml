@@ -30,7 +30,7 @@
 
 class GraphicsItemConnectionPoint;
 
-class GraphicsItemConnection : public QGraphicsPolygonItem
+class GraphicsItemConnection : public QGraphicsPathItem
 {
 public:
 	GraphicsItemConnection(QGraphicsItem * parent = 0);
@@ -43,8 +43,6 @@ public:
 
 	void updateConnection();
 
-	virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
-
 protected:
 	virtual QVariant itemChange(GraphicsItemChange change, const QVariant & value);
 	virtual bool sceneEventFilter(QGraphicsItem * watched, QEvent * event);
@@ -56,7 +54,6 @@ private:
 
 private:
 	QList<GraphicsItemConnectionPoint *> _points;
-	QRectF _boundingRect;
 	bool _shiftDown;
 };
 
