@@ -28,36 +28,42 @@
 
 #include "icommand.hpp"
 #include "macro.hpp"
-#include "elementcommand.hpp"
 #include <string>
 
 class ClassObject;
 class ClassDiagramController;
 
-class CreateClassCommand : public CreateElementCommand
+class CreateClassCommand : public ICommand
 {
 public:
 	CreateClassCommand(ClassDiagramController * controller, const std::string & className, const std::string & parentQualifiedName);
 
-	virtual Error redo();
-	virtual Error undo();
-
-	ClassObject * classObject() const;
+	virtual bool redo();
+	virtual bool undo();
 
 private:
 	ClassDiagramController * _controller;
+
+	RefVarGet(std::string, className);
+	RefVarGet(std::string, parentQualifiedName);
+	PtrVarGet(ClassObject, classObject);
 };
 
-class MoveClassCommand : public MoveElementCommand
+class MoveClassCommand : public ICommand
 {
 public:
 	MoveClassCommand(ClassDiagramController * controller, const std::string & oldclassQualifiedName, const std::string & newparentQualifiedName);
 
-	virtual Error redo();
-	virtual Error undo();
+	virtual bool redo();
+	virtual bool undo();
 
 private:
 	ClassDiagramController * _controller;
+
+	RefVarGet(std::string, oldclassQualifiedName);
+	RefVarGet(std::string, newclassQualifiedName);
+	RefVarGet(std::string, newparentQualifiedName);
+	RefVarGet(std::string, oldparentQualifiedName);
 };
 
 #endif // CLASSCOMMAND_HPP

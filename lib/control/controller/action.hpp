@@ -23,12 +23,81 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef LISTENER_HPP
-#define LISTENER_HPP
+#ifndef ACTION_HPP
+#define ACTION_HPP
 
-template <typename T> class Listener
+#include "macro.hpp"
+#include "error.hpp"
+#include <string>
+
+enum ActionType
 {
-	virtual void messageReceived(const T & message) = 0;
+	Action_CreateElement,
+	Action_DetachElement,
+	Action_MoveElement,
+	Action_RenameElement,
 };
 
-#endif // LISTENER_HPP
+class ElementObject;
+
+class Action
+{
+public:
+	Action(ActionType type)
+		: _type(type),
+		_elementObject(0),
+		_error(Error_NoError)
+	{
+	}
+
+	SimpleVarGet(ActionType, type);
+	PtrVarGetAccSet(ElementObject, elementObject, ElementObject);
+	SimpleVarGetSet(Error, error, Error);
+
+};
+
+class MoveAction : public Action
+{
+public:
+	MoveAction()
+		: Action(Action_MoveElement),
+		_oldParent(0)
+	{
+	}
+
+	PtrVarGetAccSet(ElementObject, oldParent, OldParent);
+};
+
+class RenameAction : public Action
+{
+public:
+	RenameAction()
+		: Action(Action_RenameElement),
+		_oldName("")
+	{
+	}
+
+	RefVarGetAccSet(std::string, oldName, OldName);
+};
+
+class CreateAction : public Action
+{
+public:
+	CreateAction()
+		: Action(Action_CreateElement) {}
+};
+
+class DetachAction : public Action
+{
+public:
+	DetachAction()
+		: Action(Action_DetachElement),
+		_oldParent(0)
+	{
+	}
+
+	PtrVarGetAccSet(ElementObject, oldParent, OldParent);
+};
+
+
+#endif // ACTION_HPP

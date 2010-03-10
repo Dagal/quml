@@ -48,7 +48,6 @@ protected:
 
 private:
     Ui::MainWindow *ui;
-	ClassObject * classObject;
 };
 
 #endif // MAINWINDOW_HPP

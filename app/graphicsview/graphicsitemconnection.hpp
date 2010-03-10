@@ -23,29 +23,42 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef CONTROLLER_HPP
-#define CONTROLLER_HPP
+#ifndef GRAPHICSITEMCONNECTION_HPP
+#define GRAPHICSITEMCONNECTION_HPP
 
-#include "singleton.hpp"
-#include "notifier.hpp"
-#include "macro.hpp"
+#include <QGraphicsItem>
 
-class Event;
+class GraphicsItemConnectionPoint;
 
-class Controller : public Singleton<Controller>
+class GraphicsItemConnection : public QGraphicsPolygonItem
 {
-	friend class Singleton<Controller>;
+public:
+	GraphicsItemConnection(QGraphicsItem * parent = 0);
 
-	class ControllerPrivate;
+	void attachPoint(GraphicsItemConnectionPoint * point, int position);
+	void detachPoint(GraphicsItemConnectionPoint * point);
+
+	GraphicsItemConnectionPoint * pointAt(int position) const;
+	int findPointPosition(GraphicsItemConnectionPoint * point) const;
+
+	void updateConnection();
+
+	virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
+
+protected:
+	virtual QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+	virtual bool sceneEventFilter(QGraphicsItem * watched, QEvent * event);
 
 private:
-    Controller();
-	~Controller();
+	void removeAllSceneEventFilters();
+	void installAllSceneEventFilters();
+	bool filterMouseMovement(GraphicsItemConnectionPoint * point, QGraphicsSceneMouseEvent * event);
 
-public:
-
-
-	RefVarGetAcc(Notifier<Event>, eventNotifier);
+private:
+	QList<GraphicsItemConnectionPoint *> _points;
+	QRectF _boundingRect;
+	bool _shiftDown;
 };
 
-#endif // CONTROLLER_HPP
+
+#endif // GRAPHICSITEMCONNECTION_HPP

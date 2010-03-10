@@ -31,6 +31,13 @@
 #include "methodobject.hpp"
 #include "packageobject.hpp"
 
+#define SEND_AND_RETURN(ERROR) \
+{\
+	a.setError(ERROR);\
+	actionListener().sendMessage(a); \
+	return ERROR; \
+}
+
 inline bool checkParentForClass(ElementObject * parent)
 {
 	return parent == 0 || parent->type() == Element_Class || parent->type() == Element_Package;
@@ -50,6 +57,17 @@ bool checkForParentRecursion(ElementObject * child, ElementObject * newParent)
 
 }
 
+ElementObject * helperDetachElement(ElementObject * element)
+{
+	if(element == 0)
+		return 0;
+
+	element->setUMLDiagram(0);
+	element->setParent(0);
+
+	return element;
+}
+
 ClassDiagramController::ClassDiagramController(UMLDiagram * diagram)
 	: _dd(new ClassDiagramControllerPrivate(diagram))
 {
@@ -62,136 +80,165 @@ UMLDiagram * ClassDiagramController::diagram() const
 
 Error ClassDiagramController::detachElement(const std::string & qualifiedElementName, ElementObject ** elementObject)
 {
-	ElementObject * element = getElement(qualifiedElementName);
-	if(elementObject != 0) *elementObject = element;
+	DetachAction a;
 
-	if(!element) return Error_ElementUndefined;
+	a.elementObject() = helperDetachElement(getElement(qualifiedElementName));
 
-	element->setUMLDiagram(0);
-	element->setParent(0);
+	if(a.elementObject() == 0)
+		SEND_AND_RETURN(Error_ElementUndefined);
 
-	return Error_NoError;
+	a.oldParent() = a.elementObject()->parent();
+
+	*elementObject = a.elementObject();
+
+	SEND_AND_RETURN(Error_NoError);
 }
 
 Error ClassDiagramController::renameElement(const std::string & qualifiedElementName, const std::string & newName)
 {
-	ElementObject * element = getElement(qualifiedElementName);
-	if(!element) return Error_ElementUndefined;
+	RenameAction a;
 
-	if(newName.empty()) return Error_ElementNameEmpty;
+	a.elementObject() = getElement(qualifiedElementName);
+	if(!a.elementObject())
+		SEND_AND_RETURN(Error_ElementUndefined);
+
+	a.oldName() = a.elementObject()->name();
+
+	if(newName.empty()) SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	// check for the names
-	if(!checkNameAgainstSiblings(element, newName, element->parent()))
-		return Error_ElementNameAlreadyUsed;
+	if(!checkNameAgainstSiblings(a.elementObject(), newName, a.elementObject()->parent()))
+		SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
 
 	// perform the operation
-	element->setName(newName);
+	a.elementObject()->setName(newName);
 
-	return Error_NoError;
+	SEND_AND_RETURN(Error_NoError);
 }
 
 Error ClassDiagramController::createClass(const std::string & className, const std::string & qualifiedParentName, ClassObject ** elementObject)
 {
+	CreateAction a;
+
 	// useful new name?
-	if(className.empty()) return Error_ElementNameEmpty;
+	if(className.empty()) SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	ElementObject * parentElement = getElement(qualifiedParentName);
 
 	// check for the names
 	if(!checkNameAgainstSiblings(0, className, parentElement))
-		return Error_ElementNameEmpty;
+		SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	// check for the right type of parent
 	if(!checkParentForClass(parentElement))
-		return Error_ElementParentBadContainer;
+		SEND_AND_RETURN(Error_ElementParentBadContainer);
 
 	// perform the operation
 	ClassObject * element = new ClassObject(className);
 	element->setParent(parentElement);
 	element->setUMLDiagram(diagram());
 
+	a.elementObject() = element;
+
 	// should we hand over the pointer?
 	if(elementObject != 0)
 		(*elementObject) = element;
 
-	return Error_NoError;
+	SEND_AND_RETURN(Error_NoError);
 }
 
 Error ClassDiagramController::moveClass(const std::string & classQualifiedName, const std::string & newParentQualifiedName)
 {
+	MoveAction a;
+
 	// useful name?
-	if(classQualifiedName.empty()) return Error_ElementNameEmpty;
+	if(classQualifiedName.empty())
+		SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	// check if we found a class
 	ClassObject * classObject = getElement<ClassObject>(classQualifiedName);
-	if(!classObject) return Error_ElementUndefined;
+	if(!classObject)
+		SEND_AND_RETURN(Error_ElementUndefined);
+
+	a.elementObject() = classObject;
+	a.oldParent() = classObject->parent();
 
 	ElementObject * parentElement = getElement(newParentQualifiedName);
 
 	// check for the right type of parent
 	if(!checkParentForClass(parentElement))
-		return Error_ElementParentBadContainer;
+		SEND_AND_RETURN(Error_ElementParentBadContainer);
 
 	// check for recursion
 	if(!checkForParentRecursion(classObject, parentElement))
-		return Error_ElementParentRecursion;
+		SEND_AND_RETURN(Error_ElementParentRecursion);
 
 	// perform the operation
 	classObject->setParent(parentElement);
 
-	return Error_NoError;
+	SEND_AND_RETURN(Error_NoError);
 }
 
 Error ClassDiagramController::createPackage(const std::string & packageName, const std::string & newParentQualifiedName, PackageObject ** elementObject)
 {
+	CreateAction a;
+
 	// useful name?
-	if(packageName.empty()) return Error_ElementNameEmpty;
+	if(packageName.empty()) SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	ElementObject * parentElement = getElement(newParentQualifiedName);
 
 	// check for the names
 	if(!checkNameAgainstSiblings(0, packageName, parentElement))
-		return Error_ElementNameEmpty;
+		SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	// check for the right type of parent
 	if(parentElement != 0 && parentElement->type() != Element_Package)
-		return Error_ElementParentBadContainer;
+		SEND_AND_RETURN(Error_ElementParentBadContainer);
 
 	// perform the operation
 	PackageObject * packageObject = new PackageObject(packageName);
 	packageObject->setParent(parentElement);
 	packageObject->setUMLDiagram(diagram());
+	a.elementObject() = packageObject;
 
 	// should we hand over the pointer?
 	if(elementObject != 0)
 		(*elementObject) = packageObject;
 
-	return Error_NoError;
+	SEND_AND_RETURN(Error_NoError);
 }
 
 Error ClassDiagramController::movePackage(const std::string & packageQualifiedName, const std::string & newParentQualifiedName)
 {
+	MoveAction a;
+
 	// useful name?
-	if(packageQualifiedName.empty()) return Error_ElementNameEmpty;
+	if(packageQualifiedName.empty())
+		SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	// check if we found a package?
 	PackageObject * packageObject = getElement<PackageObject>(packageQualifiedName);
-	if(!packageObject) return Error_ElementUndefined;
+	if(!packageObject)
+		SEND_AND_RETURN(Error_ElementUndefined);
+
+	a.elementObject() = packageObject;
+	a.oldParent() = packageObject->parent();
 
 	ElementObject * parentElement = getElement(newParentQualifiedName);
 
 	// check for the right type of parent
 	if(parentElement != 0 && parentElement->type() != Element_Package)
-		return Error_ElementParentBadContainer;
+		SEND_AND_RETURN(Error_ElementParentBadContainer);
 
 	// check for recursion
 	if(!checkForParentRecursion(packageObject, parentElement))
-		return Error_ElementParentRecursion;
+		SEND_AND_RETURN(Error_ElementParentRecursion);
 
 	// perform the operation
 	packageObject->setParent(parentElement);
 
-	return Error_NoError;
+	SEND_AND_RETURN(Error_NoError);
 
 }
 
@@ -237,11 +284,11 @@ std::vector<ElementObject *> ClassDiagramController::getElements(const std::stri
 	// copy from elements
 	elementvct::iterator i =
 			std::remove_copy_if(
-				toCheckVCT->begin(),
-				toCheckVCT->end(),
-				targetVCT.begin(),
-				conditionChecker
-				);
+					toCheckVCT->begin(),
+					toCheckVCT->end(),
+					targetVCT.begin(),
+					conditionChecker
+					);
 
 	targetVCT.erase(i, targetVCT.end());
 	return targetVCT;
@@ -265,7 +312,7 @@ bool ClassDiagramController::checkNameAgainstSiblings(ElementObject * element, c
 				sameNamedElements.begin(),
 				sameNamedElements.end(),
 				!boost::bind(element_castable<MethodObject>, _1)
-						)
+				)
 			== sameNamedElements.end())
 			return false;
 	}

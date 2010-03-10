@@ -39,8 +39,8 @@ HEADERS += model/element/umldiagram.hpp \
     control/command/commandtype.hpp \
     control/controller/controller.hpp \
     util/notifier.hpp \
-    util/listener.hpp \
-    control/command/event.hpp
+    control/command/event.hpp \
+    control/controller/action.hpp
 SOURCES += model/element/umldiagram.cpp \
     model/element/elementobject.cpp \
     model/element/elementhelper.cpp \

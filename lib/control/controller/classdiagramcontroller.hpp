@@ -27,7 +27,9 @@
 #define CLASSDIAGRAMCONTROLLER_HPP
 
 #include "elementhelper.hpp"
-#include "error.hpp"
+#include "action.hpp"
+#include "macro.hpp"
+#include "notifier.hpp"
 #include <vector>
 
 class UMLDiagram;
@@ -66,6 +68,9 @@ protected:
 
 private:
 	boost::shared_ptr<ClassDiagramControllerPrivate> _dd;
+
+	RefVarGetAcc(Notifier<Action>, actionListener);
+
 };
 
 template <typename T> T * ClassDiagramController::getElement(const std::string & qualifiedName) const

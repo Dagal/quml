@@ -30,7 +30,11 @@
 #include <boost/bind.hpp>
 #include <algorithm>
 
-template <typename T> class Listener;
+template <typename T> class Listener
+{
+public:
+	virtual void messageReceived(const T & message) = 0;
+};
 
 template <typename T> class Notifier
 {
@@ -51,10 +55,6 @@ private:
 private:
 	listenerVct _listeners;
 };
-
-
-
-
 
 template <typename T> inline void Notifier<T>::addEventListener(Listener<T> * listener)
 {

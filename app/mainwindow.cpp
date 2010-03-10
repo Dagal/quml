@@ -25,8 +25,11 @@
 
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
-#include "classobject.hpp"
-#include "graphicsview/graphicsitemclass.hpp"
+#include "graphicsview/graphicsitemconnection.hpp"
+#include "graphicsview/graphicsitemconnectionpoint.hpp"
+#include <QGraphicsPathItem>
+#include <QGraphicsPolygonItem>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent),
@@ -34,17 +37,37 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-	classObject = new ClassObject("testnaam");
-
 	QGraphicsScene * scene = new QGraphicsScene(this);
-	scene->addItem(new GraphicsItemClass(classObject));
-
 	ui->mainView->setScene(scene);
+
+	GraphicsItemConnection * c = new GraphicsItemConnection;
+	GraphicsItemConnectionPoint * p1 = new GraphicsItemConnectionPoint(c);
+	GraphicsItemConnectionPoint * p2 = new GraphicsItemConnectionPoint(c);
+	GraphicsItemConnectionPoint * p3 = new GraphicsItemConnectionPoint(c);
+	GraphicsItemConnectionPoint * p4 = new GraphicsItemConnectionPoint(c);
+
+	p1->setPos(10,10);
+	p2->setPos(50,20);
+	p3->setPos(40,40);
+	p4->setPos(70,70);
+
+	QGraphicsPathItem path;
+	QGraphicsPolygonItem poly;
+
+	QGraphicsItem::GraphicsItemFlags flags =  path.flags() ^ poly.flags();
+
+	for(int i = 1; i <= 0x400; i  = i << 1)
+	{
+		qDebug() << path.flags().testFlag((QGraphicsItem::GraphicsItemFlag)i) << poly.flags().testFlag((QGraphicsItem::GraphicsItemFlag)i);
+	}
+
+
+	scene->addItem(c);
+
 }
 
 MainWindow::~MainWindow()
 {
-	delete classObject;
     delete ui;
 }
 

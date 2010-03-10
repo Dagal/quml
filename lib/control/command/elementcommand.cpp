@@ -28,8 +28,7 @@
 #include "elementobject.hpp"
 
 DeleteElementCommand::DeleteElementCommand(ClassDiagramController * controller, const std::string & elementQualifiedName)
-	: ICommand(Command_DetachElement),
-	_controller(controller),
+	: _controller(controller),
 	_elementQualifiedName(elementQualifiedName),
 	_element(0)
 {
@@ -41,22 +40,26 @@ DeleteElementCommand::~DeleteElementCommand()
 		delete _element;
 }
 
-Error DeleteElementCommand::redo()
+bool DeleteElementCommand::redo()
 {
 	_element = _controller->getElement(_elementQualifiedName);
+
+	if(!_element)
+		return false;
+
 	if(_element->parent())
 		_parentQualifiedName = _element->parent()->qualifiedName();
 	else
 		_parentQualifiedName.clear();
 
-	return _controller->detachElement(_elementQualifiedName);
+	return _controller->detachElement(_elementQualifiedName) == Error_NoError;
 }
 
 
-Error DeleteElementCommand::undo()
+bool DeleteElementCommand::undo()
 {
 	if(!_element)
-		return Error_ElementUndefined;
+		return false;
 
 	ElementObject * parent = _controller->getElement(_parentQualifiedName);
 	_element->setParent(parent);
@@ -64,49 +67,37 @@ Error DeleteElementCommand::undo()
 
 	_element = 0;
 
-	return Error_NoError;
+	return true;
 }
 
 RenameElementCommand::RenameElementCommand(ClassDiagramController * controller, const std::string & elementQualifiedName, const std::string & newName)
-	: ICommand(Command_RenameElement),
-	_controller(controller),
-	_elementOldQualifiedName(elementQualifiedName),
+	: _controller(controller),
+	_oldElementQualifiedName(elementQualifiedName),
 	_newName(newName)
 {
 }
 
-Error RenameElementCommand::redo()
+bool RenameElementCommand::redo()
 {
-	ElementObject * element = _controller->getElement(elementOldQualifiedName());
+	ElementObject * element = _controller->getElement(_oldElementQualifiedName);
 
 	if(!element)
-		return Error_ElementUndefined;
+		return false;
 
 	_oldName = element->name();
-	Error error = _controller->renameElement(elementOldQualifiedName(), newName());
+	Error error = _controller->renameElement(_oldElementQualifiedName, _newName);
 
-	_elementNewQualifiedName = element->qualifiedName();
+	_newElementQualifiedName = element->qualifiedName();
 
-	return error;
+	return error == Error_NoError;
 }
 
-Error RenameElementCommand::undo()
+bool RenameElementCommand::undo()
 {
-	return _controller->renameElement(elementNewQualifiedName(), oldName());
-}
+	ElementObject * element = _controller->getElement(_newElementQualifiedName);
 
-CreateElementCommand::CreateElementCommand(const std::string & elementName, const std::string & parentQualifiedName)
-	: ICommand(Command_CreateElement),
-	_elementName(elementName),
-	_parentQualifiedName(parentQualifiedName),
-	_elementObject(0)
-{
-}
+	if(!element)
+		return false;
 
-
-MoveElementCommand::MoveElementCommand(const std::string & classQualifiedName, const std::string & parentNewQualifiedName)
-	: ICommand(Command_MoveElement),
-	_elementOldQualifiedName(classQualifiedName),
-	_parentNewQualifiedName(parentNewQualifiedName)
-{
+	return _controller->renameElement(_newElementQualifiedName, _oldName) == Error_NoError;
 }

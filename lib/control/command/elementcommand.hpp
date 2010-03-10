@@ -27,7 +27,6 @@
 #define ELEMENTCOMMAND_HPP
 
 #include "icommand.hpp"
-#include "macro.hpp"
 #include <string>
 
 class ClassDiagramController;
@@ -39,57 +38,31 @@ public:
 	DeleteElementCommand(ClassDiagramController * controller, const std::string & elementQualifiedName);
 	~DeleteElementCommand();
 
-	virtual Error redo();
-	virtual Error undo();
+	virtual bool redo();
+	virtual bool undo();
 
 private:
 	ClassDiagramController * _controller;
-
-	RefVarGet(std::string, elementQualifiedName);
-	RefVarGet(std::string, parentQualifiedName);
-	PtrVarGet(ElementObject, element);
+	std::string _elementQualifiedName;
+	std::string _parentQualifiedName;
+	ElementObject * _element;
 };
+
 
 class RenameElementCommand : public ICommand
 {
 public:
 	RenameElementCommand(ClassDiagramController * controller, const std::string & elementQualifiedName, const std::string & newName);
 
-	virtual Error redo();
-	virtual Error undo();
+	virtual bool redo();
+	virtual bool undo();
 
 private:
 	ClassDiagramController * _controller;
-
-	RefVarGet(std::string, elementOldQualifiedName);
-	RefVarGet(std::string, elementNewQualifiedName);
-	RefVarGet(std::string, oldName);
-	RefVarGet(std::string, newName);
+	std::string _oldElementQualifiedName;
+	std::string _newElementQualifiedName;
+	std::string _oldName;
+	std::string _newName;
 };
-
-class CreateElementCommand : public ICommand
-{
-protected:
-	CreateElementCommand(const std::string & elementName, const std::string & parentQualifiedName);
-
-private:
-	RefVarGetProtectedAcc(std::string, elementName);
-	RefVarGetProtectedAcc(std::string, parentQualifiedName);
-	PtrVarGetProtectedAcc(ElementObject, elementObject);
-};
-
-
-class MoveElementCommand : public ICommand
-{
-protected:
-	MoveElementCommand(const std::string & elementQualifiedName, const std::string & parentNewQualifiedName);
-
-private:
-	RefVarGetProtectedAcc(std::string, elementOldQualifiedName);
-	RefVarGetProtectedAcc(std::string, elementNewQualifiedName);
-	RefVarGetProtectedAcc(std::string, parentNewQualifiedName);
-	RefVarGetProtectedAcc(std::string, parentOldQualifiedName);
-};
-
 
 #endif // ELEMENTCOMMAND_HPP

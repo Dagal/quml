@@ -23,29 +23,27 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef CONTROLLER_HPP
-#define CONTROLLER_HPP
+#ifndef GRAPHICSITEMCONNECTIONPOINT_HPP
+#define GRAPHICSITEMCONNECTIONPOINT_HPP
 
-#include "singleton.hpp"
-#include "notifier.hpp"
-#include "macro.hpp"
+#include <QGraphicsItem>
 
-class Event;
+class GraphicsItemConnection;
 
-class Controller : public Singleton<Controller>
+class GraphicsItemConnectionPoint : public QGraphicsRectItem
 {
-	friend class Singleton<Controller>;
-
-	class ControllerPrivate;
+public:
+	GraphicsItemConnectionPoint(QGraphicsItem * parent = 0);
 
 private:
-    Controller();
-	~Controller();
+	void addToConnection();
+	void removeFromConnection();
 
-public:
+protected:
+	virtual QVariant itemChange(GraphicsItemChange change, const QVariant & value);
 
-
-	RefVarGetAcc(Notifier<Event>, eventNotifier);
+private:
+	GraphicsItemConnection* _connection;
 };
 
-#endif // CONTROLLER_HPP
+#endif // GRAPHICSITEMCONNECTIONPOINT_HPP
