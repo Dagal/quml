@@ -24,52 +24,69 @@
 *******************************************************************/
 
 #include "graphicsitemconnectionpoint.hpp"
-#include "graphicsitemconnection.hpp"
-#include <QGraphicsSceneMouseEvent>
+#include "graphicsitemconnectionline.hpp"
 #include <QPainter>
-#include <QDebug>
+#include <QBrush>
+
+const float rectWidth = 4;
 
 GraphicsItemConnectionPoint::GraphicsItemConnectionPoint(QGraphicsItem * parent)
-	: QGraphicsRectItem(-3, -3, 7, 7, 0, 0),
-	 _connection(0)
+	: GraphicsExt<QGraphicsRectItem>(0),
+	_pointStatus(PointDisabled)
 {
+	setRect(-rectWidth, -rectWidth, rectWidth*2+1,rectWidth*2+1);
+
 	setFlag(QGraphicsItem::ItemIsMovable, true);
-	setFlag(QGraphicsItem::ItemIsFocusable, true);
+	setFlag(QGraphicsItem::ItemIsSelectable, true);
 	setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-	setFlag(QGraphicsItem::ItemAcceptsInputMethod, true);
+	//setFlag(QGraphicsItem::ItemAcceptsInputMethod, true);
 
-	setBrush(QBrush(Qt::red, Qt::SolidPattern));
-
+	setBrush(QBrush(Qt::NoBrush));
+	setSelectedBrush(QBrush(Qt::red, Qt::SolidPattern));
+	setSelectedPen(QPen(Qt::NoPen));
 	setParentItem(parent);
 }
 
-void GraphicsItemConnectionPoint::addToConnection()
+void GraphicsItemConnectionPoint::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
-	GraphicsItemConnection * connection = qgraphicsitem_cast<GraphicsItemConnection*>(parentItem());
-	if(!connection)
+	switch(pointStatus())
+	{
+	case PointDisabled:
 		return;
+		break;
 
-	_connection = connection;
-	_connection->attachPoint(this, -1);
+	case PointVisible:
+		painter->setBrush(brush());
+		painter->setPen(pen());
+		break;
+
+	case PointSelected:
+		painter->setBrush(selectedBrush());
+		painter->setPen(selectedPen());
+		break;
+	}
+
+	painter->drawRect(rect());
 }
 
-void GraphicsItemConnectionPoint::removeFromConnection()
+void GraphicsItemConnectionPoint::setPointStatus(PointStatus  pointStatus)
 {
-	if(!_connection)
+	if(pointStatus == _pointStatus)
 		return;
 
-	_connection->detachPoint(this);
-	_connection = 0;
+	_pointStatus = pointStatus;
+	setSelected(pointStatus == PointSelected);
+
+	update();
 }
 
-QVariant GraphicsItemConnectionPoint::itemChange(GraphicsItemChange change, const QVariant & value)
+QVariant GraphicsItemConnectionPoint::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant & value)
 {
-	if(change == ItemPositionHasChanged && _connection)
-		_connection->updateConnection();
-	else if(change == ItemParentChange)
-		removeFromConnection();
-	else if(change == ItemParentHasChanged)
-		addToConnection();
+	if(change == QGraphicsItem::ItemSelectedHasChanged)
+	{
+		if(value.toBool() && pointStatus() != PointSelected) setPointStatus(PointSelected);
+		else if(!value.toBool() && pointStatus() == PointSelected) setPointStatus(PointVisible);
+	}
 
-	return QGraphicsItem::itemChange(change, value);
+	return GraphicsExt<QGraphicsRectItem>::itemChange(change, value);
 }

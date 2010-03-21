@@ -25,155 +25,316 @@
 
 #include "graphicsitemconnection.hpp"
 #include "graphicsitemconnectionpoint.hpp"
+#include "graphicsitemconnectionline.hpp"
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QDebug>
 #include <QKeyEvent>
+#include <QMenu>
 
 GraphicsItemConnection::GraphicsItemConnection(QGraphicsItem * parent)
-	: QGraphicsPathItem(parent),
-	_shiftDown(false)
+	: QGraphicsItem(parent)
 {
+	setFlag(QGraphicsItem::ItemIsFocusable, true);
 }
 
-
-void GraphicsItemConnection::updateConnection()
+GraphicsItemConnectionPoint * createNewPoint(const QPointF & position, GraphicsItemConnection * connection)
 {
-	if(_points.size() == 0)
-		setPath(QPainterPath());
+	GraphicsItemConnectionPoint * point = new GraphicsItemConnectionPoint(connection);
+	point->setPos(position);
+	point->installItemChangedListener(connection);
+	if(connection->scene()) point->installSceneEventFilter(connection);
 
-	QPainterPath p(_points[0]->pos());
-
-	for(int i = 0; i < _points.size(); i++)
-		p.lineTo(_points[i]->pos());
-
-	setPath(p);
+	return point;
 }
 
-void GraphicsItemConnection::attachPoint(GraphicsItemConnectionPoint * point, int position)
+GraphicsItemConnectionLine * createNewLine(GraphicsItemConnectionPoint * startPoint, GraphicsItemConnectionPoint * endPoint, GraphicsItemConnection * connection)
 {
-	if(!point)
-		return;
+	GraphicsItemConnectionLine * line = new GraphicsItemConnectionLine(startPoint, endPoint, connection);
+	line->installItemChangedListener(connection);
+	if(connection->scene()) line->installSceneEventFilter(connection);
 
-	if(point->parentItem() != this)
+	return line;
+}
+
+GraphicsItemConnectionPoint * GraphicsItemConnection::createPoint(int posInLine, const QPointF & posInScene)
+{
+	if(posInLine < 0 || posInLine > _points.size())
+		posInLine = _points.size();
+
+	GraphicsItemConnectionPoint * point = createNewPoint(posInScene, this);
+
+	// first point, just insert
+	if(_points.empty())
 	{
-		point->setParentItem(this);
-		return;
+		_points.push_back(point);
+	}
+	// front point
+	else if(posInLine == 0)
+	{
+		_points.push_front(point);
+		_lines.push_front(createNewLine(point, pointAt(0), this));
+	}
+	// end point
+	else if(posInLine == _points.size())
+	{
+		_points.push_back(point);
+		_lines.push_back(createNewLine(pointAt(posInLine-1), point, this));
+	}
+	// point in the middle
+	else
+	{
+		_points.insert(posInLine, point);
+		// get the old line
+		GraphicsItemConnectionLine * oldLine = _lines[posInLine-1];
+
+		// create the two new lines
+		_lines[posInLine-1] = createNewLine(oldLine->startPoint(), point, this);
+		_lines.insert(posInLine, createNewLine(point, oldLine->endPoint(), this));
+
+		// destroy the old lines
+		delete oldLine;
 	}
 
-	if(_points.contains(point))
+	updateCompleteConnection();
+
+	return point;
+}
+
+void GraphicsItemConnection::removePoint(int position)
+{
+	if(position < 0 || position >= _points.size())
 		return;
 
-	if(position < 0) position = _points.size();
-	_points.insert(position, point);
-	if(scene()) point->installSceneEventFilter(this);
-	updateConnection();
-}
+	GraphicsItemConnectionPoint * point = pointAt(position);
 
-void GraphicsItemConnection::detachPoint(GraphicsItemConnectionPoint * point)
-{
-		if(!point)
-		return;
+	if(_points.size() == 1)
+	{
+		_points.removeAt(position);
+	}
+	else if(position == 0)
+	{
+		delete _lines.first();
+		_lines.removeFirst();
+		_points.removeAt(position);
+	}
+	else if(position == _points.size()-1)
+	{
+		delete _lines.last();
+		_lines.removeLast();
+		_points.removeAt(position);
+	}
+	else
+	{
+		// delete two lines (position-1 && position) and create one new
+		GraphicsItemConnectionLine * lineA = _lines[position-1];
+		GraphicsItemConnectionLine * lineB = _lines[position];
 
-	_points.removeAll(point);
-	if(scene()) point->removeSceneEventFilter(this);
-	updateConnection();
-}
+		// only remove one line, overwrite the second
+		_points.removeAt(position);
+		_lines[position] = createNewLine(lineA->startPoint(), lineB->endPoint(), this);
+		_lines.removeAt(position-1);
 
-QVariant GraphicsItemConnection::itemChange(GraphicsItemChange change, const QVariant & value)
-{
-	if(change == QGraphicsItem::ItemSceneChange)
-		removeAllSceneEventFilters();
-	else if(change == QGraphicsItem::ItemSceneHasChanged)
-		installAllSceneEventFilters();
+		delete lineA;
+		delete lineB;
+	}
 
-	return value;
-}
+	delete point;
 
-void GraphicsItemConnection::removeAllSceneEventFilters()
-{
-	if(scene())
-		foreach(GraphicsItemConnectionPoint * point, _points)
-			point->removeSceneEventFilter(this);
-}
-
-void GraphicsItemConnection::installAllSceneEventFilters()
-{
-	if(scene())
-		foreach(GraphicsItemConnectionPoint * point, _points)
-			point->installSceneEventFilter(this);
+	updateCompleteConnection();
 }
 
 GraphicsItemConnectionPoint * GraphicsItemConnection::pointAt(int position) const
 {
-	if(position < 0)
+	if(position < 0 || position >= _points.size())
 		return 0;
-	if(position >= _points.size())
-		return 0;
-
-	return _points.at(position);
+	else
+		return _points.at(position);
 }
 
-int GraphicsItemConnection::findPointPosition(GraphicsItemConnectionPoint * point) const
+int GraphicsItemConnection::pointPosition(GraphicsItemConnectionPoint * point) const
 {
 	return _points.indexOf(point);
 }
 
+void GraphicsItemConnection::updateCompleteConnection()
+{
+	for(int i = 0; i < _points.size(); i++)
+		_points[i]->setFlag(QGraphicsItem::ItemIsMovable, !(i == 0 || i == _points.size()-1));
+
+	for(int i = 0; i < _lines.size(); i++)
+	{
+		_lines[i]->setStartType(GraphicsItemConnectionLine::LineConnectionNormal);
+		_lines[i]->setEndType(GraphicsItemConnectionLine::LineConnectionNormal);
+
+		if(i == 0)
+			_lines[i]->setStartType(GraphicsItemConnectionLine::LineConnectionStartArrow);
+		if(i == _lines.size()-1)
+			_lines[i]->setEndType(GraphicsItemConnectionLine::LineConnectionAggregation);
+	}
+
+	updateBoundingRect();
+}
+
+void GraphicsItemConnection::updateBoundingRect()
+{
+	// loop through everything and get the bounding box
+	_boundingRect = QRectF();
+
+	foreach(GraphicsItemConnectionPoint * point, _points)
+	{
+		QRectF itemRct = mapRectFromItem(point, point->boundingRect());
+		_boundingRect |= itemRct;
+	}
+
+	foreach(GraphicsItemConnectionLine * line, _lines)
+		_boundingRect |= mapRectFromItem(line, line->boundingRect());
+
+}
+
+void GraphicsItemConnection::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+	Q_UNUSED(option);
+	Q_UNUSED(widget);
+	Q_UNUSED(painter);
+}
+
+
+bool GraphicsItemConnection::itemChangedFilter(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & inValue, QVariant & outValue)
+{
+	Q_UNUSED(item);
+	Q_UNUSED(inValue);
+	Q_UNUSED(outValue);
+
+	if(change == QGraphicsItem::ItemPositionHasChanged)
+		updateBoundingRect();
+
+	return false;
+}
+
+QVariant GraphicsItemConnection::itemChange(GraphicsItemChange change, const QVariant & value)
+{
+	if(change == QGraphicsItem::ItemChildAddedChange)
+	{
+		QGraphicsItem * newChild = value.value<QGraphicsItem*>();
+		newChild->setFlag(QGraphicsItem::ItemIsFocusable, false);
+		newChild->setFlag(QGraphicsItem::ItemStacksBehindParent, !hasFocus());
+
+		GraphicsItemConnectionPoint * p = qgraphicsitem_cast<GraphicsItemConnectionPoint*>(newChild);
+		if( p != 0)
+		{
+			p->setPointStatus( hasFocus() ? GraphicsItemConnectionPoint::PointVisible : GraphicsItemConnectionPoint::PointDisabled );
+
+			if(hasFocus())
+				p->setSelected(true);
+		}
+	}
+
+	return QGraphicsItem::itemChange(change, value);
+}
+
 bool GraphicsItemConnection::sceneEventFilter(QGraphicsItem * watched, QEvent * event)
 {
-	if(event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
+	if(event->type() == QEvent::GraphicsSceneContextMenu)
 	{
-		QKeyEvent * keyEvent = static_cast<QKeyEvent*>(event);
-		if(keyEvent->key() == Qt::Key_Shift)
-			_shiftDown =event->type() == QEvent::KeyPress;
+		GraphicsItemConnectionPoint * p = qgraphicsitem_cast<GraphicsItemConnectionPoint*>(watched);
+		GraphicsItemConnectionLine * l = qgraphicsitem_cast<GraphicsItemConnectionLine*>(watched);
+
+		if(p) return onPointContextMenu(p, static_cast<QGraphicsSceneContextMenuEvent*>(event));
+		if(l) return onLineContextMenu(l, static_cast<QGraphicsSceneContextMenuEvent*>(event));
+
 	}
-	else if(event->type() == QEvent::GraphicsSceneMouseMove)
+	else if(event->type() == QEvent::GraphicsSceneMouseDoubleClick)
 	{
-		return filterMouseMovement(
-				qgraphicsitem_cast<GraphicsItemConnectionPoint*>(watched),
-				static_cast<QGraphicsSceneMouseEvent*>(event));
+		GraphicsItemConnectionPoint * p = qgraphicsitem_cast<GraphicsItemConnectionPoint*>(watched);
+		GraphicsItemConnectionLine * l = qgraphicsitem_cast<GraphicsItemConnectionLine*>(watched);
+
+		if(p) return onPointDoubleClick(p, static_cast<QGraphicsSceneMouseEvent*>(event));
+		if(l) return onLineDoubleClick(l, static_cast<QGraphicsSceneMouseEvent*>(event));
+	}
+
+	return QGraphicsItem::sceneEventFilter(watched, event);
+}
+
+bool GraphicsItemConnection::sceneEvent(QEvent * event)
+{
+	if(event->type() == QEvent::GraphicsSceneMousePress)
+		return true;
+
+	return QGraphicsItem::sceneEvent(event);
+}
+
+void GraphicsItemConnection::focusInEvent(QFocusEvent * event)
+{
+	Q_UNUSED(event);
+
+	foreach(QGraphicsItem * item, childItems())
+	{
+		item->setSelected(false);
+		item->setFlag(QGraphicsItem::ItemStacksBehindParent, false);
+	}
+
+	foreach(GraphicsItemConnectionPoint * p, _points)
+		p->setPointStatus(GraphicsItemConnectionPoint::PointVisible);
+}
+
+void GraphicsItemConnection::focusOutEvent(QFocusEvent * event)
+{
+	// no pop-up focus out events
+	if(event->reason() == 4)
+	{
+		setFocus(Qt::OtherFocusReason);
+		return;
+	}
+
+
+	foreach(QGraphicsItem * item, childItems())
+	{
+		item->setFlag(QGraphicsItem::ItemStacksBehindParent, true);
+		item->setSelected(false);
+	}
+
+	foreach(GraphicsItemConnectionPoint * p, _points)
+		p->setPointStatus(GraphicsItemConnectionPoint::PointDisabled);
+}
+
+
+bool GraphicsItemConnection::onPointContextMenu(GraphicsItemConnectionPoint * point, QGraphicsSceneContextMenuEvent * event)
+{
+	QMenu m;
+	QAction * delAction = m.addAction("Delete point");
+
+	if(m.exec(event->screenPos(), 0) == delAction)
+	{
+		removePoint(pointPosition(point));
+		return true;
 	}
 
 	return false;
 }
 
-bool GraphicsItemConnection::filterMouseMovement(GraphicsItemConnectionPoint * point, QGraphicsSceneMouseEvent * event)
+bool GraphicsItemConnection::onLineContextMenu(GraphicsItemConnectionLine * line, QGraphicsSceneContextMenuEvent * event)
 {
-	const float distanceToLock = 10.0f;
+	Q_UNUSED(line);
+	Q_UNUSED(event);
 
-	if(!_shiftDown || !point)
-		return false;
-
-	QPointF position = point->mapToParent(event->pos());
-
-	// get the two other points
-	int pointPos = findPointPosition(point);
-	GraphicsItemConnectionPoint * prev = pointAt(pointPos-1);
-	GraphicsItemConnectionPoint * next = pointAt(pointPos+1);
-
-	if(prev == 0 && next == 0)
-		return false;
-
-	QRectF rct;
-	if(prev == 0)
-		rct = QRectF(position, next->pos());
-	else if(next == 0)
-		rct = QRectF(prev->pos(), position);
-	else
-		rct = QRectF(prev->pos(), next->pos());
-
-	QPointF d1 = rct.topRight()-position;
-	QPointF d2 = rct.bottomLeft()-position;
-
-	qreal p1 = d1.x()*d1.x() + d1.y()*d1.y();
-	qreal p2 = d2.x()*d2.x() + d2.y()*d2.y();
-
-	QPointF realPoint (p1 < p2 ? d1 : d2);
-
-	if(qAbs(realPoint.x()) < distanceToLock) position.rx() += realPoint.x();
-	if(qAbs(realPoint.y()) < distanceToLock) position.ry() += realPoint.y();
-
-	point->setPos(position);
 	return true;
 }
 
+bool GraphicsItemConnection::onPointDoubleClick(GraphicsItemConnectionPoint * point, QGraphicsSceneMouseEvent * event)
+{
+	Q_UNUSED(point);
+	Q_UNUSED(event);
+
+	return true;
+}
+
+bool GraphicsItemConnection::onLineDoubleClick(GraphicsItemConnectionLine * line, QGraphicsSceneMouseEvent * event)
+{
+	int posInLine = pointPosition(line->endPoint());
+	QPointF posInScene = mapFromScene(event->scenePos());
+
+	createPoint(posInLine, posInScene);
+
+	return true;
+}

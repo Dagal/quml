@@ -27,23 +27,37 @@
 #define GRAPHICSITEMCONNECTIONPOINT_HPP
 
 #include <QGraphicsItem>
+#include <QSet>
+#include <QPen>
+#include <QBrush>
+#include "../util/iextendedgraphicsitem.hpp"
+#include "macro.hpp"
 
-class GraphicsItemConnection;
+class GraphicsItemConnectionLine;
 
-class GraphicsItemConnectionPoint : public QGraphicsRectItem
+class GraphicsItemConnectionPoint : public GraphicsExt<QGraphicsRectItem>
 {
 public:
+	enum { Type = UserType + 1};
+	enum PointStatus { PointDisabled, PointVisible, PointSelected };
+
 	GraphicsItemConnectionPoint(QGraphicsItem * parent = 0);
 
-private:
-	void addToConnection();
-	void removeFromConnection();
+	void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
+
+	virtual int type() const { return Type; }
+
+	void setPointStatus(PointStatus  pointStatus);
 
 protected:
-	virtual QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+	virtual QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant & value);
 
 private:
-	GraphicsItemConnection* _connection;
+	RefVarGetSet(QPen, selectedPen, SelectedPen);
+	RefVarGetSet(QBrush, selectedBrush, SelectedBrush);
+	SimpleVarGet(PointStatus, pointStatus);
+
+	QSet<GraphicsItemConnectionLine *> _lines;
 };
 
 #endif // GRAPHICSITEMCONNECTIONPOINT_HPP

@@ -27,34 +27,52 @@
 #define GRAPHICSITEMCONNECTION_HPP
 
 #include <QGraphicsItem>
+#include "../util/iextendedgraphicsitem.hpp"
+#include "macro.hpp"
 
 class GraphicsItemConnectionPoint;
+class GraphicsItemConnectionLine;
 
-class GraphicsItemConnection : public QGraphicsPathItem
+class GraphicsItemConnection : public QGraphicsItem, public IExtendedGraphicsItem
 {
 public:
 	GraphicsItemConnection(QGraphicsItem * parent = 0);
 
-	void attachPoint(GraphicsItemConnectionPoint * point, int position);
-	void detachPoint(GraphicsItemConnectionPoint * point);
+	QRectF boundingRect() const { return _boundingRect; }
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+	// point attachement functions
+	GraphicsItemConnectionPoint * createPoint(int posInLine = -1, const QPointF & posInScene = QPointF());
+	void removePoint(int position);
 	GraphicsItemConnectionPoint * pointAt(int position) const;
-	int findPointPosition(GraphicsItemConnectionPoint * point) const;
+	int pointPosition(GraphicsItemConnectionPoint * point) const;
 
-	void updateConnection();
+	virtual bool itemChangedFilter(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & inValue, QVariant & outValue);
 
 protected:
-	virtual QVariant itemChange(GraphicsItemChange change, const QVariant & value);
 	virtual bool sceneEventFilter(QGraphicsItem * watched, QEvent * event);
+	virtual bool sceneEvent(QEvent * event);
+	virtual QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+	virtual void focusInEvent(QFocusEvent * event);
+	virtual void focusOutEvent(QFocusEvent * event);
+
+	virtual bool onPointContextMenu(GraphicsItemConnectionPoint * point, QGraphicsSceneContextMenuEvent * event);
+	virtual bool onLineContextMenu(GraphicsItemConnectionLine * line, QGraphicsSceneContextMenuEvent * event);
+	virtual bool onPointDoubleClick(GraphicsItemConnectionPoint * point, QGraphicsSceneMouseEvent * event);
+	virtual bool onLineDoubleClick(GraphicsItemConnectionLine * line, QGraphicsSceneMouseEvent * event);
+
+
+
 
 private:
-	void removeAllSceneEventFilters();
-	void installAllSceneEventFilters();
-	bool filterMouseMovement(GraphicsItemConnectionPoint * point, QGraphicsSceneMouseEvent * event);
+	void updateCompleteConnection();
+	void updateBoundingRect();
+
 
 private:
+	QList<GraphicsItemConnectionLine *> _lines;
 	QList<GraphicsItemConnectionPoint *> _points;
-	bool _shiftDown;
+	QRectF _boundingRect;
 };
 
 

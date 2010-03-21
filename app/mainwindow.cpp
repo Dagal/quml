@@ -25,11 +25,13 @@
 
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
-#include "graphicsview/graphicsitemconnection.hpp"
+#include "graphicsview/graphicsitemconnectionline.hpp"
 #include "graphicsview/graphicsitemconnectionpoint.hpp"
+#include "graphicsview/graphicsitemconnection.hpp"
 #include <QGraphicsPathItem>
 #include <QGraphicsPolygonItem>
 #include <QDebug>
+#include "test.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent),
@@ -39,27 +41,25 @@ MainWindow::MainWindow(QWidget *parent)
 
 	QGraphicsScene * scene = new QGraphicsScene(this);
 	ui->mainView->setScene(scene);
+	ui->mainView->setTransform(QTransform(), false);
 
-	GraphicsItemConnection * c = new GraphicsItemConnection;
-	GraphicsItemConnectionPoint * p1 = new GraphicsItemConnectionPoint(c);
-	GraphicsItemConnectionPoint * p2 = new GraphicsItemConnectionPoint(c);
-	GraphicsItemConnectionPoint * p3 = new GraphicsItemConnectionPoint(c);
-	GraphicsItemConnectionPoint * p4 = new GraphicsItemConnectionPoint(c);
-	GraphicsItemConnectionPoint * p5 = new GraphicsItemConnectionPoint(c);
+//	Parent * p = new Parent();
+//	scene->addItem(p);
+//	Child * c1 = new Child(p);
+//	Child * c2 = new Child(p);
+//
+//	c1->setPos(0,0);
+//	c2->setPos(20,0);
 
-	p1->setPos(10,10);
-	p2->setPos(50,20);
-	p3->setPos(40,40);
-	p4->setPos(70,70);
-	p5->setPos(70,170);
 
-	QGraphicsPathItem * path = new QGraphicsPathItem(0, scene);
-	QPainterPath p(QPointF(10,10));
-	p.lineTo(30,30);
-	path->setPath(p);
+	GraphicsItemConnection * connection = new GraphicsItemConnection(0);
+	scene->addItem(connection);
 
-	scene->addItem(c);
-
+	connection->createPoint(-1, QPointF(-50,40));
+	connection->createPoint(-1, QPointF(70,-30));
+	connection->createPoint(-1, QPointF(100,100));
+	connection->createPoint(-1, QPointF(130,100));
+	connection->createPoint(-1, QPointF(100,140));
 }
 
 MainWindow::~MainWindow()
