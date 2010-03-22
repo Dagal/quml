@@ -23,46 +23,49 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "mainwindow.hpp"
-#include "ui_mainwindow.h"
-#include "graphicsview/graphicsitemconnectionline.hpp"
-#include "graphicsview/graphicsitemconnectionpoint.hpp"
-#include "graphicsview/graphicsitemconnection.hpp"
-#include <QGraphicsPathItem>
-#include <QGraphicsPolygonItem>
-#include <QDebug>
 
-MainWindow::MainWindow(QWidget *parent)
-	: QMainWindow(parent),
-    ui(new Ui::MainWindow)
+#include "iextendedgraphicsitem.hpp"
+
+GraphicsExtPrivate::~GraphicsExtPrivate()
 {
-    ui->setupUi(this);
-
-	QGraphicsScene * scene = new QGraphicsScene(this);
-	ui->mainView->setScene(scene);
-	ui->mainView->setTransform(QTransform(), false);
-
-	GraphicsItemConnection * connection = new GraphicsItemConnection(0);
-	scene->addItem(connection);
-
-	connection->createPoint(-1, QPointF(-100,0));
-	connection->createPoint(-1, QPointF(100,0));
+	while(!_listeners.empty())
+		removeItemChangedListener(_listeners.first());
 }
 
-MainWindow::~MainWindow()
+void GraphicsExtPrivate::addItemChangedListener(ItemChangedListener * listener)
 {
-    delete ui;
+	if(listener == 0)
+		return;
+
+	if(_listeners.contains(listener))
+		return;
+
+	_listeners.push_back(listener);
+	listener->_listenObjects.push_back(this);
 }
 
-void MainWindow::changeEvent(QEvent *e)
+void GraphicsExtPrivate::removeItemChangedListener(ItemChangedListener * listener)
 {
-    QMainWindow::changeEvent(e);
-	switch (e->type())
-	{
-    case QEvent::LanguageChange:
-        ui->retranslateUi(this);
-        break;
-    default:
-        break;
-    }
+	_listeners.removeAll(listener);
+	listener->_listenObjects.removeAll(this);
+}
+
+bool GraphicsExtPrivate::sendItemChanged(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & value, QVariant & outValue)
+{
+	foreach(ItemChangedListener * listener, _listeners)
+		if(listener->itemChangedFilter(item, change, value, outValue))
+			return true;
+
+	return false;
+}
+
+ItemChangedListener::~ItemChangedListener()
+{
+	while(!_listenObjects.empty())
+		_listenObjects.first()->removeItemChangedListener(this);
+}
+
+bool ItemChangedListener::itemChangedFilter(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & inValue, QVariant & outValue)
+{
+	return false;
 }

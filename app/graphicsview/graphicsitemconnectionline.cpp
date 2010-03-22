@@ -27,10 +27,11 @@
 #include "graphicsitemconnectionpoint.hpp"
 #include <QGraphicsScene>
 #include <QPainter>
+#include <QDebug>
 #include <cmath>
 
-const float dxArrow = 5;
-const float dyArrow = 2;
+const float dxArrow = 12;
+const float dyArrow = 5;
 const float dxDiamond = 12;
 const float dyDiamond = 5;
 
@@ -83,13 +84,13 @@ void GraphicsItemConnectionLine::InitialiseMarkers()
 	_Markers[LineConnectionComposition] = MarkerInformation(pAggregation, true);
 }
 
-GraphicsItemConnectionLine::GraphicsItemConnectionLine(GraphicsItemConnectionPoint * start, GraphicsItemConnectionPoint * end, QGraphicsItem * parent, QGraphicsScene * scene)
-	: GraphicsExt<QGraphicsPathItem>(parent, scene),
+GraphicsItemConnectionLine::GraphicsItemConnectionLine(GraphicsItemConnectionPoint * start, GraphicsItemConnectionPoint * end, QGraphicsItem * parent)
+	: GraphicsExt<QGraphicsPathItem>(parent),
 	_startPoint(start),
 	_endPoint(end)
 {
-	_startPoint->installItemChangedListener(this);
-	_endPoint->installItemChangedListener(this);
+	_startPoint->addItemChangedListener(this);
+	_endPoint->addItemChangedListener(this);
 
 	InitialiseMarkers();
 	initialiseDefaults();
@@ -140,9 +141,10 @@ void GraphicsItemConnectionLine::updatePosition()
 	_startMarker = (_Markers.contains(startType()) ? _Markers[startType()] : MarkerInformation());
 	_endMarker = (_Markers.contains(endType()) ? _Markers[endType()] : MarkerInformation());
 	_middleStart = _startMarker._path.currentPosition().x();
-	_middleEnd = distance - _endMarker._path.currentPosition().x();
 
-	_endMarker._path.translate(_middleEnd, 0);
+	_middleEnd = distance + _endMarker._path.currentPosition().x();
+
+	_endMarker._path.translate(distance, 0);
 
 	p += _startMarker._path + _endMarker._path;
 	p.moveTo(_middleStart, 0);

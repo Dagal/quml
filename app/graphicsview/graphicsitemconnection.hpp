@@ -33,7 +33,7 @@
 class GraphicsItemConnectionPoint;
 class GraphicsItemConnectionLine;
 
-class GraphicsItemConnection : public QGraphicsItem, public IExtendedGraphicsItem
+class GraphicsItemConnection : public QGraphicsItem, public ItemChangedListener
 {
 public:
 	GraphicsItemConnection(QGraphicsItem * parent = 0);

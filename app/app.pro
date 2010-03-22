@@ -3,7 +3,7 @@ SOURCES += main.cpp \
     graphicsview/graphicsitemconnection.cpp \
     graphicsview/graphicsitemconnectionpoint.cpp \
     graphicsview/graphicsitemconnectionline.cpp \
-    test.cpp
+	util/iextendedgraphicsitem.cpp
 INCLUDEPATH = ../lib/
 LIBS += -L$(HOME)/programming/lib \
     -lquml
@@ -16,5 +16,5 @@ HEADERS += mainwindow.hpp \
     graphicsview/graphicsitemconnectionpoint.hpp \
     graphicsview/graphicsitemconnectionline.hpp \
     util/iextendedgraphicsitem.hpp \
-    test.hpp
+	util/iextendedgraphicsitem.hpp
 FORMS += mainwindow.ui

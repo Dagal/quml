@@ -61,7 +61,7 @@ public:
 	enum { Type = UserType + 2};
 
 public:
-	GraphicsItemConnectionLine(GraphicsItemConnectionPoint * start, GraphicsItemConnectionPoint * end, QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
+	GraphicsItemConnectionLine(GraphicsItemConnectionPoint * start, GraphicsItemConnectionPoint * end, QGraphicsItem * parent = 0);
 	virtual ~GraphicsItemConnectionLine();
 
 	void setStartType(ConnectionType type);

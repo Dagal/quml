@@ -42,7 +42,7 @@ GraphicsItemConnectionPoint * createNewPoint(const QPointF & position, GraphicsI
 {
 	GraphicsItemConnectionPoint * point = new GraphicsItemConnectionPoint(connection);
 	point->setPos(position);
-	point->installItemChangedListener(connection);
+	point->addItemChangedListener(connection);
 	if(connection->scene()) point->installSceneEventFilter(connection);
 
 	return point;
@@ -51,7 +51,7 @@ GraphicsItemConnectionPoint * createNewPoint(const QPointF & position, GraphicsI
 GraphicsItemConnectionLine * createNewLine(GraphicsItemConnectionPoint * startPoint, GraphicsItemConnectionPoint * endPoint, GraphicsItemConnection * connection)
 {
 	GraphicsItemConnectionLine * line = new GraphicsItemConnectionLine(startPoint, endPoint, connection);
-	line->installItemChangedListener(connection);
+	line->addItemChangedListener(connection);
 	if(connection->scene()) line->installSceneEventFilter(connection);
 
 	return line;
@@ -159,8 +159,8 @@ int GraphicsItemConnection::pointPosition(GraphicsItemConnectionPoint * point) c
 
 void GraphicsItemConnection::updateCompleteConnection()
 {
-	for(int i = 0; i < _points.size(); i++)
-		_points[i]->setFlag(QGraphicsItem::ItemIsMovable, !(i == 0 || i == _points.size()-1));
+	//for(int i = 0; i < _points.size(); i++)
+//		_points[i]->setFlag(QGraphicsItem::ItemIsMovable, !(i == 0 || i == _points.size()-1));
 
 	for(int i = 0; i < _lines.size(); i++)
 	{
@@ -170,7 +170,7 @@ void GraphicsItemConnection::updateCompleteConnection()
 		if(i == 0)
 			_lines[i]->setStartType(GraphicsItemConnectionLine::LineConnectionStartArrow);
 		if(i == _lines.size()-1)
-			_lines[i]->setEndType(GraphicsItemConnectionLine::LineConnectionAggregation);
+			_lines[i]->setEndType(GraphicsItemConnectionLine::LineConnectionClosedEndArrow);
 	}
 
 	updateBoundingRect();

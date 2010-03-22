@@ -42,8 +42,8 @@ GraphicsItemConnectionPoint::GraphicsItemConnectionPoint(QGraphicsItem * parent)
 	//setFlag(QGraphicsItem::ItemAcceptsInputMethod, true);
 
 	setBrush(QBrush(Qt::NoBrush));
-	setSelectedBrush(QBrush(Qt::red, Qt::SolidPattern));
-	setSelectedPen(QPen(Qt::NoPen));
+	setSelectedBrush(QBrush(Qt::gray, Qt::SolidPattern));
+	setSelectedPen(QPen(Qt::blue));
 	setParentItem(parent);
 }
 
