@@ -23,54 +23,26 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
+#ifndef GRAPHICSITEMRELATION_HPP
+#define GRAPHICSITEMRELATION_HPP
 
-#include "iextendedgraphicsitem.hpp"
+#include "connection/graphicsitemconnection.hpp"
 
-GraphicsExtPrivate::~GraphicsExtPrivate()
+class GraphicsItemRelation : public GraphicsItemConnection
 {
-	while(!_listeners.empty())
-		removeItemChangedListener(_listeners.first());
-}
+public:
+	GraphicsItemRelation(QGraphicsItem * parent = 0);
 
-void GraphicsExtPrivate::addItemChangedListener(ItemChangedListener * listener)
-{
-	if(listener == 0)
-		return;
+protected:
+	virtual bool sceneEventFilter(QGraphicsItem * watched, QEvent * event);
 
-	if(_listeners.contains(listener))
-		return;
+	virtual void onLineCreated(GraphicsItemConnectionLine * newLine);
 
-	_listeners.push_back(listener);
-	listener->_listenObjects.push_back(this);
-}
+private:
+	bool onPointContextMenu(GraphicsItemConnectionPoint * point, QGraphicsSceneContextMenuEvent * event);
+	bool onLineContextMenu(GraphicsItemConnectionLine * line, QGraphicsSceneContextMenuEvent * event);
+	bool onLineDoubleClick(GraphicsItemConnectionLine * line, QGraphicsSceneMouseEvent * event);
 
-void GraphicsExtPrivate::removeItemChangedListener(ItemChangedListener * listener)
-{
-	_listeners.removeAll(listener);
-	listener->_listenObjects.removeAll(this);
-}
+};
 
-bool GraphicsExtPrivate::sendItemChanged(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & value, QVariant & outValue)
-{
-	foreach(ItemChangedListener * listener, _listeners)
-		if(listener->itemChangedFilter(item, change, value, outValue))
-			return true;
-
-	return false;
-}
-
-ItemChangedListener::~ItemChangedListener()
-{
-	while(!_listenObjects.empty())
-		_listenObjects.first()->removeItemChangedListener(this);
-}
-
-bool ItemChangedListener::itemChangedFilter(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & inValue, QVariant & outValue)
-{
-	Q_UNUSED(item);
-	Q_UNUSED(change);
-	Q_UNUSED(inValue);
-	Q_UNUSED(outValue);
-
-	return false;
-}
+#endif // GRAPHICSITEMRELATION_HPP

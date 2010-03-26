@@ -32,37 +32,50 @@
 #include <QKeyEvent>
 #include <QMenu>
 
+GraphicsItemConnectionLine * DefaultLineCreator::operator()(GraphicsItemConnectionPoint * startPoint, GraphicsItemConnectionPoint * endPoint)
+{
+	return new GraphicsItemConnectionLine(startPoint, endPoint);
+}
+
 GraphicsItemConnection::GraphicsItemConnection(QGraphicsItem * parent)
 	: QGraphicsItem(parent)
+	, _lineCreator(new DefaultLineCreator)
 {
 	setFlag(QGraphicsItem::ItemIsFocusable, true);
 }
 
-GraphicsItemConnectionPoint * createNewPoint(const QPointF & position, GraphicsItemConnection * connection)
+GraphicsItemConnection::~GraphicsItemConnection()
 {
-	GraphicsItemConnectionPoint * point = new GraphicsItemConnectionPoint(connection);
-	point->setPos(position);
-	point->addItemChangedListener(connection);
-	if(connection->scene()) point->installSceneEventFilter(connection);
-
-	return point;
+	delete _lineCreator;
 }
 
-GraphicsItemConnectionLine * createNewLine(GraphicsItemConnectionPoint * startPoint, GraphicsItemConnectionPoint * endPoint, GraphicsItemConnection * connection)
+GraphicsItemConnectionLine * GraphicsItemConnection::createAndAttachLine(GraphicsItemConnectionPoint * startPoint, GraphicsItemConnectionPoint * endPoint, int position)
 {
-	GraphicsItemConnectionLine * line = new GraphicsItemConnectionLine(startPoint, endPoint, connection);
-	line->addItemChangedListener(connection);
-	if(connection->scene()) line->installSceneEventFilter(connection);
+	if(!lineCreator())
+		return 0;
+
+	GraphicsItemConnectionLine * line = (*lineCreator())(startPoint, endPoint);
+	line->setParentItem(this);
+
+	_lines[position] = line;
+
+	onLineCreated(line);
 
 	return line;
 }
 
-GraphicsItemConnectionPoint * GraphicsItemConnection::createPoint(int posInLine, const QPointF & posInScene)
+void GraphicsItemConnection::attachPoint(GraphicsItemConnectionPoint * point, int position)
 {
-	if(posInLine < 0 || posInLine > _points.size())
-		posInLine = _points.size();
+	if(point == 0)
+		return;
 
-	GraphicsItemConnectionPoint * point = createNewPoint(posInScene, this);
+	if(point->parentItem() != this)
+		point->setParentItem(this);
+
+	if(position < 0 || position > _points.size())
+		position = _points.size();
+
+	point->addItemChangedListener(this);
 
 	// first point, just insert
 	if(_points.empty())
@@ -70,41 +83,45 @@ GraphicsItemConnectionPoint * GraphicsItemConnection::createPoint(int posInLine,
 		_points.push_back(point);
 	}
 	// front point
-	else if(posInLine == 0)
+	else if(position == 0)
 	{
 		_points.push_front(point);
-		_lines.push_front(createNewLine(point, pointAt(0), this));
+		_lines.push_front(0);
+		createAndAttachLine(point, pointAt(0), 0);
 	}
 	// end point
-	else if(posInLine == _points.size())
+	else if(position == _points.size())
 	{
 		_points.push_back(point);
-		_lines.push_back(createNewLine(pointAt(posInLine-1), point, this));
+		_lines.push_back(0);
+		createAndAttachLine(pointAt(position-1), point, _lines.size()-1);
 	}
 	// point in the middle
 	else
 	{
-		_points.insert(posInLine, point);
+		_points.insert(position, point);
 		// get the old line
-		GraphicsItemConnectionLine * oldLine = _lines[posInLine-1];
+		GraphicsItemConnectionLine * oldLine = _lines[position-1];
 
 		// create the two new lines
-		_lines[posInLine-1] = createNewLine(oldLine->startPoint(), point, this);
-		_lines.insert(posInLine, createNewLine(point, oldLine->endPoint(), this));
+		_lines.insert(position , 0);
+		createAndAttachLine(oldLine->startPoint(), point, position-1);
+		createAndAttachLine(point, oldLine->endPoint(), position);
 
 		// destroy the old lines
+		onLineDestroyed(oldLine);
 		delete oldLine;
 	}
 
-	updateCompleteConnection();
+	onPointAdded(point);
 
-	return point;
+	updateCompleteConnection();
 }
 
-void GraphicsItemConnection::removePoint(int position)
+ GraphicsItemConnectionPoint * GraphicsItemConnection::detachPoint(int position)
 {
 	if(position < 0 || position >= _points.size())
-		return;
+		return 0;
 
 	GraphicsItemConnectionPoint * point = pointAt(position);
 
@@ -114,12 +131,14 @@ void GraphicsItemConnection::removePoint(int position)
 	}
 	else if(position == 0)
 	{
+		onLineDestroyed(_lines.first());
 		delete _lines.first();
 		_lines.removeFirst();
 		_points.removeAt(position);
 	}
 	else if(position == _points.size()-1)
 	{
+		onLineDestroyed(_lines.last());
 		delete _lines.last();
 		_lines.removeLast();
 		_points.removeAt(position);
@@ -132,16 +151,19 @@ void GraphicsItemConnection::removePoint(int position)
 
 		// only remove one line, overwrite the second
 		_points.removeAt(position);
-		_lines[position] = createNewLine(lineA->startPoint(), lineB->endPoint(), this);
+		createAndAttachLine(lineA->startPoint(), lineB->endPoint(), position);
 		_lines.removeAt(position-1);
 
+		onLineDestroyed(lineA);
+		onLineDestroyed(lineB);
 		delete lineA;
 		delete lineB;
 	}
 
-	delete point;
-
 	updateCompleteConnection();
+
+	onPointRemoved(point);
+	return point;
 }
 
 GraphicsItemConnectionPoint * GraphicsItemConnection::pointAt(int position) const
@@ -159,20 +181,7 @@ int GraphicsItemConnection::pointPosition(GraphicsItemConnectionPoint * point) c
 
 void GraphicsItemConnection::updateCompleteConnection()
 {
-	//for(int i = 0; i < _points.size(); i++)
-//		_points[i]->setFlag(QGraphicsItem::ItemIsMovable, !(i == 0 || i == _points.size()-1));
-
-	for(int i = 0; i < _lines.size(); i++)
-	{
-		_lines[i]->setStartType(GraphicsItemConnectionLine::LineConnectionNormal);
-		_lines[i]->setEndType(GraphicsItemConnectionLine::LineConnectionNormal);
-
-		if(i == 0)
-			_lines[i]->setStartType(GraphicsItemConnectionLine::LineConnectionStartArrow);
-		if(i == _lines.size()-1)
-			_lines[i]->setEndType(GraphicsItemConnectionLine::LineConnectionClosedEndArrow);
-	}
-
+	onUpdateConnection();
 	updateBoundingRect();
 }
 
@@ -191,14 +200,6 @@ void GraphicsItemConnection::updateBoundingRect()
 		_boundingRect |= mapRectFromItem(line, line->boundingRect());
 
 }
-
-void GraphicsItemConnection::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-	Q_UNUSED(option);
-	Q_UNUSED(widget);
-	Q_UNUSED(painter);
-}
-
 
 bool GraphicsItemConnection::itemChangedFilter(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & inValue, QVariant & outValue)
 {
@@ -229,31 +230,34 @@ QVariant GraphicsItemConnection::itemChange(GraphicsItemChange change, const QVa
 				p->setSelected(true);
 		}
 	}
+	else if(change == QGraphicsItem::ItemChildRemovedChange)
+	{
+		QGraphicsItem * oldChild = value.value<QGraphicsItem*>();
+
+		// detaching a connected point?
+		GraphicsItemConnectionPoint * p = qgraphicsitem_cast<GraphicsItemConnectionPoint*>(oldChild);
+		if(p)
+		{
+			int pos = pointPosition(p);
+			if(pos != -1)
+				detachPoint(pos);
+		}
+
+		// detaching a connected line?
+		GraphicsItemConnectionLine * l = qgraphicsitem_cast<GraphicsItemConnectionLine*>(oldChild);
+		if(l)
+		{
+			int pos = _lines.indexOf(l);
+			if(pos != -1)
+			{
+				qDebug() << "GraphicsConnectionLine: Warning, don't remove a line from a connection!";
+				createAndAttachLine(pointAt(pos), pointAt(pos+1), pos);
+				updateCompleteConnection();
+			}
+		}
+	}
 
 	return QGraphicsItem::itemChange(change, value);
-}
-
-bool GraphicsItemConnection::sceneEventFilter(QGraphicsItem * watched, QEvent * event)
-{
-	if(event->type() == QEvent::GraphicsSceneContextMenu)
-	{
-		GraphicsItemConnectionPoint * p = qgraphicsitem_cast<GraphicsItemConnectionPoint*>(watched);
-		GraphicsItemConnectionLine * l = qgraphicsitem_cast<GraphicsItemConnectionLine*>(watched);
-
-		if(p) return onPointContextMenu(p, static_cast<QGraphicsSceneContextMenuEvent*>(event));
-		if(l) return onLineContextMenu(l, static_cast<QGraphicsSceneContextMenuEvent*>(event));
-
-	}
-	else if(event->type() == QEvent::GraphicsSceneMouseDoubleClick)
-	{
-		GraphicsItemConnectionPoint * p = qgraphicsitem_cast<GraphicsItemConnectionPoint*>(watched);
-		GraphicsItemConnectionLine * l = qgraphicsitem_cast<GraphicsItemConnectionLine*>(watched);
-
-		if(p) return onPointDoubleClick(p, static_cast<QGraphicsSceneMouseEvent*>(event));
-		if(l) return onLineDoubleClick(l, static_cast<QGraphicsSceneMouseEvent*>(event));
-	}
-
-	return QGraphicsItem::sceneEventFilter(watched, event);
 }
 
 bool GraphicsItemConnection::sceneEvent(QEvent * event)
@@ -298,43 +302,8 @@ void GraphicsItemConnection::focusOutEvent(QFocusEvent * event)
 		p->setPointStatus(GraphicsItemConnectionPoint::PointDisabled);
 }
 
-
-bool GraphicsItemConnection::onPointContextMenu(GraphicsItemConnectionPoint * point, QGraphicsSceneContextMenuEvent * event)
-{
-	QMenu m;
-	QAction * delAction = m.addAction("Delete point");
-
-	if(m.exec(event->screenPos(), 0) == delAction)
-	{
-		removePoint(pointPosition(point));
-		return true;
-	}
-
-	return false;
-}
-
-bool GraphicsItemConnection::onLineContextMenu(GraphicsItemConnectionLine * line, QGraphicsSceneContextMenuEvent * event)
-{
-	Q_UNUSED(line);
-	Q_UNUSED(event);
-
-	return true;
-}
-
-bool GraphicsItemConnection::onPointDoubleClick(GraphicsItemConnectionPoint * point, QGraphicsSceneMouseEvent * event)
-{
-	Q_UNUSED(point);
-	Q_UNUSED(event);
-
-	return true;
-}
-
-bool GraphicsItemConnection::onLineDoubleClick(GraphicsItemConnectionLine * line, QGraphicsSceneMouseEvent * event)
-{
-	int posInLine = pointPosition(line->endPoint());
-	QPointF posInScene = mapFromScene(event->scenePos());
-
-	createPoint(posInLine, posInScene);
-
-	return true;
-}
+void GraphicsItemConnection::onUpdateConnection() {}
+void GraphicsItemConnection::onPointAdded(GraphicsItemConnectionPoint * ) {}
+void GraphicsItemConnection::onPointRemoved(GraphicsItemConnectionPoint * ) {}
+void GraphicsItemConnection::onLineCreated(GraphicsItemConnectionLine * ) {}
+void GraphicsItemConnection::onLineDestroyed(GraphicsItemConnectionLine * ) {}

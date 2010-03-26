@@ -49,6 +49,9 @@ GraphicsItemConnectionPoint::GraphicsItemConnectionPoint(QGraphicsItem * parent)
 
 void GraphicsItemConnectionPoint::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+	Q_UNUSED(option);
+	Q_UNUSED(widget);
+
 	switch(pointStatus())
 	{
 	case PointDisabled:

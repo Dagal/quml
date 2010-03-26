@@ -25,9 +25,10 @@
 
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
-#include "graphicsview/graphicsitemconnectionline.hpp"
-#include "graphicsview/graphicsitemconnectionpoint.hpp"
-#include "graphicsview/graphicsitemconnection.hpp"
+#include "graphicsview/connection/graphicsitemconnectionline.hpp"
+#include "graphicsview/connection/graphicsitemconnectionpoint.hpp"
+#include "graphicsview/connection/graphicsitemconnection.hpp"
+#include "graphicsview/graphicsitemrelation.hpp"
 #include <QGraphicsPathItem>
 #include <QGraphicsPolygonItem>
 #include <QDebug>
@@ -42,11 +43,11 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->mainView->setScene(scene);
 	ui->mainView->setTransform(QTransform(), false);
 
-	GraphicsItemConnection * connection = new GraphicsItemConnection(0);
+	GraphicsItemConnection * connection = new GraphicsItemRelation(0);
 	scene->addItem(connection);
 
-	connection->createPoint(-1, QPointF(-100,0));
-	connection->createPoint(-1, QPointF(100,0));
+	connection->attachPoint(new GraphicsItemConnectionPoint());
+	connection->attachPoint(new GraphicsItemConnectionPoint());
 }
 
 MainWindow::~MainWindow()

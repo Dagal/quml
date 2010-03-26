@@ -33,43 +33,54 @@
 class GraphicsItemConnectionPoint;
 class GraphicsItemConnectionLine;
 
+struct LineCreator
+{
+	virtual ~LineCreator() {};
+
+	virtual GraphicsItemConnectionLine * operator()(GraphicsItemConnectionPoint * startPoint, GraphicsItemConnectionPoint * endPoint) = 0;
+};
+struct DefaultLineCreator : public LineCreator
+{
+	virtual GraphicsItemConnectionLine * operator()(GraphicsItemConnectionPoint * startPoint, GraphicsItemConnectionPoint * endPoint);
+};
+
 class GraphicsItemConnection : public QGraphicsItem, public ItemChangedListener
 {
 public:
 	GraphicsItemConnection(QGraphicsItem * parent = 0);
+	~GraphicsItemConnection();
 
-	QRectF boundingRect() const { return _boundingRect; }
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+	virtual QRectF boundingRect() const { return _boundingRect; }
+	virtual void paint(QPainter * , const QStyleOptionGraphicsItem * , QWidget * = 0) { };
 
 	// point attachement functions
-	GraphicsItemConnectionPoint * createPoint(int posInLine = -1, const QPointF & posInScene = QPointF());
-	void removePoint(int position);
+	void attachPoint(GraphicsItemConnectionPoint * point, int position = -1);
+	GraphicsItemConnectionPoint *  detachPoint(int position);
 	GraphicsItemConnectionPoint * pointAt(int position) const;
 	int pointPosition(GraphicsItemConnectionPoint * point) const;
 
 	virtual bool itemChangedFilter(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & inValue, QVariant & outValue);
 
 protected:
-	virtual bool sceneEventFilter(QGraphicsItem * watched, QEvent * event);
 	virtual bool sceneEvent(QEvent * event);
 	virtual QVariant itemChange(GraphicsItemChange change, const QVariant & value);
 	virtual void focusInEvent(QFocusEvent * event);
 	virtual void focusOutEvent(QFocusEvent * event);
 
-	virtual bool onPointContextMenu(GraphicsItemConnectionPoint * point, QGraphicsSceneContextMenuEvent * event);
-	virtual bool onLineContextMenu(GraphicsItemConnectionLine * line, QGraphicsSceneContextMenuEvent * event);
-	virtual bool onPointDoubleClick(GraphicsItemConnectionPoint * point, QGraphicsSceneMouseEvent * event);
-	virtual bool onLineDoubleClick(GraphicsItemConnectionLine * line, QGraphicsSceneMouseEvent * event);
-
-
-
+	virtual void onUpdateConnection();
+	virtual void onPointAdded(GraphicsItemConnectionPoint * newPoint);
+	virtual void onPointRemoved(GraphicsItemConnectionPoint * oldPoint);
+	virtual void onLineCreated(GraphicsItemConnectionLine * newLine);
+	virtual void onLineDestroyed(GraphicsItemConnectionLine * oldLine);
 
 private:
 	void updateCompleteConnection();
 	void updateBoundingRect();
 
+	GraphicsItemConnectionLine * createAndAttachLine(GraphicsItemConnectionPoint * startPoint, GraphicsItemConnectionPoint * endPoint, int position);
 
 private:
+	PtrVarGetSet(LineCreator, lineCreator, LineCreator);
 	QList<GraphicsItemConnectionLine *> _lines;
 	QList<GraphicsItemConnectionPoint *> _points;
 	QRectF _boundingRect;

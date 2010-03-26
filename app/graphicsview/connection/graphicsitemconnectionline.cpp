@@ -56,10 +56,11 @@ void GraphicsItemConnectionLine::InitialiseMarkers()
 	pStartArrow.moveTo(0,0);
 
 	QPainterPath pEndArrow;
-	pEndArrow.lineTo(-dxArrow, dyArrow);
-	pEndArrow.moveTo(0,0);
-	pEndArrow.lineTo(-dxArrow, -dyArrow);
-	pEndArrow.moveTo(0,0);
+	pEndArrow.moveTo(0, dyArrow);
+	pEndArrow.lineTo(dxArrow, 0);
+	pEndArrow.lineTo(0, -dyArrow);
+	pEndArrow.moveTo(dxArrow, 0);
+
 
 	QPainterPath pClosedStartArrow;
 	pClosedStartArrow.lineTo(dxArrow, dyArrow);
@@ -68,10 +69,11 @@ void GraphicsItemConnectionLine::InitialiseMarkers()
 	pClosedStartArrow.moveTo(dxArrow, 0);
 
 	QPainterPath pClosedEndArrow;
-	pClosedEndArrow.lineTo(-dxArrow, dyArrow);
-	pClosedEndArrow.lineTo(-dxArrow, -dyArrow);
-	pClosedEndArrow.lineTo(0,0);
-	pClosedEndArrow.moveTo(-dxArrow, 0);
+	pClosedEndArrow.moveTo(0, dyArrow);
+	pClosedEndArrow.lineTo(dxArrow, 0);
+	pClosedEndArrow.lineTo(0, -dyArrow);
+	pClosedEndArrow.lineTo(0, dyArrow);
+	pClosedEndArrow.moveTo(dxArrow, 0);
 
 	QPainterPath pNormal;
 
@@ -111,8 +113,8 @@ void GraphicsItemConnectionLine::initialiseDefaults()
 	qreal z = qMin(_startPoint->zValue(), _endPoint->zValue());
 	setZValue(z-1);
 
-	_startType = LineConnectionAggregation;
-	_endType = LineConnectionAggregation;
+	_startType = LineConnectionNormal;
+	_endType = LineConnectionNormal;
 
 	setPen(QPen(QBrush(Qt::red, Qt::SolidPattern), 1));
 	setSelectedPen(QPen(QBrush(Qt::blue, Qt::SolidPattern), 1));
@@ -142,9 +144,9 @@ void GraphicsItemConnectionLine::updatePosition()
 	_endMarker = (_Markers.contains(endType()) ? _Markers[endType()] : MarkerInformation());
 	_middleStart = _startMarker._path.currentPosition().x();
 
-	_middleEnd = distance + _endMarker._path.currentPosition().x();
+	_middleEnd = distance - _endMarker._path.currentPosition().x();
 
-	_endMarker._path.translate(distance, 0);
+	_endMarker._path.translate(_middleEnd, 0);
 
 	p += _startMarker._path + _endMarker._path;
 	p.moveTo(_middleStart, 0);
@@ -171,6 +173,9 @@ void GraphicsItemConnectionLine::setEndType(ConnectionType type)
 
 void GraphicsItemConnectionLine::paint(QPainter * painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+	Q_UNUSED(option);
+	Q_UNUSED(widget);
+
 	painter->setPen(isSelected() ? selectedPen() : pen());
 
 	painter->setBrush( (_startMarker._fill ? brush() : emptyBrush()) );

@@ -23,54 +23,15 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
+#ifndef GRAPHICSITEMCLASS_HPP
+#define GRAPHICSITEMCLASS_HPP
 
-#include "iextendedgraphicsitem.hpp"
+#include <QGraphicsRectItem>
 
-GraphicsExtPrivate::~GraphicsExtPrivate()
+class GraphicsItemClass : public QGraphicsRectItem
 {
-	while(!_listeners.empty())
-		removeItemChangedListener(_listeners.first());
-}
+public:
+    GraphicsItemClass();
+};
 
-void GraphicsExtPrivate::addItemChangedListener(ItemChangedListener * listener)
-{
-	if(listener == 0)
-		return;
-
-	if(_listeners.contains(listener))
-		return;
-
-	_listeners.push_back(listener);
-	listener->_listenObjects.push_back(this);
-}
-
-void GraphicsExtPrivate::removeItemChangedListener(ItemChangedListener * listener)
-{
-	_listeners.removeAll(listener);
-	listener->_listenObjects.removeAll(this);
-}
-
-bool GraphicsExtPrivate::sendItemChanged(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & value, QVariant & outValue)
-{
-	foreach(ItemChangedListener * listener, _listeners)
-		if(listener->itemChangedFilter(item, change, value, outValue))
-			return true;
-
-	return false;
-}
-
-ItemChangedListener::~ItemChangedListener()
-{
-	while(!_listenObjects.empty())
-		_listenObjects.first()->removeItemChangedListener(this);
-}
-
-bool ItemChangedListener::itemChangedFilter(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & inValue, QVariant & outValue)
-{
-	Q_UNUSED(item);
-	Q_UNUSED(change);
-	Q_UNUSED(inValue);
-	Q_UNUSED(outValue);
-
-	return false;
-}
+#endif // GRAPHICSITEMCLASS_HPP
