@@ -6,9 +6,7 @@ SOURCES += main.cpp \
     util/iextendedgraphicsitem.cpp \
     graphicsview/graphicsitemclass.cpp \
     graphicsview/graphicsitemrelation.cpp
-INCLUDEPATH = ../lib/
-LIBS += -L$(HOME)/programming/lib \
-    -lquml
+
 unix:OBJECTS_DIR = .obj/
 unix:MOC_DIR = .obj/
 REL_PATH = ../lib/

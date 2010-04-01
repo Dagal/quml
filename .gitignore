@@ -7,3 +7,4 @@ moc_*
 app/app
 test/test
 ui_*
+*.a

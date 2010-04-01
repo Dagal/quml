@@ -1,9 +1,8 @@
 TEMPLATE = lib
-CONFIG += dll
+CONFIG += static
 TARGET = quml
 unix:OBJECTS_DIR = .obj/
 unix:MOC_DIR = .obj/
-DESTDIR = /home/tfannes/programming/lib/
 HEADERS += model/element/umldiagram.hpp \
     model/element/elementobject.hpp \
     model/element/elementhelper.hpp \
