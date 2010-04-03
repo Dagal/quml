@@ -23,54 +23,57 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "parameterobject.hpp"
-#include "_parameterobject.hpp"
-#include "datatypeobject.hpp"
-#include "_umldiagram.hpp"
-#include <sstream>
 
-namespace element
+#include "graphicsext.hpp"
+
+namespace graphicsUtil
 {
-	ParameterObject::ParameterObject(const std::string & name)
-		: ElementObject(name), _dd(new ParameterObjectPrivate)
+	GraphicsExtPrivate::~GraphicsExtPrivate()
 	{
+		while(!_listeners.empty())
+			removeItemChangedListener(_listeners.first());
 	}
 
-	DatatypeObject * ParameterObject::datatype() const
+	void GraphicsExtPrivate::addItemChangedListener(ItemChangedListener * listener)
 	{
-		return _dd->_datatype;
-	}
-
-	const string & ParameterObject::defaultValue() const
-	{
-		return _dd->_defaultValue;
-	}
-
-	void ParameterObject::setDatatype(DatatypeObject * datatype)
-	{
-		if(datatype != 0 && datatype->umlDiagram() != umlDiagram())
-			datatype = 0;
-
-		if(_dd->_datatype == datatype)
+		if(listener == 0)
 			return;
 
+		if(_listeners.contains(listener))
+			return;
 
-		DatatypeObject * oldData = _dd->_datatype;
-		_dd->_datatype = datatype;
-		relatedElementChanged(oldData);
+		_listeners.push_back(listener);
+		listener->_listenObjects.push_back(this);
 	}
 
-	void ParameterObject::setDefaultValue(const string & defaultValue)
+	void GraphicsExtPrivate::removeItemChangedListener(ItemChangedListener * listener)
 	{
-		_dd->_defaultValue = defaultValue;
+		_listeners.removeAll(listener);
+		listener->_listenObjects.removeAll(this);
 	}
 
-	std::string ParameterObject::umlName() const
+	bool GraphicsExtPrivate::sendItemChanged(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & value, QVariant & outValue)
 	{
-		std::stringstream s;
+		foreach(ItemChangedListener * listener, _listeners)
+			if(listener->itemChangedFilter(item, change, value, outValue))
+				return true;
 
-		s << name() << ": " << datatype();
+		return false;
+	}
 
-		return s.str();
+	ItemChangedListener::~ItemChangedListener()
+	{
+		while(!_listenObjects.empty())
+			_listenObjects.first()->removeItemChangedListener(this);
+	}
+
+	bool ItemChangedListener::itemChangedFilter(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & inValue, QVariant & outValue)
+	{
+		Q_UNUSED(item);
+		Q_UNUSED(change);
+		Q_UNUSED(inValue);
+		Q_UNUSED(outValue);
+
+		return false;
 	}
 }

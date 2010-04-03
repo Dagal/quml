@@ -25,7 +25,10 @@
 
 #include "datatypeobject.hpp"
 
-DatatypeObject::DatatypeObject(const std::string & name)
-	: ElementObject(name)
+namespace element
 {
+	DatatypeObject::DatatypeObject(const std::string & name)
+		: ElementObject(name)
+	{
+	}
 }

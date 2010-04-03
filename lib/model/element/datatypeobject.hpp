@@ -28,12 +28,19 @@
 
 #include "elementobject.hpp"
 
-class DatatypeObject : public ElementObject
+namespace element
 {
-public:
-	enum { elementtype = Element_Datatype };
+	/*!
+	  \brief The DatatypeObject class contains all the information to store the UML model of a datatype.
+	  This class is abstract but can be seen as a parent class for element::ClassObject and element::PrimitiveObject
+	*/
+	class DatatypeObject : public ElementObject
+	{
+	public:
+		enum { elementtype = Element_Datatype };
 
-	DatatypeObject(const std::string & name);
-};
+		DatatypeObject(const std::string & name);
+	};
+}
 
 #endif // DATATYPE_HPP

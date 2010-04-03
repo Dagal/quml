@@ -26,54 +26,69 @@
 #ifndef UMLDIAGRAM_HPP
 #define UMLDIAGRAM_HPP
 
-#include "defines.hpp"
+#include "element.hpp"
 #include "algorithm.hpp"
 #include "elementhelper.hpp"
 #include <vector>
 #include <string>
 
-class UMLDiagram
+namespace element
 {
-	friend class ElementObject;
+	/*!
+	  \class element::UMLDiagram
+	  \brief The UMLDiagram is a container for all different types of ElementObject
 
-	class UMLDiagramPrivate;
+	  A UMLDiagram contains ElementObjects in an hierarchical way. It is possible to search a complete UMLDiagram for specific elements by qualifiedName.
+	  Next to this, a UMLDiagram makes it also possible to find related elements. If an element is added to a UMLDiagram, the changing of a name, parent,
+	  relatedElements is automatically passed on to the UMLDiagram and so is updated.
+	  If a UMLDiagram is destroyed, all contained elements are also destroyed.
 
-public:
-	UMLDiagram();
-	~UMLDiagram();
+		\sa element::findRelatedElement
+	*/
+	class UMLDiagram
+	{
+		friend class ElementObject;
 
-	// create & add functions
-	ElementObject * createElement(ElementType type, const std::string & name, const std::string & parentName);
+		class UMLDiagramPrivate;
 
-	// element "find" functions
-	ElementObject * findElement(const std::string & qualifiedName) const;
-	const std::vector<ElementObject*> & allElements() const;
-	std::vector<ElementObject *> findRelatedElements(ElementObject * elementObject) const;
-	template <typename T> std::vector<T *> findElements() const;
+	public:
+		UMLDiagram();
+		~UMLDiagram();
 
-private:
-	boost::shared_ptr<UMLDiagramPrivate> _dd;
-};
+		// create & add functions
+		ElementObject * createElement(ElementType type, const std::string & name, const std::string & parentName);
 
-template <typename T> std::vector<T*> UMLDiagram::findElements() const
-{
-	std::vector<T*> vct(allElements().size());
+		// element "find" functions
+		ElementObject * findElement(const std::string & qualifiedName) const;
+		const std::vector<ElementObject*> & allElements() const;
+		std::vector<ElementObject *> findRelatedElements(ElementObject * elementObject) const;
+		template <typename T> std::vector<T *> findElements() const;
 
-	typename std::vector<T*>::iterator i = stf::copy_transformed_if(
-			allElements().begin(),
-			allElements().end(),
-			vct.begin(),
-			boost::bind<T*>(
-					element_cast<T>,
-					_1),
-			boost::bind(
-					std::not_equal_to<T*>(),
-					_1,
-					(T*)0)
-			);
+	private:
+		boost::shared_ptr<UMLDiagramPrivate> _dd;
+	};
 
-	vct.erase(i, vct.end());
-	return vct;
+
+	template <typename T> std::vector<T*> UMLDiagram::findElements() const
+	{
+		std::vector<T*> vct(allElements().size());
+
+		typename std::vector<T*>::iterator i = stf::copy_transformed_if(
+				allElements().begin(),
+				allElements().end(),
+				vct.begin(),
+				boost::bind<T*>(
+						element_cast<T>,
+						_1),
+				boost::bind(
+						std::not_equal_to<T*>(),
+						_1,
+						(T*)0)
+				);
+
+		vct.erase(i, vct.end());
+		return vct;
+	}
 }
 
 #endif // UMLDIAGRAM_HPP

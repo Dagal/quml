@@ -43,9 +43,10 @@ private:
 	~Controller();
 
 public:
+	const Notifier<Event>  & eventNotifier() const { return _eventNotifier; }
 
-
-	RefVarGetAcc(Notifier<Event>, eventNotifier);
+private:
+	Notifier<Event> _eventNotifier;
 };
 
 #endif // CONTROLLER_HPP

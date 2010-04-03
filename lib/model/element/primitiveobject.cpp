@@ -25,7 +25,10 @@
 
 #include "primitiveobject.hpp"
 
-PrimitiveObject::PrimitiveObject(const std::string & name)
-	: DatatypeObject(name)
+namespace element
 {
+	PrimitiveObject::PrimitiveObject(const std::string & name)
+		: DatatypeObject(name)
+	{
+	}
 }

@@ -27,10 +27,10 @@
 #define ELEMENTCOMMAND_HPP
 
 #include "icommand.hpp"
+#include "element.hpp"
 #include <string>
 
 class ClassDiagramController;
-class ElementObject;
 
 class DeleteElementCommand : public ICommand
 {
@@ -45,7 +45,7 @@ private:
 	ClassDiagramController * _controller;
 	std::string _elementQualifiedName;
 	std::string _parentQualifiedName;
-	ElementObject * _element;
+	element::ElementObject * _element;
 };
 
 

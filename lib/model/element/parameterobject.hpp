@@ -29,25 +29,31 @@
 #include "elementobject.hpp"
 #include "datatypeobject.hpp"
 
-class ParameterObject : public ElementObject
+namespace element
 {
-	class ParameterObjectPrivate;
+	/*!
+	  \brief The ParameterObject class contains all the information to store the UML model of a parameter.
+	*/
+	class ParameterObject : public ElementObject
+	{
+		class ParameterObjectPrivate;
 
-public:
-	enum { elementtype = Element_Parameter };
+	public:
+		enum { elementtype = Element_Parameter };
 
-	ParameterObject(const std::string & name);
+		ParameterObject(const std::string & name);
 
-	DatatypeObject * datatype() const;
-	const std::string & defaultValue() const;
-	void setDatatype(DatatypeObject * datatype);
-	void setDefaultValue(const std::string & defaultValue);
+		DatatypeObject * datatype() const;
+		const std::string & defaultValue() const;
+		void setDatatype(DatatypeObject * datatype);
+		void setDefaultValue(const std::string & defaultValue);
 
-	virtual ElementType type() const { return Element_Parameter; }
-	virtual std::string umlName() const;
+		virtual ElementType type() const { return Element_Parameter; }
+		virtual std::string umlName() const;
 
-private:
-	boost::shared_ptr<ParameterObjectPrivate> _dd;
-};
+	private:
+		boost::shared_ptr<ParameterObjectPrivate> _dd;
+	};
+}
 
 #endif // PARAMETEROBJECT_HPP

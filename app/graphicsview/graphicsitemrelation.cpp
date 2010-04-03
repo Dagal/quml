@@ -31,6 +31,7 @@
 #include <QMenu>
 #include <QDebug>
 
+using namespace connection;
 
 GraphicsItemRelation::GraphicsItemRelation(QGraphicsItem * parent)
 	: GraphicsItemConnection(parent)
@@ -40,6 +41,16 @@ GraphicsItemRelation::GraphicsItemRelation(QGraphicsItem * parent)
 void GraphicsItemRelation::onLineCreated(GraphicsItemConnectionLine * newLine)
 {
 	if(scene()) newLine->installSceneEventFilter(this);
+}
+
+void GraphicsItemRelation::onPointAdded(GraphicsItemConnectionPoint * newPoint)
+{
+	if(scene()) newPoint->installSceneEventFilter(this);
+}
+
+void GraphicsItemRelation::onPointRemoved(GraphicsItemConnectionPoint * oldPoint)
+{
+	if(scene()) oldPoint->removeSceneEventFilter(this);
 }
 
 bool GraphicsItemRelation::sceneEventFilter(QGraphicsItem * watched, QEvent * event)
@@ -54,8 +65,6 @@ bool GraphicsItemRelation::sceneEventFilter(QGraphicsItem * watched, QEvent * ev
 	}
 	else if(event->type() == QEvent::GraphicsSceneMouseDoubleClick)
 	{
-		qDebug() << "double click";
-
 		GraphicsItemConnectionLine * l = qgraphicsitem_cast<GraphicsItemConnectionLine*>(watched);
 		if(l) return onLineDoubleClick(l, static_cast<QGraphicsSceneMouseEvent*>(event));
 	}

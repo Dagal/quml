@@ -29,31 +29,37 @@
 #include "elementobject.hpp"
 #include "datatypeobject.hpp"
 
-class MethodObject : public ElementObject
+namespace element
 {
-	class MethodObjectPrivate;
+	/*!
+	  \brief The MethodObject class contains all the information to store the UML model of a method.
+	*/
+	class MethodObject : public ElementObject
+	{
+		class MethodObjectPrivate;
 
-public:
-	enum { elementtype = Element_Method };
+	public:
+		enum { elementtype = Element_Method };
 
-	MethodObject(const std::string & name);
-	~MethodObject() {}
+		MethodObject(const std::string & name);
+		~MethodObject() {}
 
 
-	DatatypeObject * returnType() const;
-	void setReturnType(DatatypeObject * returnType);
-	const std::vector<ParameterObject*> & parameters() const;
-	ParameterObject * parameterAt(unsigned int position) const;
+		DatatypeObject * returnType() const;
+		void setReturnType(DatatypeObject * returnType);
+		const std::vector<ParameterObject*> & parameters() const;
+		ParameterObject * parameterAt(unsigned int position) const;
 
-	virtual std::string umlName() const;
-	virtual ElementType type() const { return Element_Method; }
+		virtual std::string umlName() const;
+		virtual ElementType type() const { return Element_Method; }
 
-private:
-	virtual void onChildAdded(ElementObject * child);
-	virtual void onChildRemoved(ElementObject * child);
+	private:
+		virtual void onChildAdded(ElementObject * child);
+		virtual void onChildRemoved(ElementObject * child);
 
-private:
-	boost::shared_ptr<MethodObjectPrivate> _dd;
-};
+	private:
+		boost::shared_ptr<MethodObjectPrivate> _dd;
+	};
+}
 
 #endif // METHODOBJECT_HPP

@@ -28,15 +28,21 @@
 
 #include "elementobject.hpp"
 
-class PackageObject : public ElementObject
+namespace element
 {
-public:
-	enum { elementtype = Element_Package };
+	/*!
+	  \brief The PackageObject class contains all the information to store the UML model of a package.
+	*/
+	class PackageObject : public ElementObject
+	{
+	public:
+		enum { elementtype = Element_Package };
 
-	PackageObject(const std::string & name);
-	~PackageObject() {};
+		PackageObject(const std::string & name);
+		~PackageObject() {};
 
-	virtual ElementType type() const { return Element_Package; }
-};
+		virtual ElementType type() const { return Element_Package; }
+	};
+}
 
 #endif // PACKAGEOBJECT_HPP

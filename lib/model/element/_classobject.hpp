@@ -31,7 +31,7 @@
 
 using std::vector;
 
-struct ClassObject::ClassObjectPrivate
+struct element::ClassObject::ClassObjectPrivate
 {
 	ElementContainer<PropertyObject> _properties;
 	ElementContainer<OperationObject> _operations;

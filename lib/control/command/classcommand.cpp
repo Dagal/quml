@@ -27,6 +27,8 @@
 #include "classdiagramcontroller.hpp"
 #include "classobject.hpp"
 
+using namespace element;
+
 CreateClassCommand::CreateClassCommand(ClassDiagramController * controller, const std::string & className, const std::string & parentQualifiedName)
 	: _controller(controller),
 	_className(className),

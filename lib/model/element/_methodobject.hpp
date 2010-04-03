@@ -31,7 +31,7 @@
 
 using std::string;
 
-struct MethodObject::MethodObjectPrivate
+struct element::MethodObject::MethodObjectPrivate
 {
 	MethodObjectPrivate()
 		: _returnType(0)

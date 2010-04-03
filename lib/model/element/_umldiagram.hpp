@@ -31,35 +31,42 @@
 
 struct AttachedElement
 {
-	ElementObject * elementObject;
-	ElementObject * relatedElement;
+	element::ElementObject * elementObject;
+	element::ElementObject * relatedElement;
 };
 
-struct UMLDiagram::UMLDiagramPrivate
+namespace element
 {
-	typedef std::vector<ElementObject* > element_vector;
-
-	UMLDiagramPrivate()
+	/*!
+	  \internal
+	  \class element::UMLDiagram::UMLDiagramPrivate
+	  \brief The UMLDiagramPrivate class is the PIMPL-implementation for UMLDiagram
+	*/
+	struct UMLDiagram::UMLDiagramPrivate
 	{
-	}
+		typedef std::vector<ElementObject* > element_vector;
 
-	element_vector _elements;
-	UMLDiagram * _diagram;
-	ElementRelator _elementRelator;
+		UMLDiagramPrivate()
+		{
+		}
 
-	void attachElement(ElementObject * elementObject);
-	void detachElement(ElementObject * elementObject);
-	void resortElements();
-	std::vector<ElementObject*>::iterator findElement(const std::string & qualifiedName);
-	std::vector<ElementObject*>::iterator findElement(ElementObject * elementObject);
+		element_vector _elements;
+		UMLDiagram * _diagram;
+		ElementRelator _elementRelator;
 
+		void attachElement(ElementObject * elementObject);
+		void detachElement(ElementObject * elementObject);
+		void resortElements();
+		std::vector<ElementObject*>::iterator findElement(const std::string & qualifiedName);
+		std::vector<ElementObject*>::iterator findElement(ElementObject * elementObject);
 
-private:
-	void INT_recursiveAttachElement(ElementObject * elementObject);
-	void INT_recursiveDetachElement(ElementObject * elementObject);
-	void INT_recursiveRemoveStrangeAttachedElements(ElementObject * elementObject);
-	void INT_removeElementFromLists(ElementObject * elementObject);
-	void INT_addElementToLists(ElementObject * elementObject);
-};
+	private:
+		void INT_recursiveAttachElement(ElementObject * elementObject);
+		void INT_recursiveDetachElement(ElementObject * elementObject);
+		void INT_recursiveRemoveStrangeAttachedElements(ElementObject * elementObject);
+		void INT_removeElementFromLists(ElementObject * elementObject);
+		void INT_addElementToLists(ElementObject * elementObject);
+	};
+}
 
 #endif // _UMLDIAGRAM_HPP

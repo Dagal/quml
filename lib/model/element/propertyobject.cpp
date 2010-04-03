@@ -26,19 +26,21 @@
 #include "propertyobject.hpp"
 #include "_propertyobject.hpp"
 
-PropertyObject::PropertyObject(const std::string & name)
-	: ParameterObject(name), _dd(new PropertyObjectPrivate)
+namespace element
 {
-}
+	PropertyObject::PropertyObject(const std::string & name)
+		: ParameterObject(name), _dd(new PropertyObjectPrivate)
+	{
+	}
 
-void PropertyObject::setVisibility(VisibilityType type)
-{
-	_dd->_visibility.setType(type);
-}
+	void PropertyObject::setVisibility(VisibilityType type)
+	{
+		_dd->_visibility.setType(type);
+	}
 
-VisibilityType PropertyObject::visibility() const
-{
-	return _dd->_visibility.type();
+	VisibilityType PropertyObject::visibility() const
+	{
+		return _dd->_visibility.type();
+	}
 }
-
 

@@ -30,66 +30,82 @@
 
 const float rectWidth = 4;
 
-GraphicsItemConnectionPoint::GraphicsItemConnectionPoint(QGraphicsItem * parent)
-	: GraphicsExt<QGraphicsRectItem>(0),
-	_pointStatus(PointDisabled)
+namespace connection
 {
-	setRect(-rectWidth, -rectWidth, rectWidth*2+1,rectWidth*2+1);
-
-	setFlag(QGraphicsItem::ItemIsMovable, true);
-	setFlag(QGraphicsItem::ItemIsSelectable, true);
-	setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-	//setFlag(QGraphicsItem::ItemAcceptsInputMethod, true);
-
-	setBrush(QBrush(Qt::NoBrush));
-	setSelectedBrush(QBrush(Qt::gray, Qt::SolidPattern));
-	setSelectedPen(QPen(Qt::blue));
-	setParentItem(parent);
-}
-
-void GraphicsItemConnectionPoint::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
-{
-	Q_UNUSED(option);
-	Q_UNUSED(widget);
-
-	switch(pointStatus())
+	/*!
+	  This constructor creates a point and sets the default state to disabled.
+	*/
+	GraphicsItemConnectionPoint::GraphicsItemConnectionPoint(QGraphicsItem * parent)
+		: graphicsUtil::GraphicsExt<QGraphicsRectItem>(0),
+		_pointStatus(PointSelected)
 	{
-	case PointDisabled:
-		return;
-		break;
+		setRect(-rectWidth, -rectWidth, rectWidth*2+1,rectWidth*2+1);
 
-	case PointVisible:
-		painter->setBrush(brush());
-		painter->setPen(pen());
-		break;
+		setFlag(QGraphicsItem::ItemIsMovable, true);
+		setFlag(QGraphicsItem::ItemIsSelectable, true);
+		setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+		//setFlag(QGraphicsItem::ItemAcceptsInputMethod, true);
 
-	case PointSelected:
-		painter->setBrush(selectedBrush());
-		painter->setPen(selectedPen());
-		break;
+		setBrush(QBrush(Qt::NoBrush));
+		setSelectedBrush(QBrush(Qt::gray, Qt::SolidPattern));
+		setSelectedPen(QPen(Qt::blue));
+		setParentItem(parent);
+		setPointStatus(PointDisabled);
 	}
 
-	painter->drawRect(rect());
-}
-
-void GraphicsItemConnectionPoint::setPointStatus(PointStatus  pointStatus)
-{
-	if(pointStatus == _pointStatus)
-		return;
-
-	_pointStatus = pointStatus;
-	setSelected(pointStatus == PointSelected);
-
-	update();
-}
-
-QVariant GraphicsItemConnectionPoint::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant & value)
-{
-	if(change == QGraphicsItem::ItemSelectedHasChanged)
+	/*!
+	  This reimplemented method draws the point according to its state
+	*/
+	void GraphicsItemConnectionPoint::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 	{
-		if(value.toBool() && pointStatus() != PointSelected) setPointStatus(PointSelected);
-		else if(!value.toBool() && pointStatus() == PointSelected) setPointStatus(PointVisible);
+		Q_UNUSED(option);
+		Q_UNUSED(widget);
+
+		switch(pointStatus())
+		{
+		case PointDisabled:
+			return;
+			break;
+
+		case PointVisible:
+			painter->setBrush(brush());
+			painter->setPen(pen());
+			break;
+
+		case PointSelected:
+			painter->setBrush(selectedBrush());
+			painter->setPen(selectedPen());
+			break;
+		}
+
+		painter->drawRect(rect());
 	}
 
-	return GraphicsExt<QGraphicsRectItem>::itemChange(change, value);
+	/*!
+	  Updates the internal state according to the \c pointStatus
+	*/
+	void GraphicsItemConnectionPoint::setPointStatus(PointStatus  pointStatus)
+	{
+		if(pointStatus == _pointStatus)
+			return;
+
+		_pointStatus = pointStatus;
+		setSelected(pointStatus == PointSelected);
+
+		update();
+	}
+
+	/*!
+	  This functions checks whether the itemSelectedState has changed and matches it to the GraphicsItemConnectionPoint::pointStatus
+	*/
+	QVariant GraphicsItemConnectionPoint::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant & value)
+	{
+		if(change == QGraphicsItem::ItemSelectedHasChanged)
+		{
+			if(value.toBool() && pointStatus() != PointSelected) setPointStatus(PointSelected);
+			else if(!value.toBool() && pointStatus() == PointSelected) setPointStatus(PointVisible);
+		}
+
+		return graphicsUtil::GraphicsExt<QGraphicsRectItem>::itemChange(change, value);
+	}
 }

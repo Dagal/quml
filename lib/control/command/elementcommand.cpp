@@ -27,6 +27,8 @@
 #include "classdiagramcontroller.hpp"
 #include "elementobject.hpp"
 
+using namespace element;
+
 DeleteElementCommand::DeleteElementCommand(ClassDiagramController * controller, const std::string & elementQualifiedName)
 	: _controller(controller),
 	_elementQualifiedName(elementQualifiedName),

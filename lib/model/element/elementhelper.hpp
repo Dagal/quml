@@ -32,65 +32,111 @@
 #include <boost/function.hpp>
 #include <iostream>
 
-template <typename ElementClass> bool element_castable(const ElementObject * element)
+namespace element
 {
-	if(!element) return false;
+	/*!
+  This method checks if a certain element is castable to certain type. This is based on the type of an element.
 
-	return ((element->type() & ElementClass::elementtype) == ElementClass::elementtype);
+  \sa ElementObject::type, \sa ElementObject::elementtype, \sa element_cast
+*/
+	template <typename ElementClass> bool element_castable(const ElementObject * element)
+	{
+		if(!element) return false;
+
+		return ((element->type() & ElementClass::elementtype) == ElementClass::elementtype);
+	}
+
+	/*!
+  This method tries to cast an element to a certain type. If unable it returns a zero value.
+
+  \sa ElementObject::type, \sa ElementObject::elementtype
+*/
+	template <typename ElementClass> ElementClass * element_cast(ElementObject * element)
+	{
+		if(!element_castable<ElementClass>(element))
+			return 0;
+
+		return static_cast<ElementClass*>(element);
+	}
+
+	/*!
+  This method tries to cast a const element to a certain type. If unable it returns a zero value.
+
+  \sa ElementObject::type, \sa ElementObject::elementtype
+*/
+	template <typename ElementClass> const ElementClass * element_cast(const ElementObject * element)
+	{
+		if(!element_castable<ElementClass>(element))
+			return 0;
+
+		return static_cast<const ElementClass*>(element);
+	}
+
+	template <typename T> bool checkForValidNamedElement(T * element, const std::string & name)
+	{
+		return (element && element->name() == name);
+	}
+	template <typename T> bool checkForValidElement(T * element)
+	{
+		return (element);
+	}
+
+	/*!
+  This method returns a list of all the child from \c element that can be casted to \c ElementClass. If \c name is defined, the names of the children
+  should also match.
+*/
+	template <typename ElementClass> std::vector<ElementClass*> findChildren(ElementObject * element, const std::string & name = std::string())
+	{
+		if(element == 0)
+			return std::vector<ElementClass*>();
+
+		typedef std::vector<ElementClass*> elementvct;
+		typedef typename elementvct::iterator elementvctit;
+
+		const std::vector<ElementObject * >	& children = element->children();
+		elementvct transf(children.size());
+
+		boost::function<bool (ElementClass*)> pred;
+		if(name.empty())
+			pred = boost::bind(checkForValidElement<ElementClass>, _1);
+		else
+			pred = boost::bind(checkForValidNamedElement<ElementClass>, _1, boost::cref(name));
+
+
+		elementvctit it = stf::copy_transformed_if(
+				children.begin(),
+				children.end(),
+				transf.begin(),
+				boost::bind<ElementClass*>(
+						element_cast<ElementClass>,
+						_1),
+				pred
+				);
+
+		transf.erase(it, transf.end());
+		return transf;
+	}
+
+	/*!
+  This method returns a list of all the children from \c element whose name is equal to \c name. If name is empty, all the children are returned.
+*/
+	std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name = std::string());
+
+	/*!
+  Return the related element for \c elementObject. If elementObject is method, it will return the returntype. If elementObject is a parameter, it will
+  return the datatype.
+
+  This function returns zero if no related element was found.
+
+  \todo Make it possible to add new related element types
+*/
+	ElementObject * findRelatedElement(ElementObject * elementObject);
+
+	/*!
+  Creates an element of type \c type and sets the name.
+*/
+	ElementObject * createElementObject(ElementType type, const std::string & name);
+
 }
-template <typename ElementClass> ElementClass * element_cast(ElementObject * element)
-{
-	if(!element_castable<ElementClass>(element))
-		return 0;
-
-	return static_cast<ElementClass*>(element);
-}
-template <typename ElementClass> const ElementClass * element_cast(const ElementObject * element)
-{
-	if(!element_castable<ElementClass>(element))
-		return 0;
-
-	return static_cast<const ElementClass*>(element);
-}
-template <typename T> bool checkForValidNamedElement(T * element, const std::string & name)
-{
-	return (element && element->name() == name);
-}
-template <typename T> bool checkForValidElement(T * element)
-{
-	return (element);
-}
-template <typename ElementClass> std::vector<ElementClass*> findChildren(ElementObject * element, const std::string & name = std::string())
-{
-	typedef std::vector<ElementClass*> elementvct;
-	typedef typename elementvct::iterator elementvctit;
-
-	const std::vector<ElementObject * >	& children = element->children();
-	elementvct transf(children.size());
-
-	boost::function<bool (ElementClass*)> pred;
-	if(name.empty())
-		pred = boost::bind(checkForValidElement<ElementClass>, _1);
-	else
-		pred = boost::bind(checkForValidNamedElement<ElementClass>, _1, boost::cref(name));
-
-
-	elementvctit it = stf::copy_transformed_if(
-			children.begin(),
-			children.end(),
-			transf.begin(),
-			boost::bind<ElementClass*>(
-					element_cast<ElementClass>,
-					_1),
-			pred
-			);
-
-	transf.erase(it, transf.end());
-	return transf;
-}
-
-std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name = std::string());
-ElementObject * findRelatedElement(ElementObject * elementObject);
-ElementObject * createElementObject(ElementType type, const std::string & name);
 
 #endif // ELEMENTHELPER_HPP

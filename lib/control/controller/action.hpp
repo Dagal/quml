@@ -26,6 +26,7 @@
 #ifndef ACTION_HPP
 #define ACTION_HPP
 
+#include "element.hpp"
 #include "macro.hpp"
 #include "error.hpp"
 #include <string>
@@ -38,65 +39,42 @@ enum ActionType
 	Action_RenameElement,
 };
 
-class ElementObject;
-
-class Action
+struct Action
 {
-public:
-	Action(ActionType type)
-		: _type(type),
-		_elementObject(0),
-		_error(Error_NoError)
-	{
-	}
+	Action(ActionType type) : elementObject(0), error(Error_NoError), _type(type) {}
+	ActionType type() const { return _type; }
 
-	SimpleVarGet(ActionType, type);
-	PtrVarGetAccSet(ElementObject, elementObject, ElementObject);
-	SimpleVarGetSet(Error, error, Error);
+	element::ElementObject * elementObject;
+	Error error;
 
+private:
+	ActionType _type;
 };
 
-class MoveAction : public Action
+struct MoveAction : public Action
 {
-public:
-	MoveAction()
-		: Action(Action_MoveElement),
-		_oldParent(0)
-	{
-	}
+	MoveAction() : Action(Action_MoveElement), oldParent(0) {}
 
-	PtrVarGetAccSet(ElementObject, oldParent, OldParent);
+	element::ElementObject * oldParent;
 };
 
-class RenameAction : public Action
+struct RenameAction : public Action
 {
-public:
-	RenameAction()
-		: Action(Action_RenameElement),
-		_oldName("")
-	{
-	}
+	RenameAction() : Action(Action_RenameElement), oldName("") {}
 
-	RefVarGetAccSet(std::string, oldName, OldName);
+	std::string oldName;
 };
 
-class CreateAction : public Action
+struct CreateAction : public Action
 {
-public:
-	CreateAction()
-		: Action(Action_CreateElement) {}
+	CreateAction() : Action(Action_CreateElement) {}
 };
 
-class DetachAction : public Action
+struct DetachAction : public Action
 {
-public:
-	DetachAction()
-		: Action(Action_DetachElement),
-		_oldParent(0)
-	{
-	}
+	DetachAction() : Action(Action_DetachElement), oldParent(0) {}
 
-	PtrVarGetAccSet(ElementObject, oldParent, OldParent);
+	element::ElementObject * oldParent;
 };
 
 

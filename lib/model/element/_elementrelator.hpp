@@ -30,22 +30,24 @@
 #include <boost/unordered_map.hpp>
 #include <boost/shared_ptr.hpp>
 
-class ElementRelator
+namespace element
 {
-public:
-	ElementRelator();
+	class ElementRelator
+	{
+	public:
+		ElementRelator();
 
-	std::vector<ElementObject *> findElementsRelatedTo(ElementObject * relatedElement);
-	void updateElementObject(ElementObject * elementObject, ElementObject * oldRelatedElement);
-	void removeElementObject(ElementObject * elementObject);
-	void addElementObject(ElementObject * elementObject);
+		std::vector<ElementObject *> findElementsRelatedTo(ElementObject * relatedElement);
+		void updateElementObject(ElementObject * elementObject, ElementObject * oldRelatedElement);
+		void removeElementObject(ElementObject * elementObject);
+		void addElementObject(ElementObject * elementObject);
 
-private:
-	typedef boost::unordered_map<ElementObject*, boost::shared_ptr<std::vector<ElementObject*> > > relatedElements_map;
-	relatedElements_map _relatedElements;
+	private:
+		typedef boost::unordered_map<ElementObject*, boost::shared_ptr<std::vector<ElementObject*> > > relatedElements_map;
+		relatedElements_map _relatedElements;
 
-	void removeElementFromRelator(ElementObject * key, ElementObject * value);
-	void addElementToRelator(ElementObject * key, ElementObject * value);
-};
-
+		void removeElementFromRelator(ElementObject * key, ElementObject * value);
+		void addElementToRelator(ElementObject * key, ElementObject * value);
+	};
+}
 #endif // _ELEMENTRELATOR_HPP

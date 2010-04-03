@@ -27,33 +27,35 @@
 #include "_operationobject.hpp"
 #include <sstream>
 
-OperationObject::OperationObject(const std::string & name)
-	: MethodObject(name), _dd(new OperationObjectPrivate)
+namespace element
 {
-}
+	OperationObject::OperationObject(const std::string & name)
+		: MethodObject(name), _dd(new OperationObjectPrivate)
+	{
+	}
 
-std::string OperationObject::umlName() const
-{
-	std::stringstream s;
-	s << _dd->_visibility.umlNotation() << MethodObject::umlName();
+	std::string OperationObject::umlName() const
+	{
+		std::stringstream s;
+		s << _dd->_visibility.umlNotation() << MethodObject::umlName();
 
-	return s.str();
-}
+		return s.str();
+	}
 
-std::string OperationObject::qualifiedName() const
-{
-	if(parent())
-		return parent()->qualifiedName() + "::" + MethodObject::umlName();
-	else
-		return MethodObject::umlName();
-}
+	std::string OperationObject::qualifiedName() const
+	{
+		if(parent())
+			return parent()->qualifiedName() + "::" + MethodObject::umlName();
+		else
+			return MethodObject::umlName();
+	}
 
-VisibilityType OperationObject::visibility() const
-{
-	return _dd->_visibility.type();
+	VisibilityType OperationObject::visibility() const
+	{
+		return _dd->_visibility.type();
+	}
+	void OperationObject::setVisibility(VisibilityType type)
+	{
+		_dd->_visibility.setType(type);
+	}
 }
-void OperationObject::setVisibility(VisibilityType type)
-{
-	_dd->_visibility.setType(type);
-}
-

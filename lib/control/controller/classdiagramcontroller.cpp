@@ -31,10 +31,12 @@
 #include "methodobject.hpp"
 #include "packageobject.hpp"
 
+using namespace element;
+
 #define SEND_AND_RETURN(ERROR) \
 {\
-	a.setError(ERROR);\
-	actionListener().sendMessage(a); \
+	a.error = ERROR;\
+	_actionListener.sendMessage(a); \
 	return ERROR; \
 }
 
@@ -82,14 +84,14 @@ Error ClassDiagramController::detachElement(const std::string & qualifiedElement
 {
 	DetachAction a;
 
-	a.elementObject() = helperDetachElement(getElement(qualifiedElementName));
+	a.elementObject = helperDetachElement(getElement(qualifiedElementName));
 
-	if(a.elementObject() == 0)
+	if(a.elementObject == 0)
 		SEND_AND_RETURN(Error_ElementUndefined);
 
-	a.oldParent() = a.elementObject()->parent();
+	a.oldParent = a.elementObject->parent();
 
-	*elementObject = a.elementObject();
+	*elementObject = a.elementObject;
 
 	SEND_AND_RETURN(Error_NoError);
 }
@@ -98,20 +100,20 @@ Error ClassDiagramController::renameElement(const std::string & qualifiedElement
 {
 	RenameAction a;
 
-	a.elementObject() = getElement(qualifiedElementName);
-	if(!a.elementObject())
+	a.elementObject = getElement(qualifiedElementName);
+	if(!a.elementObject)
 		SEND_AND_RETURN(Error_ElementUndefined);
 
-	a.oldName() = a.elementObject()->name();
+	a.oldName = a.elementObject->name();
 
 	if(newName.empty()) SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	// check for the names
-	if(!checkNameAgainstSiblings(a.elementObject(), newName, a.elementObject()->parent()))
+	if(!checkNameAgainstSiblings(a.elementObject, newName, a.elementObject->parent()))
 		SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
 
 	// perform the operation
-	a.elementObject()->setName(newName);
+	a.elementObject->setName(newName);
 
 	SEND_AND_RETURN(Error_NoError);
 }
@@ -138,7 +140,7 @@ Error ClassDiagramController::createClass(const std::string & className, const s
 	element->setParent(parentElement);
 	element->setUMLDiagram(diagram());
 
-	a.elementObject() = element;
+	a.elementObject = element;
 
 	// should we hand over the pointer?
 	if(elementObject != 0)
@@ -160,8 +162,8 @@ Error ClassDiagramController::moveClass(const std::string & classQualifiedName, 
 	if(!classObject)
 		SEND_AND_RETURN(Error_ElementUndefined);
 
-	a.elementObject() = classObject;
-	a.oldParent() = classObject->parent();
+	a.elementObject = classObject;
+	a.oldParent = classObject->parent();
 
 	ElementObject * parentElement = getElement(newParentQualifiedName);
 
@@ -200,7 +202,7 @@ Error ClassDiagramController::createPackage(const std::string & packageName, con
 	PackageObject * packageObject = new PackageObject(packageName);
 	packageObject->setParent(parentElement);
 	packageObject->setUMLDiagram(diagram());
-	a.elementObject() = packageObject;
+	a.elementObject = packageObject;
 
 	// should we hand over the pointer?
 	if(elementObject != 0)
@@ -222,8 +224,8 @@ Error ClassDiagramController::movePackage(const std::string & packageQualifiedNa
 	if(!packageObject)
 		SEND_AND_RETURN(Error_ElementUndefined);
 
-	a.elementObject() = packageObject;
-	a.oldParent() = packageObject->parent();
+	a.elementObject = packageObject;
+	a.oldParent = packageObject->parent();
 
 	ElementObject * parentElement = getElement(newParentQualifiedName);
 

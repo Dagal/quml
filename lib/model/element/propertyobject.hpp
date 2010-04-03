@@ -29,21 +29,27 @@
 #include "parameterobject.hpp"
 #include "visibility.hpp"
 
-class PropertyObject : public ParameterObject
+namespace element
 {
-	class PropertyObjectPrivate;
+	/*!
+	  \brief The PropertyObject class contains all the information to store the UML model of a property.
+	*/
+	class PropertyObject : public ParameterObject
+	{
+		class PropertyObjectPrivate;
 
-public:
-	enum { elementtype = Element_Property };
+	public:
+		enum { elementtype = Element_Property };
 
-	PropertyObject(const std::string & name);
-	void setVisibility(VisibilityType type);
-	VisibilityType visibility() const;
+		PropertyObject(const std::string & name);
+		void setVisibility(VisibilityType type);
+		VisibilityType visibility() const;
 
-	virtual ElementType type() const { return Element_Property; }
+		virtual ElementType type() const { return Element_Property; }
 
-private:
-	boost::shared_ptr<PropertyObjectPrivate> _dd;
-};
+	private:
+		boost::shared_ptr<PropertyObjectPrivate> _dd;
+	};
+}
 
 #endif // PROPERTYOBJECT_HPP

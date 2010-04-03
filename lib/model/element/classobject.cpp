@@ -29,33 +29,36 @@
 #include "_classobject.hpp"
 #include "elementhelper.hpp"
 
-ClassObject::ClassObject(const std::string & name)
-	: DatatypeObject(name), _dd(new ClassObjectPrivate)
+namespace element
 {
-}
+	ClassObject::ClassObject(const std::string & name)
+		: DatatypeObject(name), _dd(new ClassObjectPrivate)
+	{
+	}
 
-void ClassObject::onChildAdded(ElementObject * child)
-{
-	_dd->_operations.addElement(element_cast<OperationObject>(child));
-	_dd->_properties.addElement(element_cast<PropertyObject>(child));
-}
+	void ClassObject::onChildAdded(ElementObject * child)
+	{
+		_dd->_operations.addElement(element_cast<OperationObject>(child));
+		_dd->_properties.addElement(element_cast<PropertyObject>(child));
+	}
 
-void ClassObject::onChildRemoved(ElementObject * child)
-{
-	_dd->_operations.removeElement(element_cast<OperationObject>(child));
-	_dd->_properties.removeElement(element_cast<PropertyObject>(child));
-}
+	void ClassObject::onChildRemoved(ElementObject * child)
+	{
+		_dd->_operations.removeElement(element_cast<OperationObject>(child));
+		_dd->_properties.removeElement(element_cast<PropertyObject>(child));
+	}
 
-const std::vector<OperationObject*> & ClassObject::operations() const
-{
-	return _dd->_operations.vector();
-}
-const std::vector<PropertyObject*> & ClassObject::properties() const
-{
-	return _dd->_properties.vector();
-}
+	const std::vector<OperationObject*> & ClassObject::operations() const
+	{
+		return _dd->_operations.vector();
+	}
+	const std::vector<PropertyObject*> & ClassObject::properties() const
+	{
+		return _dd->_properties.vector();
+	}
 
-std::string ClassObject::umlName() const
-{
-	return name();
+	std::string ClassObject::umlName() const
+	{
+		return name();
+	}
 }

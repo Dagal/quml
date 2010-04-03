@@ -27,7 +27,7 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
-#define SimpleVarGetSet(type, name, capitalisedName)							\
+/*#define SimpleVarGetSet(type, name, capitalisedName)							\
 public:																			\
 			type name() const { return _##name; }					\
 			void set##capitalisedName(type name) { _##name = name; }			\
@@ -202,7 +202,7 @@ private:																		\
 
 
 
-
+*/
 
 
 

@@ -27,10 +27,10 @@
 #define CLASSCOMMAND_HPP
 
 #include "icommand.hpp"
+#include "element.hpp"
 #include "macro.hpp"
 #include <string>
 
-class ClassObject;
 class ClassDiagramController;
 
 class CreateClassCommand : public ICommand
@@ -41,12 +41,15 @@ public:
 	virtual bool redo();
 	virtual bool undo();
 
+	const std::string & className() const { return _className; }
+	const std::string & parentQualifiedName() const { return _parentQualifiedName; }
+	element::ClassObject * classObject() const { return _classObject; }
+
 private:
 	ClassDiagramController * _controller;
-
-	RefVarGet(std::string, className);
-	RefVarGet(std::string, parentQualifiedName);
-	PtrVarGet(ClassObject, classObject);
+	std::string  _className;
+	std::string _parentQualifiedName;
+	element::ClassObject * _classObject;
 };
 
 class MoveClassCommand : public ICommand
@@ -57,13 +60,17 @@ public:
 	virtual bool redo();
 	virtual bool undo();
 
+	const std::string & oldclassQualifiedName() const { return _oldclassQualifiedName; }
+	const std::string & newclassQualifiedName() const { return _newclassQualifiedName; }
+	const std::string & newparentQualifiedName() const { return _newparentQualifiedName; }
+	const std::string & oldparentQualifiedName() const { return _oldparentQualifiedName; }
+
 private:
 	ClassDiagramController * _controller;
-
-	RefVarGet(std::string, oldclassQualifiedName);
-	RefVarGet(std::string, newclassQualifiedName);
-	RefVarGet(std::string, newparentQualifiedName);
-	RefVarGet(std::string, oldparentQualifiedName);
+	std::string _oldclassQualifiedName;
+	std::string _newclassQualifiedName;
+	std::string _newparentQualifiedName;
+	std::string _oldparentQualifiedName;
 };
 
 #endif // CLASSCOMMAND_HPP

@@ -8,3 +8,4 @@ app/app
 test/test
 ui_*
 *.a
+doc/

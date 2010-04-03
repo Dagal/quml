@@ -29,7 +29,7 @@
 #include "operationobject.hpp"
 #include "visibility.hpp"
 
-struct OperationObject::OperationObjectPrivate
+struct element::OperationObject::OperationObjectPrivate
 {
 	OperationObjectPrivate()
 		: _visibility(Visibility_Public)

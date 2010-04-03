@@ -29,27 +29,33 @@
 #include "methodobject.hpp"
 #include "visibility.hpp"
 
-class OperationObject : public MethodObject
+namespace element
 {
-	class OperationObjectPrivate;
+	/*!
+	  \brief The OperationObject class contains all the information to store the UML model of an operation
+	*/
+	class OperationObject : public MethodObject
+	{
+		class OperationObjectPrivate;
 
-public:
-	enum { elementtype = Element_Operation };
+	public:
+		enum { elementtype = Element_Operation };
 
-	OperationObject(const std::string & name);
-	~OperationObject() {}
+		OperationObject(const std::string & name);
+		~OperationObject() {}
 
-	VisibilityType visibility() const;
-	void setVisibility(VisibilityType type);
+		VisibilityType visibility() const;
+		void setVisibility(VisibilityType type);
 
-	virtual std::string qualifiedName() const;
-	virtual std::string umlName() const;
+		virtual std::string qualifiedName() const;
+		virtual std::string umlName() const;
 
 
-	virtual ElementType type() const { return Element_Operation; }
+		virtual ElementType type() const { return Element_Operation; }
 
-private:
-	boost::shared_ptr<OperationObjectPrivate> _dd;
-};
+	private:
+		boost::shared_ptr<OperationObjectPrivate> _dd;
+	};
+}
 
 #endif // OPERATIONOBJECT_HPP

@@ -19,7 +19,7 @@ HEADERS += model/element/umldiagram.hpp \
     model/element/packageobject.hpp \
     model/element/operationobject.hpp \
     model/element/methodobject.hpp \
-    model/element/defines.hpp \
+	model/element/element.hpp \
     model/element/datatypeobject.hpp \
     model/element/classobject.hpp \
     model/element/_propertyobject.hpp \

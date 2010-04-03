@@ -33,6 +33,8 @@
 #include <QGraphicsPolygonItem>
 #include <QDebug>
 
+using namespace connection;
+
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent),
     ui(new Ui::MainWindow)

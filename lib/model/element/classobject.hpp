@@ -28,28 +28,34 @@
 
 #include "datatypeobject.hpp"
 
-class ClassObject : public DatatypeObject
+namespace element
 {
-	class ClassObjectPrivate;
+	/*!
+	  \brief The ClassObject class contains all the information to store the UML model of a class.
+	*/
+	class ClassObject : public DatatypeObject
+	{
+		class ClassObjectPrivate;
 
-public:
-	enum { elementtype = Element_Class };
+	public:
+		enum { elementtype = Element_Class };
 
-	ClassObject(const std::string & name);
+		ClassObject(const std::string & name);
 
-	const std::vector<OperationObject*> & operations() const;
-	const std::vector<PropertyObject*> & properties() const;
+		const std::vector<OperationObject*> & operations() const;
+		const std::vector<PropertyObject*> & properties() const;
 
-	virtual std::string umlName() const;
+		virtual std::string umlName() const;
 
-	virtual ElementType type() const { return Element_Class; }
+		virtual ElementType type() const { return Element_Class; }
 
-protected:
-	virtual void onChildAdded(ElementObject * child);
-	virtual void onChildRemoved(ElementObject * child);
+	protected:
+		virtual void onChildAdded(ElementObject * child);
+		virtual void onChildRemoved(ElementObject * child);
 
-private:
-	boost::shared_ptr<ClassObjectPrivate> _dd;
-};
+	private:
+		boost::shared_ptr<ClassObjectPrivate> _dd;
+	};
+}
 
 #endif // CLASSOBJECT_HPP

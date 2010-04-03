@@ -24,7 +24,44 @@
 *******************************************************************/
 
 #include "graphicsitemclass.hpp"
+#include "_graphicsitemclass.hpp"
 
-GraphicsItemClass::GraphicsItemClass()
+GraphicsItemClass::GraphicsItemClass(ClassObject * classObject, QGraphicsItem * parent)
+	: QGraphicsRectItem(parent),
+	_dd(new GraphicsItemClass::GraphicsItemClassPrivate(classObject))
 {
+}
+
+void GraphicsItemClass::updateItem()
+{
+
+}
+
+ClassObject * GraphicsItemClass::classObject() const
+{
+	return _dd->classObject();
+}
+
+const QFont & GraphicsItemClass::font() const
+{
+	return _dd->font();
+}
+void GraphicsItemClass::setFont(const QFont & font)
+{
+	_dd->setFont(font);
+}
+
+
+QRectF GraphicsItemClass::GraphicsItemClassPrivate::calculateHeader(const QFontMetricsF & fontMetrics)
+{
+}
+
+QRectF GraphicsItemClass::GraphicsItemClassPrivate::calculateProperties(const QFontMetricsF & fontMetrics)
+{
+
+}
+
+QRectF GraphicsItemClass::GraphicsItemClassPrivate::calculateOperations(const QFontMetricsF & fontMetrics)
+{
+
 }

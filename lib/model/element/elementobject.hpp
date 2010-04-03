@@ -26,50 +26,65 @@
 #ifndef ELEMENTOBJECT_HPP
 #define ELEMENTOBJECT_HPP
 
-#include "defines.hpp"
+#include "element.hpp"
 #include <string>
 #include <vector>
 
 
-class ElementObject
+namespace element
 {
-	friend class UMLDiagram;
-	class ElementObjectPrivate;
+	/*!
+	  \brief The ElementObject class is the base class for all UML objects
 
-public:
-	// enum hack (for template functions)
-	enum { elementtype = Element };
+	  ElementObject implements the composition pattern. So different child ElementObjects can be added to a parent ElementObject. If the parent element gets
+	  deleted, it will automatically delete all child objects.
+	*/
+	class ElementObject
+	{
+		friend class UMLDiagram;
+		class ElementObjectPrivate;
 
-	// constructor & destructor
-	ElementObject(const std::string & name);
-	virtual ~ElementObject() = 0;
+	public:
+		// enum hack (for template functions)
+		enum { elementtype = Element /*!<  Reimplement this enum value in the inheriting classes so ensure casting to different element types is possible. \sa element_cast*/};
 
-	// simple getters
-	const std::string & name() const;
-	ElementObject * parent() const;
-	UMLDiagram * umlDiagram() const;
-	const std::vector<ElementObject *> & children() const;
-	std::vector<const ElementObject*> ancestors() const;
+		// constructor & destructor
+		ElementObject(const std::string & name);
+		virtual ~ElementObject() = 0;
 
-	// virtual functions
-	virtual std::string qualifiedName() const;
-	virtual std::string umlName() const;
-	virtual ElementType type() const  = 0;
+		// simple getters
+		const std::string & name() const;
+		ElementObject * parent() const;
+		UMLDiagram * umlDiagram() const;
+		const std::vector<ElementObject *> & children() const;
+		std::vector<const ElementObject*> ancestors() const;
 
-	// setters
-	void setName(const std::string & name);
-	void setParent(ElementObject * parent);
-	void setUMLDiagram(UMLDiagram * diagram);
+		// virtual functions
+		virtual std::string qualifiedName() const;
+		virtual std::string umlName() const;
 
-private:
-	virtual void onChildAdded(ElementObject * child);
-	virtual void onChildRemoved(ElementObject * child);
+		/*!
+		Reimplement this abstract to return the right ElementType. This is necessary for casting different element types.
+		\sa element_cast
+		*/
+		virtual ElementType type() const  = 0;
 
-protected:
-	void relatedElementChanged(ElementObject * oldRelatedElement);
+		// setters
+		void setName(const std::string & name);
+		void setParent(ElementObject * parent);
+		void setUMLDiagram(UMLDiagram * diagram);
 
-private:
-	boost::shared_ptr<ElementObjectPrivate> _dd;
-};
+	private:
+		virtual void onChildAdded(ElementObject * child);
+		virtual void onChildRemoved(ElementObject * child);
+
+	protected:
+		void relatedElementChanged(ElementObject * oldRelatedElement);
+
+	private:
+		boost::shared_ptr<ElementObjectPrivate> _dd;
+	};
+
+}
 
 #endif // ELEMENTOBJECT_HPP

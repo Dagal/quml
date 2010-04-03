@@ -28,14 +28,20 @@
 
 #include "datatypeobject.hpp"
 
-class PrimitiveObject : public DatatypeObject
+namespace element
 {
-public:
-	enum { elementtype = Element_Primitive };
+	/*!
+	  \brief The PrimitiveObject class contains all the information to store the UML model of a primitive.
+	*/
+	class PrimitiveObject : public DatatypeObject
+	{
+	public:
+		enum { elementtype = Element_Primitive };
 
-	PrimitiveObject(const std::string & name);
+		PrimitiveObject(const std::string & name);
 
-	virtual ElementType type() const { return Element_Primitive; }
-};
+		virtual ElementType type() const { return Element_Primitive; }
+	};
+}
 
 #endif // PRIMITIVEOBJECT_HPP

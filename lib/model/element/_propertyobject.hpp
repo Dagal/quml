@@ -28,7 +28,7 @@
 
 #include "propertyobject.hpp"
 
-struct PropertyObject::PropertyObjectPrivate
+struct element::PropertyObject::PropertyObjectPrivate
 {
 	PropertyObjectPrivate()
 		: _visibility(Visibility_Private)

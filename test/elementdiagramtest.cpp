@@ -32,6 +32,8 @@
 #include <algorithm>
 #include "propertyobject.hpp"
 
+using namespace element;
+
 void ElementDiagramTest::init()
 {
 	_diagram = new UMLDiagram;

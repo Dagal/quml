@@ -32,50 +32,47 @@
 #include "notifier.hpp"
 #include <vector>
 
-class UMLDiagram;
-class ElementObject;
-
 class ClassDiagramController
 {
 	class ClassDiagramControllerPrivate;
 
 public:
-	ClassDiagramController(UMLDiagram * diagram);
+	ClassDiagramController(element::UMLDiagram * diagram);
 
 	// simple getters
-	UMLDiagram * diagram() const;
+	element::UMLDiagram * diagram() const;
 
 	// element methods
-	Error detachElement(const std::string & qualifiedElementName, ElementObject ** elementObject = 0);
+	Error detachElement(const std::string & qualifiedElementName, element::ElementObject ** elementObject = 0);
 	Error renameElement(const std::string & qualifiedElementName, const std::string & newName);
 
 	// class methods
-	Error createClass(const std::string & className, const std::string & qualifiedParentName, ClassObject ** elementObject = 0);
+	Error createClass(const std::string & className, const std::string & qualifiedParentName, element::ClassObject ** elementObject = 0);
 	Error moveClass(const std::string & classQualifiedName, const std::string & newParentQualifiedName);
 
 	// package methods
-	Error createPackage(const std::string & packageName, const std::string & newParentQualifiedName, PackageObject ** elementObject = 0);
+	Error createPackage(const std::string & packageName, const std::string & newParentQualifiedName, element::PackageObject ** elementObject = 0);
 	Error movePackage(const std::string & packageQualifiedName, const std::string & newParentQualifiedName);
 
 	// find/get methods
-	ElementObject * getElement(const std::string & qualifiedName) const;
+	element::ElementObject * getElement(const std::string & qualifiedName) const;
 	template <typename T> T * getElement(const std::string & qualifiedName) const;
-	std::vector<ElementObject *> getElements(const std::string & name, const std::string & parentQualifiedName) const;
-	std::vector<ElementObject *> getElements(const std::string & name, ElementObject * parentObject) const;
+	std::vector<element::ElementObject *> getElements(const std::string & name, const std::string & parentQualifiedName) const;
+	std::vector<element::ElementObject *> getElements(const std::string & name, element::ElementObject * parentObject) const;
+
+	const Notifier<Action> & actionListener() const { return _actionListener; }
 
 protected:
-	bool checkNameAgainstSiblings(ElementObject * element, const std::string & newName, ElementObject * parentObject) const;
+	bool checkNameAgainstSiblings(element::ElementObject * element, const std::string & newName, element::ElementObject * parentObject) const;
 
 private:
 	boost::shared_ptr<ClassDiagramControllerPrivate> _dd;
-
-	RefVarGetAcc(Notifier<Action>, actionListener);
-
+	Notifier<Action> _actionListener;
 };
 
 template <typename T> T * ClassDiagramController::getElement(const std::string & qualifiedName) const
 {
-	return element_cast<T>(getElement(qualifiedName));
+	return element::element_cast<T>(getElement(qualifiedName));
 }
 
 #endif // CLASSDIAGRAMCONTROLLER_HPP

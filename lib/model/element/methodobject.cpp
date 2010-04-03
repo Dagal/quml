@@ -31,64 +31,66 @@
 #include "_umldiagram.hpp"
 #include <sstream>
 
-MethodObject::MethodObject(const std::string & name)
-	: ElementObject(name), _dd(new MethodObjectPrivate)
+namespace element
 {
-}
-
-DatatypeObject * MethodObject::returnType() const
-{
-	return _dd->_returnType;
-}
-void MethodObject::setReturnType(DatatypeObject * returnType)
-{
-	if(returnType != 0 && returnType->umlDiagram() != umlDiagram())
-		returnType = 0;
-
-	if(_dd->_returnType == returnType)
-		return;
-
-	DatatypeObject * oldData = _dd->_returnType;
-	_dd->_returnType = returnType;
-	relatedElementChanged(oldData);
-}
-
-const std::vector<ParameterObject*> & MethodObject::parameters() const
-{
-	return _dd->_parameters.vector();
-}
-
-ParameterObject * MethodObject::parameterAt(unsigned int position) const
-{
-	return _dd->_parameters.getElement(position);
-}
-
-std::string MethodObject::umlName() const
-{
-	std::stringstream s;
-
-	s << name() << "(";
-
-	for(unsigned int i = 0; i < parameters().size(); i++)
+	MethodObject::MethodObject(const std::string & name)
+		: ElementObject(name), _dd(new MethodObjectPrivate)
 	{
-		s << parameterAt(i)->umlName();
-		if(i != parameters().size()-1)
-			s << ", ";
 	}
 
-	s << "): " << returnType();
+	DatatypeObject * MethodObject::returnType() const
+	{
+		return _dd->_returnType;
+	}
+	void MethodObject::setReturnType(DatatypeObject * returnType)
+	{
+		if(returnType != 0 && returnType->umlDiagram() != umlDiagram())
+			returnType = 0;
 
-	return s.str();
+		if(_dd->_returnType == returnType)
+			return;
+
+		DatatypeObject * oldData = _dd->_returnType;
+		_dd->_returnType = returnType;
+		relatedElementChanged(oldData);
+	}
+
+	const std::vector<ParameterObject*> & MethodObject::parameters() const
+	{
+		return _dd->_parameters.vector();
+	}
+
+	ParameterObject * MethodObject::parameterAt(unsigned int position) const
+	{
+		return _dd->_parameters.getElement(position);
+	}
+
+	std::string MethodObject::umlName() const
+	{
+		std::stringstream s;
+
+		s << name() << "(";
+
+		for(unsigned int i = 0; i < parameters().size(); i++)
+		{
+			s << parameterAt(i)->umlName();
+			if(i != parameters().size()-1)
+				s << ", ";
+		}
+
+		s << "): " << returnType();
+
+		return s.str();
+	}
+
+	void MethodObject::onChildAdded(ElementObject * child)
+	{
+		_dd->_parameters.addElement(element_cast<ParameterObject>(child));
+
+	}
+
+	void MethodObject::onChildRemoved(ElementObject * child)
+	{
+		_dd->_parameters.removeElement(element_cast<ParameterObject>(child));
+	}
 }
-
-void MethodObject::onChildAdded(ElementObject * child)
-{
-	_dd->_parameters.addElement(element_cast<ParameterObject>(child));
-
-}
-
-void MethodObject::onChildRemoved(ElementObject * child)
-{
-	_dd->_parameters.removeElement(element_cast<ParameterObject>(child));
-}
-

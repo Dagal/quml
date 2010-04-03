@@ -27,11 +27,29 @@
 #define GRAPHICSITEMCLASS_HPP
 
 #include <QGraphicsRectItem>
+#include <QFont>
+#include "classobject.hpp"
+
+using element::ClassObject;
 
 class GraphicsItemClass : public QGraphicsRectItem
 {
+	class GraphicsItemClassPrivate;
+
 public:
-    GraphicsItemClass();
+	GraphicsItemClass(ClassObject * classObject, QGraphicsItem * parent = 0);
+
+	ClassObject * classObject() const;
+	const QFont & font() const;
+	void setFont(const QFont & font);
+
+
+	void updateItem();
+
+private:
+	QSharedPointer<GraphicsItemClassPrivate> _dd;
+
 };
+
 
 #endif // GRAPHICSITEMCLASS_HPP

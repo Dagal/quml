@@ -28,7 +28,7 @@
 
 #include "connection/graphicsitemconnection.hpp"
 
-class GraphicsItemRelation : public GraphicsItemConnection
+class GraphicsItemRelation : public connection::GraphicsItemConnection
 {
 public:
 	GraphicsItemRelation(QGraphicsItem * parent = 0);
@@ -36,12 +36,15 @@ public:
 protected:
 	virtual bool sceneEventFilter(QGraphicsItem * watched, QEvent * event);
 
-	virtual void onLineCreated(GraphicsItemConnectionLine * newLine);
+	virtual void onLineCreated(connection::GraphicsItemConnectionLine * newLine);
+	virtual void onPointAdded(connection::GraphicsItemConnectionPoint * newPoint);
+	virtual void onPointRemoved(connection::GraphicsItemConnectionPoint * oldPoint);
+
 
 private:
-	bool onPointContextMenu(GraphicsItemConnectionPoint * point, QGraphicsSceneContextMenuEvent * event);
-	bool onLineContextMenu(GraphicsItemConnectionLine * line, QGraphicsSceneContextMenuEvent * event);
-	bool onLineDoubleClick(GraphicsItemConnectionLine * line, QGraphicsSceneMouseEvent * event);
+	bool onPointContextMenu(connection::GraphicsItemConnectionPoint * point, QGraphicsSceneContextMenuEvent * event);
+	bool onLineContextMenu(connection::GraphicsItemConnectionLine * line, QGraphicsSceneContextMenuEvent * event);
+	bool onLineDoubleClick(connection::GraphicsItemConnectionLine * line, QGraphicsSceneMouseEvent * event);
 
 };
 

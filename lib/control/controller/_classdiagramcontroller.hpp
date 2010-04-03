@@ -30,12 +30,12 @@
 
 struct ClassDiagramController::ClassDiagramControllerPrivate
 {
-	ClassDiagramControllerPrivate(UMLDiagram * diagram)
+	ClassDiagramControllerPrivate(element::UMLDiagram * diagram)
 		: _diagram(diagram)
 	{
 	}
 
-	UMLDiagram * const _diagram;
+	element::UMLDiagram * const _diagram;
 };
 
 #endif // _CLASSDIAGRAMCONTROLLER_HPP

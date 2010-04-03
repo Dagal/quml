@@ -29,7 +29,7 @@
 #include <QObject>
 #include <QtTest/QtTest>
 
-#include "defines.hpp"
+#include "element.hpp"
 
 class ElementDiagramTest : public QObject
 {
@@ -47,9 +47,9 @@ private slots:
 	void init();
 
 private:
-	ElementObject * _parent;
-	ElementObject * _child;
-	UMLDiagram * _diagram;
+	element::ElementObject * _parent;
+	element::ElementObject * _child;
+	element::UMLDiagram * _diagram;
 
 };
 

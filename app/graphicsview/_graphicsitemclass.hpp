@@ -23,54 +23,32 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
+#ifndef _GRAPHICSITEMCLASS_HPP
+#define _GRAPHICSITEMCLASS_HPP
 
-#include "iextendedgraphicsitem.hpp"
+#include "graphicsitemclass.hpp"
+#include <QFontMetricsF>
+#include "macro.hpp"
 
-GraphicsExtPrivate::~GraphicsExtPrivate()
+struct GraphicsItemClass::GraphicsItemClassPrivate
 {
-	while(!_listeners.empty())
-		removeItemChangedListener(_listeners.first());
-}
+	GraphicsItemClassPrivate(ClassObject * classObject)
+		: _classObject(classObject)
+	{
+	}
 
-void GraphicsExtPrivate::addItemChangedListener(ItemChangedListener * listener)
-{
-	if(listener == 0)
-		return;
+	QRectF calculateHeader(const QFontMetricsF & fontMetrics);
+	QRectF calculateProperties(const QFontMetricsF & fontMetrics);
+	QRectF calculateOperations(const QFontMetricsF & fontMetrics);
 
-	if(_listeners.contains(listener))
-		return;
+	ClassObject * classObject() const { return _classObject; }
+	const QFont & font() const { return _font; }
+	void setClassObject(ClassObject * classObject) { _classObject = classObject; }
+	void setFont(const QFont & font) { _font = font; }
 
-	_listeners.push_back(listener);
-	listener->_listenObjects.push_back(this);
-}
+private:
+	ClassObject * _classObject;
+	QFont _font;
+};
 
-void GraphicsExtPrivate::removeItemChangedListener(ItemChangedListener * listener)
-{
-	_listeners.removeAll(listener);
-	listener->_listenObjects.removeAll(this);
-}
-
-bool GraphicsExtPrivate::sendItemChanged(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & value, QVariant & outValue)
-{
-	foreach(ItemChangedListener * listener, _listeners)
-		if(listener->itemChangedFilter(item, change, value, outValue))
-			return true;
-
-	return false;
-}
-
-ItemChangedListener::~ItemChangedListener()
-{
-	while(!_listenObjects.empty())
-		_listenObjects.first()->removeItemChangedListener(this);
-}
-
-bool ItemChangedListener::itemChangedFilter(QGraphicsItem * item, QGraphicsItem::GraphicsItemChange change, const QVariant & inValue, QVariant & outValue)
-{
-	Q_UNUSED(item);
-	Q_UNUSED(change);
-	Q_UNUSED(inValue);
-	Q_UNUSED(outValue);
-
-	return false;
-}
+#endif // _GRAPHICSITEMCLASS_HPP

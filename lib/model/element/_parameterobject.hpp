@@ -30,7 +30,7 @@
 
 using std::string;
 
-class ParameterObject::ParameterObjectPrivate
+class element::ParameterObject::ParameterObjectPrivate
 {
 public:
 	ParameterObjectPrivate()

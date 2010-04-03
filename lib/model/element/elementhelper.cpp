@@ -32,71 +32,74 @@
 #include "operationobject.hpp"
 #include "primitiveobject.hpp"
 
-std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name)
+namespace element
 {
-	typedef std::vector<ElementObject*> elementvct;
-	typedef elementvct::iterator elementvctit;
-
-	if(!element)
-		return elementvct();
-
-	const std::vector<ElementObject * >	& children = element->children();
-	elementvct transf(children.size());
-
-	boost::function<bool (ElementObject*)> pred;
-	if(name.empty())
-		pred = boost::bind(checkForValidElement<ElementObject>, _1);
-	else
-		pred = boost::bind(checkForValidNamedElement<ElementObject>, _1, boost::cref(name));
-
-
-	elementvctit it = stf::copy_transformed_if(
-			children.begin(),
-			children.end(),
-			transf.begin(),
-			boost::bind<ElementObject*>(
-					element_cast<ElementObject>,
-					_1),
-			pred
-			);
-
-	transf.erase(it, transf.end());
-	return transf;
-}
-
-ElementObject * findRelatedElement(ElementObject * elementObject)
-{
-	if(elementObject == 0)
-		return 0;
-
-	MethodObject * method = element_cast<MethodObject>(elementObject);
-	if(method) return method->returnType();
-
-	ParameterObject * param = element_cast<ParameterObject>(elementObject);
-	if(param) return param->datatype();
-
-	else return 0;
-}
-
-ElementObject * createElementObject(ElementType type, const std::string & name)
-{
-	switch(type)
+	std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name)
 	{
-	case Element_Class:
-		return new ClassObject(name);
-	case Element_Method:
-		return new MethodObject(name);
-	case Element_Operation:
-		return new OperationObject(name);
-	case Element_Package:
-		return new PackageObject(name);
-	case Element_Parameter:
-		return new ParameterObject(name);
-	case Element_Primitive:
-		return new PrimitiveObject(name);
-	case Element_Property:
-		return new PropertyObject(name);
-	default:
-		return 0;
+		typedef std::vector<ElementObject*> elementvct;
+		typedef elementvct::iterator elementvctit;
+
+		if(!element)
+			return elementvct();
+
+		const std::vector<ElementObject * >	& children = element->children();
+		elementvct transf(children.size());
+
+		boost::function<bool (ElementObject*)> pred;
+		if(name.empty())
+			pred = boost::bind(checkForValidElement<ElementObject>, _1);
+		else
+			pred = boost::bind(checkForValidNamedElement<ElementObject>, _1, boost::cref(name));
+
+
+		elementvctit it = stf::copy_transformed_if(
+				children.begin(),
+				children.end(),
+				transf.begin(),
+				boost::bind<ElementObject*>(
+						element_cast<ElementObject>,
+						_1),
+				pred
+				);
+
+		transf.erase(it, transf.end());
+		return transf;
+	}
+
+	ElementObject * findRelatedElement(ElementObject * elementObject)
+	{
+		if(elementObject == 0)
+			return 0;
+
+		MethodObject * method = element_cast<MethodObject>(elementObject);
+		if(method) return method->returnType();
+
+		ParameterObject * param = element_cast<ParameterObject>(elementObject);
+		if(param) return param->datatype();
+
+		else return 0;
+	}
+
+	ElementObject * createElementObject(ElementType type, const std::string & name)
+	{
+		switch(type)
+		{
+		case Element_Class:
+			return new ClassObject(name);
+		case Element_Method:
+			return new MethodObject(name);
+		case Element_Operation:
+			return new OperationObject(name);
+		case Element_Package:
+			return new PackageObject(name);
+		case Element_Parameter:
+			return new ParameterObject(name);
+		case Element_Primitive:
+			return new PrimitiveObject(name);
+		case Element_Property:
+			return new PropertyObject(name);
+		default:
+			return 0;
+		}
 	}
 }

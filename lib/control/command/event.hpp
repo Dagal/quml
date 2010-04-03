@@ -33,7 +33,6 @@ class Command;
 
 struct Event
 {
-
 };
 
 struct CommandEvent : public Event

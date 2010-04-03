@@ -30,30 +30,37 @@
 
 using std::string;
 
-struct ElementObject::ElementObjectPrivate
+namespace element
 {
-	ElementObjectPrivate(ElementObject * elementObject)
-		: _parent(0)
-		, _diagram(0)
-		, _element(elementObject)
+	/*!
+	  \internal
+	  \class element::ElementObject::ElementObjectPrivate
+	  \brief The ElementObjectPrivate class is the PIMPL-implementation for ElementObject
+	*/
+	struct ElementObject::ElementObjectPrivate
 	{
-	}
+		ElementObjectPrivate(ElementObject * elementObject)
+			: _parent(0)
+			, _diagram(0)
+			, _element(elementObject)
+		{
+		}
 
-	string _name;
-	ElementObject * _parent;
-	UMLDiagram * _diagram;
-	ElementObject * _element;
-	std::vector<ElementObject *> _children;
+		string _name;
+		ElementObject * _parent;
+		UMLDiagram * _diagram;
+		ElementObject * _element;
+		std::vector<ElementObject *> _children;
 
-	void detachFromParent();
-	void detachFromUML();
-	void attachToParentInSameUML(ElementObject * parent);
-	void attachToParentInDifferentUML(ElementObject * parent);
+		void detachFromParent();
+		void detachFromUML();
+		void attachToParentInSameUML(ElementObject * parent);
+		void attachToParentInDifferentUML(ElementObject * parent);
 
-private:
-	void INT_removeChild(ElementObject * child);
-	void INT_addChild(ElementObject * chid);
-};
-
+	private:
+		void INT_removeChild(ElementObject * child);
+		void INT_addChild(ElementObject * chid);
+	};
+}
 
 #endif // P_ELEMENTOBJECT_HPP
