@@ -52,8 +52,12 @@ void GraphicsItemClass::setFont(const QFont & font)
 }
 
 
+/*!
+  A simple helper method that calculates the size of header for the UML drawing for a class
+*/
 QRectF GraphicsItemClass::GraphicsItemClassPrivate::calculateHeader(const QFontMetricsF & fontMetrics)
 {
+
 }
 
 QRectF GraphicsItemClass::GraphicsItemClassPrivate::calculateProperties(const QFontMetricsF & fontMetrics)

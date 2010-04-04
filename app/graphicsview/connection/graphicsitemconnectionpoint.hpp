@@ -30,7 +30,7 @@
 #include <QSet>
 #include <QPen>
 #include <QBrush>
-#include "../util/iextendedgraphicsitem.hpp"
+#include "../util/graphicsext.hpp"
 #include "macro.hpp"
 
 namespace connection
