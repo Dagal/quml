@@ -28,7 +28,7 @@
 
 namespace element
 {
-	PropertyObject::PropertyObject(const std::string & name)
+	PropertyObject::PropertyObject(const QString & name)
 		: ParameterObject(name), _dd(new PropertyObjectPrivate)
 	{
 	}

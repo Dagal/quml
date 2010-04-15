@@ -41,14 +41,14 @@ namespace element
 	public:
 		enum { elementtype = Element_Operation };
 
-		OperationObject(const std::string & name);
+		OperationObject(const QString & name);
 		~OperationObject() {}
 
 		VisibilityType visibility() const;
 		void setVisibility(VisibilityType type);
 
-		virtual std::string qualifiedName() const;
-		virtual std::string umlName() const;
+		virtual QString qualifiedName() const;
+		virtual QString umlName() const;
 
 
 		virtual ElementType type() const { return Element_Operation; }

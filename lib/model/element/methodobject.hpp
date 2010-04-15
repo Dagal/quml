@@ -41,16 +41,16 @@ namespace element
 	public:
 		enum { elementtype = Element_Method };
 
-		MethodObject(const std::string & name);
+		MethodObject(const QString & name);
 		~MethodObject() {}
 
 
 		DatatypeObject * returnType() const;
 		void setReturnType(DatatypeObject * returnType);
-		const std::vector<ParameterObject*> & parameters() const;
+		const QList<ParameterObject*> & parameters() const;
 		ParameterObject * parameterAt(unsigned int position) const;
 
-		virtual std::string umlName() const;
+		virtual QString umlName() const;
 		virtual ElementType type() const { return Element_Method; }
 
 	private:

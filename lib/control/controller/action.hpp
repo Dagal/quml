@@ -62,7 +62,7 @@ struct RenameAction : public Action
 {
 	RenameAction() : Action(Action_RenameElement), oldName("") {}
 
-	std::string oldName;
+	QString oldName;
 };
 
 struct CreateAction : public Action

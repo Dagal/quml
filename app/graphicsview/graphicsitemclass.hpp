@@ -37,9 +37,9 @@ class GraphicsItemClass : public QGraphicsRectItem
 	class GraphicsItemClassPrivate;
 
 public:
-	GraphicsItemClass(ClassObject * classObject, QGraphicsItem * parent = 0);
+	GraphicsItemClass(element::ClassObject * classObject, QGraphicsItem * parent = 0);
 
-	ClassObject * classObject() const;
+	element::ClassObject * classObject() const;
 	const QFont & font() const;
 	void setFont(const QFont & font);
 

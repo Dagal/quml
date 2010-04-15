@@ -51,25 +51,25 @@ void ElementDiagramTest::cleanup()
 
 void ElementDiagramTest::checkBasics()
 {
-	QCOMPARE(_diagram->allElements().size(), (unsigned int)2);
+	QCOMPARE(_diagram->allElements().size(), 2);
 	QVERIFY(_parent->qualifiedName() == "parent");
 	QVERIFY(_child->qualifiedName() == "parent::child");
 	QCOMPARE(_diagram->findElement(_parent->qualifiedName()), _parent);
 	QCOMPARE(_diagram->findElement(_child->qualifiedName()), _child);
-	QCOMPARE(_parent->children().size(), (unsigned int)1);
+	QCOMPARE(_parent->children().size(), 1);
 	QCOMPARE(_parent->children()[0], _child);
-	QCOMPARE(_diagram->findElements<ClassObject>().size(), (unsigned int)1);
+	QCOMPARE(_diagram->findElements<ClassObject>().size(), 1);
 }
 
 void ElementDiagramTest::removeChild()
 {
 	_child->setUMLDiagram(0);
 
-	QCOMPARE(_diagram->allElements().size(), (unsigned int)1);
+	QCOMPARE(_diagram->allElements().size(), 1);
 	QCOMPARE(_diagram->allElements()[0], _parent);
 	QCOMPARE(_child->umlDiagram(), (UMLDiagram*)0);
 	QCOMPARE(_child->parent(), (ElementObject*)0);
-	QCOMPARE(_parent->children().size(), (unsigned int)0);
+	QCOMPARE(_parent->children().size(), 0);
 }
 
 void ElementDiagramTest::methodTest()
@@ -78,7 +78,7 @@ void ElementDiagramTest::methodTest()
 	prop->setParent(_parent);
 	prop->setDatatype((ClassObject*)_child);
 
-	QCOMPARE(_diagram->findRelatedElements(_child).size(), (unsigned int)1);
+	QCOMPARE(_diagram->findRelatedElements(_child).size(), 1);
 
 	_parent->setUMLDiagram(0);
 

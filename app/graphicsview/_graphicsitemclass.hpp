@@ -41,13 +41,7 @@ struct GraphicsItemClass::GraphicsItemClassPrivate
 	QRectF calculateProperties(const QFontMetricsF & fontMetrics);
 	QRectF calculateOperations(const QFontMetricsF & fontMetrics);
 
-	ClassObject * classObject() const { return _classObject; }
-	const QFont & font() const { return _font; }
-	void setClassObject(ClassObject * classObject) { _classObject = classObject; }
-	void setFont(const QFont & font) { _font = font; }
-
-private:
-	ClassObject * _classObject;
+	element::ClassObject * _classObject;
 	QFont _font;
 };
 

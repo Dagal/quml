@@ -139,6 +139,10 @@ namespace connection
 
 		onPointAdded(point);
 
+		// select the point is necessary
+		if(hasFocus())
+			point->setSelected(true);
+
 		updateCompleteConnection();
 	}
 

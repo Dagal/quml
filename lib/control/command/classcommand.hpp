@@ -29,48 +29,48 @@
 #include "icommand.hpp"
 #include "element.hpp"
 #include "macro.hpp"
-#include <string>
+#include <QString>
 
 class ClassDiagramController;
 
 class CreateClassCommand : public ICommand
 {
 public:
-	CreateClassCommand(ClassDiagramController * controller, const std::string & className, const std::string & parentQualifiedName);
+	CreateClassCommand(ClassDiagramController * controller, const QString & className, const QString & parentQualifiedName);
 
 	virtual bool redo();
 	virtual bool undo();
 
-	const std::string & className() const { return _className; }
-	const std::string & parentQualifiedName() const { return _parentQualifiedName; }
+	const QString & className() const { return _className; }
+	const QString & parentQualifiedName() const { return _parentQualifiedName; }
 	element::ClassObject * classObject() const { return _classObject; }
 
 private:
 	ClassDiagramController * _controller;
-	std::string  _className;
-	std::string _parentQualifiedName;
+	QString  _className;
+	QString _parentQualifiedName;
 	element::ClassObject * _classObject;
 };
 
 class MoveClassCommand : public ICommand
 {
 public:
-	MoveClassCommand(ClassDiagramController * controller, const std::string & oldclassQualifiedName, const std::string & newparentQualifiedName);
+	MoveClassCommand(ClassDiagramController * controller, const QString & oldclassQualifiedName, const QString & newparentQualifiedName);
 
 	virtual bool redo();
 	virtual bool undo();
 
-	const std::string & oldclassQualifiedName() const { return _oldclassQualifiedName; }
-	const std::string & newclassQualifiedName() const { return _newclassQualifiedName; }
-	const std::string & newparentQualifiedName() const { return _newparentQualifiedName; }
-	const std::string & oldparentQualifiedName() const { return _oldparentQualifiedName; }
+	const QString & oldclassQualifiedName() const { return _oldclassQualifiedName; }
+	const QString & newclassQualifiedName() const { return _newclassQualifiedName; }
+	const QString & newparentQualifiedName() const { return _newparentQualifiedName; }
+	const QString & oldparentQualifiedName() const { return _oldparentQualifiedName; }
 
 private:
 	ClassDiagramController * _controller;
-	std::string _oldclassQualifiedName;
-	std::string _newclassQualifiedName;
-	std::string _newparentQualifiedName;
-	std::string _oldparentQualifiedName;
+	QString _oldclassQualifiedName;
+	QString _newclassQualifiedName;
+	QString _newparentQualifiedName;
+	QString _oldparentQualifiedName;
 };
 
 #endif // CLASSCOMMAND_HPP

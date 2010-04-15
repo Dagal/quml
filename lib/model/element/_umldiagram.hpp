@@ -44,7 +44,7 @@ namespace element
 	*/
 	struct UMLDiagram::UMLDiagramPrivate
 	{
-		typedef std::vector<ElementObject* > element_vector;
+		typedef QList<ElementObject* > element_vector;
 
 		UMLDiagramPrivate()
 		{
@@ -57,8 +57,8 @@ namespace element
 		void attachElement(ElementObject * elementObject);
 		void detachElement(ElementObject * elementObject);
 		void resortElements();
-		std::vector<ElementObject*>::iterator findElement(const std::string & qualifiedName);
-		std::vector<ElementObject*>::iterator findElement(ElementObject * elementObject);
+		QList<ElementObject*>::iterator findElement(const QString & qualifiedName);
+		QList<ElementObject*>::iterator findElement(ElementObject * elementObject);
 
 	private:
 		void INT_recursiveAttachElement(ElementObject * elementObject);

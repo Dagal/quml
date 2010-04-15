@@ -28,8 +28,6 @@
 
 #include "parameterobject.hpp"
 
-using std::string;
-
 class element::ParameterObject::ParameterObjectPrivate
 {
 public:
@@ -39,7 +37,7 @@ public:
 	}
 
 	DatatypeObject * _datatype;
-	string _defaultValue;
+	QString _defaultValue;
 };
 
 #endif // P_PARAMETEROBJECT_HPP

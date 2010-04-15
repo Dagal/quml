@@ -41,15 +41,15 @@ namespace element
 	public:
 		enum { elementtype = Element_Parameter };
 
-		ParameterObject(const std::string & name);
+		ParameterObject(const QString & name);
 
 		DatatypeObject * datatype() const;
-		const std::string & defaultValue() const;
+		const QString & defaultValue() const;
 		void setDatatype(DatatypeObject * datatype);
-		void setDefaultValue(const std::string & defaultValue);
+		void setDefaultValue(const QString & defaultValue);
 
 		virtual ElementType type() const { return Element_Parameter; }
-		virtual std::string umlName() const;
+		virtual QString umlName() const;
 
 	private:
 		boost::shared_ptr<ParameterObjectPrivate> _dd;

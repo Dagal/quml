@@ -29,11 +29,10 @@
 #include "datatypeobject.hpp"
 #include "elementhelper.hpp"
 #include "_umldiagram.hpp"
-#include <sstream>
 
 namespace element
 {
-	MethodObject::MethodObject(const std::string & name)
+	MethodObject::MethodObject(const QString & name)
 		: ElementObject(name), _dd(new MethodObjectPrivate)
 	{
 	}
@@ -55,7 +54,7 @@ namespace element
 		relatedElementChanged(oldData);
 	}
 
-	const std::vector<ParameterObject*> & MethodObject::parameters() const
+	const QList<ParameterObject*> & MethodObject::parameters() const
 	{
 		return _dd->_parameters.vector();
 	}
@@ -65,22 +64,20 @@ namespace element
 		return _dd->_parameters.getElement(position);
 	}
 
-	std::string MethodObject::umlName() const
+	QString MethodObject::umlName() const
 	{
-		std::stringstream s;
+		QString retVal = name() + "(";
 
-		s << name() << "(";
-
-		for(unsigned int i = 0; i < parameters().size(); i++)
+		for(int i = 0; i < parameters().size(); i++)
 		{
-			s << parameterAt(i)->umlName();
+			retVal += parameterAt(i)->umlName();
 			if(i != parameters().size()-1)
-				s << ", ";
+				retVal += ", ";
 		}
 
-		s << "): " << returnType();
+		retVal += "): " + returnType()->umlName();
 
-		return s.str();
+		return retVal;
 	}
 
 	void MethodObject::onChildAdded(ElementObject * child)

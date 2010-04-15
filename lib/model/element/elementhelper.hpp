@@ -72,7 +72,7 @@ namespace element
 		return static_cast<const ElementClass*>(element);
 	}
 
-	template <typename T> bool checkForValidNamedElement(T * element, const std::string & name)
+	template <typename T> bool checkForValidNamedElement(T * element, const QString & name)
 	{
 		return (element && element->name() == name);
 	}
@@ -85,19 +85,19 @@ namespace element
   This method returns a list of all the child from \c element that can be casted to \c ElementClass. If \c name is defined, the names of the children
   should also match.
 */
-	template <typename ElementClass> std::vector<ElementClass*> findChildren(ElementObject * element, const std::string & name = std::string())
+	template <typename ElementClass> QList<ElementClass*> findChildren(ElementObject * element, const QString & name = QString())
 	{
-		if(element == 0)
-			return std::vector<ElementClass*>();
-
-		typedef std::vector<ElementClass*> elementvct;
+		typedef QList<ElementClass*> elementvct;
 		typedef typename elementvct::iterator elementvctit;
 
-		const std::vector<ElementObject * >	& children = element->children();
+		if(element == 0)
+			return elementvct();
+
+		const QList<ElementObject * > & children = element->children();
 		elementvct transf(children.size());
 
 		boost::function<bool (ElementClass*)> pred;
-		if(name.empty())
+		if(name.isEmpty())
 			pred = boost::bind(checkForValidElement<ElementClass>, _1);
 		else
 			pred = boost::bind(checkForValidNamedElement<ElementClass>, _1, boost::cref(name));
@@ -120,7 +120,7 @@ namespace element
 	/*!
   This method returns a list of all the children from \c element whose name is equal to \c name. If name is empty, all the children are returned.
 */
-	std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name = std::string());
+	QList<ElementObject*> findChildren(ElementObject * element, const QString & name = QString());
 
 	/*!
   Return the related element for \c elementObject. If elementObject is method, it will return the returntype. If elementObject is a parameter, it will
@@ -135,7 +135,7 @@ namespace element
 	/*!
   Creates an element of type \c type and sets the name.
 */
-	ElementObject * createElementObject(ElementType type, const std::string & name);
+	ElementObject * createElementObject(ElementType type, const QString & name);
 
 }
 

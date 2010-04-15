@@ -25,24 +25,20 @@
 
 #include "operationobject.hpp"
 #include "_operationobject.hpp"
-#include <sstream>
 
 namespace element
 {
-	OperationObject::OperationObject(const std::string & name)
+	OperationObject::OperationObject(const QString & name)
 		: MethodObject(name), _dd(new OperationObjectPrivate)
 	{
 	}
 
-	std::string OperationObject::umlName() const
+	QString OperationObject::umlName() const
 	{
-		std::stringstream s;
-		s << _dd->_visibility.umlNotation() << MethodObject::umlName();
-
-		return s.str();
+		return _dd->_visibility.umlNotation() + MethodObject::umlName();
 	}
 
-	std::string OperationObject::qualifiedName() const
+	QString OperationObject::qualifiedName() const
 	{
 		if(parent())
 			return parent()->qualifiedName() + "::" + MethodObject::umlName();

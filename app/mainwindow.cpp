@@ -50,6 +50,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connection->attachPoint(new GraphicsItemConnectionPoint());
 	connection->attachPoint(new GraphicsItemConnectionPoint());
+
+	scene->addItem(new QGraphicsLineItem(-100,0, 100, 0));
+	scene->addItem(new QGraphicsLineItem(0,100, 0, -100));
+
+	ui->mainView->setSceneRect(QRectF());
+
 }
 
 MainWindow::~MainWindow()

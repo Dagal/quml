@@ -27,7 +27,7 @@
 
 namespace element
 {
-	PrimitiveObject::PrimitiveObject(const std::string & name)
+	PrimitiveObject::PrimitiveObject(const QString & name)
 		: DatatypeObject(name)
 	{
 	}

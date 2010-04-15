@@ -27,11 +27,10 @@
 #include "_parameterobject.hpp"
 #include "datatypeobject.hpp"
 #include "_umldiagram.hpp"
-#include <sstream>
 
 namespace element
 {
-	ParameterObject::ParameterObject(const std::string & name)
+	ParameterObject::ParameterObject(const QString & name)
 		: ElementObject(name), _dd(new ParameterObjectPrivate)
 	{
 	}
@@ -41,7 +40,7 @@ namespace element
 		return _dd->_datatype;
 	}
 
-	const string & ParameterObject::defaultValue() const
+	const QString & ParameterObject::defaultValue() const
 	{
 		return _dd->_defaultValue;
 	}
@@ -60,17 +59,13 @@ namespace element
 		relatedElementChanged(oldData);
 	}
 
-	void ParameterObject::setDefaultValue(const string & defaultValue)
+	void ParameterObject::setDefaultValue(const QString & defaultValue)
 	{
 		_dd->_defaultValue = defaultValue;
 	}
 
-	std::string ParameterObject::umlName() const
+	QString ParameterObject::umlName() const
 	{
-		std::stringstream s;
-
-		s << name() << ": " << datatype();
-
-		return s.str();
+		return name() + ": " + datatype()->umlName();
 	}
 }

@@ -29,7 +29,7 @@
 
 using namespace element;
 
-DeleteElementCommand::DeleteElementCommand(ClassDiagramController * controller, const std::string & elementQualifiedName)
+DeleteElementCommand::DeleteElementCommand(ClassDiagramController * controller, const QString & elementQualifiedName)
 	: _controller(controller),
 	_elementQualifiedName(elementQualifiedName),
 	_element(0)
@@ -72,7 +72,7 @@ bool DeleteElementCommand::undo()
 	return true;
 }
 
-RenameElementCommand::RenameElementCommand(ClassDiagramController * controller, const std::string & elementQualifiedName, const std::string & newName)
+RenameElementCommand::RenameElementCommand(ClassDiagramController * controller, const QString & elementQualifiedName, const QString & newName)
 	: _controller(controller),
 	_oldElementQualifiedName(elementQualifiedName),
 	_newName(newName)

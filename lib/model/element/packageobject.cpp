@@ -27,7 +27,7 @@
 
 namespace element
 {
-	PackageObject::PackageObject(const std::string & name)
+	PackageObject::PackageObject(const QString & name)
 		: ElementObject(name)
 	{
 	}

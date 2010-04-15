@@ -30,6 +30,7 @@
 #include "classobject.hpp"
 #include "methodobject.hpp"
 #include "packageobject.hpp"
+#include <QVector>
 
 using namespace element;
 
@@ -50,7 +51,7 @@ bool checkForParentRecursion(ElementObject * child, ElementObject * newParent)
 	if(child == 0 || newParent == 0)
 		return true;
 
-	std::vector<const ElementObject*> ancestors = newParent->ancestors();
+	QList<const ElementObject*> ancestors = newParent->ancestors();
 
 	return (std::find(
 			ancestors.begin(),
@@ -80,7 +81,7 @@ UMLDiagram * ClassDiagramController::diagram() const
 	return _dd->_diagram;
 }
 
-Error ClassDiagramController::detachElement(const std::string & qualifiedElementName, ElementObject ** elementObject)
+Error ClassDiagramController::detachElement(const QString & qualifiedElementName, ElementObject ** elementObject)
 {
 	DetachAction a;
 
@@ -96,7 +97,7 @@ Error ClassDiagramController::detachElement(const std::string & qualifiedElement
 	SEND_AND_RETURN(Error_NoError);
 }
 
-Error ClassDiagramController::renameElement(const std::string & qualifiedElementName, const std::string & newName)
+Error ClassDiagramController::renameElement(const QString & qualifiedElementName, const QString & newName)
 {
 	RenameAction a;
 
@@ -106,7 +107,7 @@ Error ClassDiagramController::renameElement(const std::string & qualifiedElement
 
 	a.oldName = a.elementObject->name();
 
-	if(newName.empty()) SEND_AND_RETURN(Error_ElementNameEmpty);
+	if(newName.isEmpty()) SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	// check for the names
 	if(!checkNameAgainstSiblings(a.elementObject, newName, a.elementObject->parent()))
@@ -118,12 +119,12 @@ Error ClassDiagramController::renameElement(const std::string & qualifiedElement
 	SEND_AND_RETURN(Error_NoError);
 }
 
-Error ClassDiagramController::createClass(const std::string & className, const std::string & qualifiedParentName, ClassObject ** elementObject)
+Error ClassDiagramController::createClass(const QString & className, const QString & qualifiedParentName, ClassObject ** elementObject)
 {
 	CreateAction a;
 
 	// useful new name?
-	if(className.empty()) SEND_AND_RETURN(Error_ElementNameEmpty);
+	if(className.isEmpty()) SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	ElementObject * parentElement = getElement(qualifiedParentName);
 
@@ -149,12 +150,12 @@ Error ClassDiagramController::createClass(const std::string & className, const s
 	SEND_AND_RETURN(Error_NoError);
 }
 
-Error ClassDiagramController::moveClass(const std::string & classQualifiedName, const std::string & newParentQualifiedName)
+Error ClassDiagramController::moveClass(const QString & classQualifiedName, const QString & newParentQualifiedName)
 {
 	MoveAction a;
 
 	// useful name?
-	if(classQualifiedName.empty())
+	if(classQualifiedName.isEmpty())
 		SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	// check if we found a class
@@ -181,12 +182,12 @@ Error ClassDiagramController::moveClass(const std::string & classQualifiedName, 
 	SEND_AND_RETURN(Error_NoError);
 }
 
-Error ClassDiagramController::createPackage(const std::string & packageName, const std::string & newParentQualifiedName, PackageObject ** elementObject)
+Error ClassDiagramController::createPackage(const QString & packageName, const QString & newParentQualifiedName, PackageObject ** elementObject)
 {
 	CreateAction a;
 
 	// useful name?
-	if(packageName.empty()) SEND_AND_RETURN(Error_ElementNameEmpty);
+	if(packageName.isEmpty()) SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	ElementObject * parentElement = getElement(newParentQualifiedName);
 
@@ -211,12 +212,12 @@ Error ClassDiagramController::createPackage(const std::string & packageName, con
 	SEND_AND_RETURN(Error_NoError);
 }
 
-Error ClassDiagramController::movePackage(const std::string & packageQualifiedName, const std::string & newParentQualifiedName)
+Error ClassDiagramController::movePackage(const QString & packageQualifiedName, const QString & newParentQualifiedName)
 {
 	MoveAction a;
 
 	// useful name?
-	if(packageQualifiedName.empty())
+	if(packageQualifiedName.isEmpty())
 		SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	// check if we found a package?
@@ -244,25 +245,29 @@ Error ClassDiagramController::movePackage(const std::string & packageQualifiedNa
 
 }
 
-ElementObject * ClassDiagramController::getElement(const std::string & qualifiedName) const
+ElementObject * ClassDiagramController::getElement(const QString & qualifiedName) const
 {
 	return diagram()->findElement(qualifiedName);
 }
 
-std::vector<ElementObject *> ClassDiagramController::getElements(const std::string & name, const std::string & parentQualifiedName) const
+QList<ElementObject *> ClassDiagramController::getElements(const QString & name, const QString & parentQualifiedName) const
 {
 	return getElements(name, getElement(parentQualifiedName));
 }
 
-std::vector<ElementObject *> ClassDiagramController::getElements(const std::string & name, ElementObject * parentObject) const
+QList<ElementObject *> ClassDiagramController::getElements(const QString & name, ElementObject * parentObject) const
 {
-	if(parentObject != 0 && parentObject->umlDiagram() != diagram())
-		return std::vector<ElementObject*>();
+	typedef QVector<ElementObject*> elementvct;
+	typedef QList<ElementObject*> elementlst;
 
-	typedef std::vector<ElementObject*> elementvct;
+	if(parentObject != 0 && parentObject->umlDiagram() != diagram())
+		return elementlst();
+
+
 
 	boost::function<bool (ElementObject *)> conditionChecker;
-	const elementvct * toCheckVCT = 0;
+	const elementlst * toCheckVCT = 0;
+
 	elementvct targetVCT;
 
 	if(parentObject != 0)
@@ -293,16 +298,17 @@ std::vector<ElementObject *> ClassDiagramController::getElements(const std::stri
 					);
 
 	targetVCT.erase(i, targetVCT.end());
-	return targetVCT;
+
+	return elementlst::fromVector(targetVCT);
 }
 
-bool ClassDiagramController::checkNameAgainstSiblings(ElementObject * element, const std::string & newName, ElementObject * parentObject) const
+bool ClassDiagramController::checkNameAgainstSiblings(ElementObject * element, const QString & newName, ElementObject * parentObject) const
 {
-	if(newName.empty())
+	if(newName.isEmpty())
 		return false;
 
 	// check for the names
-	std::vector<ElementObject *> sameNamedElements = getElements(newName, parentObject);
+	QList<ElementObject *> sameNamedElements = getElements(newName, parentObject);
 	if(!sameNamedElements.empty())
 	{
 		// not empty, than element should be a methodObject

@@ -27,7 +27,7 @@
 
 namespace element
 {
-	DatatypeObject::DatatypeObject(const std::string & name)
+	DatatypeObject::DatatypeObject(const QString & name)
 		: ElementObject(name)
 	{
 	}

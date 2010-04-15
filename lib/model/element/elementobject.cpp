@@ -41,7 +41,7 @@ namespace element
   Base constructor for an element with a specified name
   Note that this class is abstract, so calling this constructor won't work directly
 */
-	ElementObject::ElementObject(const std::string & name)
+	ElementObject::ElementObject(const QString & name)
 		: _dd(new ElementObjectPrivate(this))
 	{
 		_dd->_name = name;
@@ -56,7 +56,7 @@ namespace element
 		setUMLDiagram(0);
 		setParent(0);
 
-		std::vector<ElementObject*> childrenCopy = children();
+		QList<ElementObject*> childrenCopy = children();
 
 		std::for_each(
 				childrenCopy.begin(),
@@ -76,7 +76,7 @@ namespace element
   \li \c umlName: test(int a)
   \li \c qualifiedName: A::test(int a)
 */
-	const string & ElementObject::name() const
+	const QString & ElementObject::name() const
 	{
 		return _dd->_name;
 	}
@@ -92,7 +92,7 @@ namespace element
   \li \c umlName: test(int a)
   \li \c qualifiedName: A::test(int a)
 */
-	std::string ElementObject::umlName() const
+	QString ElementObject::umlName() const
 	{
 		return name();
 	}
@@ -108,7 +108,7 @@ namespace element
   \li \c umlName: test(int a)
   \li \c qualifiedName: A::test(int a)
 */
-	string ElementObject::qualifiedName() const
+	QString ElementObject::qualifiedName() const
 	{
 		if(parent())
 			return parent()->qualifiedName() + "::" + umlName();
@@ -150,7 +150,7 @@ namespace element
 	/*!
   Returns a list of all the attached children
 */
-	const std::vector<ElementObject *> & ElementObject::children() const
+	const QList<ElementObject *> & ElementObject::children() const
 	{
 		return _dd->_children;
 	}
@@ -185,10 +185,10 @@ namespace element
 	Changes the name of the ElementObject. The name is used to compose the umlName and the qualifiedName. Make sure that the new qualifiedElement
 	is unique within the umlDiagram, otherwise the other element will be destroyed.
 	*/
-	void ElementObject::setName(const std::string & name)
+	void ElementObject::setName(const QString & name)
 	{
 		// emtpy name?
-		if(name.empty())
+		if(name.isEmpty())
 			return;
 
 		// stupid function call?
@@ -199,9 +199,9 @@ namespace element
 		if(umlDiagram())
 		{
 			// find the "new" qualified name
-			std::string oldName = _dd->_name;
+			QString oldName = _dd->_name;
 			_dd->_name  = name;
-			std::string qualName = qualifiedName();
+			QString qualName = qualifiedName();
 			_dd->_name = oldName;
 
 			// name already taken?
@@ -356,7 +356,7 @@ namespace element
 	*/
 	void ElementObject::ElementObjectPrivate::INT_removeChild(ElementObject * child)
 	{
-		std::vector<ElementObject*>::iterator i = std::find( _children.begin(), _children.end(), child);
+		QList<ElementObject*>::iterator i = std::find( _children.begin(), _children.end(), child);
 
 		if(i != _children.end())
 			_children.erase(i);
@@ -384,9 +384,9 @@ namespace element
 	/*!
 	This method returns a list of all the ancestors. The first ancestor in the line is always this element.
 	*/
-	std::vector<const ElementObject*> ElementObject::ancestors() const
+	QList<const ElementObject*> ElementObject::ancestors() const
 	{
-		std::vector<const ElementObject*> ancestors;
+		QList<const ElementObject*> ancestors;
 
 		const ElementObject * curElement = this;
 

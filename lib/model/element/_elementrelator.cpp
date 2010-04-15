@@ -44,8 +44,8 @@ namespace element
 		if(i != _relatedElements.end())
 		{
 			// find the value in the attached elements
-			std::vector<ElementObject*> & vct = *(i->second);
-			std::vector<ElementObject*>::iterator j = std::find(
+			QList<ElementObject*> & vct = *(i->second);
+			QList<ElementObject*>::iterator j = std::find(
 					vct.begin(),
 					vct.end(),
 					value
@@ -73,7 +73,7 @@ namespace element
 		if(i == _relatedElements.end())
 		{
 			// create new vector and store that for value with key
-			boost::shared_ptr<std::vector<ElementObject*> > ptr(new std::vector<ElementObject*>);
+			boost::shared_ptr<QList<ElementObject*> > ptr(new QList<ElementObject*>);
 			_relatedElements[key] = ptr;
 			ptr->push_back(value);
 		}
@@ -84,11 +84,11 @@ namespace element
 		}
 	}
 
-	std::vector<ElementObject *> ElementRelator::findElementsRelatedTo(ElementObject * relatedElement)
+	QList<ElementObject *> ElementRelator::findElementsRelatedTo(ElementObject * relatedElement)
 	{
 		relatedElements_map::iterator i = _relatedElements.find(relatedElement);
 		if(i == _relatedElements.end())
-			return std::vector<ElementObject*>();
+			return QList<ElementObject*>();
 		else
 			return *(i->second);
 	}

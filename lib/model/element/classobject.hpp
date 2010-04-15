@@ -40,12 +40,12 @@ namespace element
 	public:
 		enum { elementtype = Element_Class };
 
-		ClassObject(const std::string & name);
+		ClassObject(const QString & name);
 
-		const std::vector<OperationObject*> & operations() const;
-		const std::vector<PropertyObject*> & properties() const;
+		const QList<OperationObject*> & operations() const;
+		const QList<PropertyObject*> & properties() const;
 
-		virtual std::string umlName() const;
+		virtual QString umlName() const;
 
 		virtual ElementType type() const { return Element_Class; }
 

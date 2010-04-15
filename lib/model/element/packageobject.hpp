@@ -38,7 +38,7 @@ namespace element
 	public:
 		enum { elementtype = Element_Package };
 
-		PackageObject(const std::string & name);
+		PackageObject(const QString & name);
 		~PackageObject() {};
 
 		virtual ElementType type() const { return Element_Package; }

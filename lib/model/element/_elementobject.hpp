@@ -28,8 +28,6 @@
 
 #include "elementobject.hpp"
 
-using std::string;
-
 namespace element
 {
 	/*!
@@ -46,11 +44,11 @@ namespace element
 		{
 		}
 
-		string _name;
+		QString _name;
 		ElementObject * _parent;
 		UMLDiagram * _diagram;
 		ElementObject * _element;
-		std::vector<ElementObject *> _children;
+		QList<ElementObject *> _children;
 
 		void detachFromParent();
 		void detachFromUML();

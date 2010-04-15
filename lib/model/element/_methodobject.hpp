@@ -29,8 +29,6 @@
 #include "methodobject.hpp"
 #include "elementcontainer.hpp"
 
-using std::string;
-
 struct element::MethodObject::MethodObjectPrivate
 {
 	MethodObjectPrivate()

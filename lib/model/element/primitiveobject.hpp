@@ -38,7 +38,7 @@ namespace element
 	public:
 		enum { elementtype = Element_Primitive };
 
-		PrimitiveObject(const std::string & name);
+		PrimitiveObject(const QString & name);
 
 		virtual ElementType type() const { return Element_Primitive; }
 	};

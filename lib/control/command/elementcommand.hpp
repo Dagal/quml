@@ -28,14 +28,14 @@
 
 #include "icommand.hpp"
 #include "element.hpp"
-#include <string>
+#include <QString>
 
 class ClassDiagramController;
 
 class DeleteElementCommand : public ICommand
 {
 public:
-	DeleteElementCommand(ClassDiagramController * controller, const std::string & elementQualifiedName);
+	DeleteElementCommand(ClassDiagramController * controller, const QString & elementQualifiedName);
 	~DeleteElementCommand();
 
 	virtual bool redo();
@@ -43,8 +43,8 @@ public:
 
 private:
 	ClassDiagramController * _controller;
-	std::string _elementQualifiedName;
-	std::string _parentQualifiedName;
+	QString _elementQualifiedName;
+	QString _parentQualifiedName;
 	element::ElementObject * _element;
 };
 
@@ -52,17 +52,17 @@ private:
 class RenameElementCommand : public ICommand
 {
 public:
-	RenameElementCommand(ClassDiagramController * controller, const std::string & elementQualifiedName, const std::string & newName);
+	RenameElementCommand(ClassDiagramController * controller, const QString & elementQualifiedName, const QString & newName);
 
 	virtual bool redo();
 	virtual bool undo();
 
 private:
 	ClassDiagramController * _controller;
-	std::string _oldElementQualifiedName;
-	std::string _newElementQualifiedName;
-	std::string _oldName;
-	std::string _newName;
+	QString _oldElementQualifiedName;
+	QString _newElementQualifiedName;
+	QString _oldName;
+	QString _newName;
 };
 
 #endif // ELEMENTCOMMAND_HPP

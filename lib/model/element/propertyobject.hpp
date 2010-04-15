@@ -41,7 +41,7 @@ namespace element
 	public:
 		enum { elementtype = Element_Property };
 
-		PropertyObject(const std::string & name);
+		PropertyObject(const QString & name);
 		void setVisibility(VisibilityType type);
 		VisibilityType visibility() const;
 

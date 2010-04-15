@@ -37,7 +37,7 @@ bool elementComparator(boost::shared_ptr<element::ElementObject> elementA, boost
 	return elementA->qualifiedName() < elementB->qualifiedName();
 }
 
-int elementFinder(boost::shared_ptr<element::ElementObject> element, const std::string & qualifiedName)
+int elementFinder(boost::shared_ptr<element::ElementObject> element, const QString & qualifiedName)
 {
 	return element->qualifiedName().compare(qualifiedName);
 }
@@ -88,9 +88,9 @@ namespace element
 	  if the parent is not found, the element has no parent.
 	  This functions returns a pointer to the newly created element.
 	*/
-	ElementObject * UMLDiagram::createElement(ElementType type, const std::string & name, const std::string & parentQualifiedName)
+	ElementObject * UMLDiagram::createElement(ElementType type, const QString & name, const QString & parentQualifiedName)
 	{
-		if(name.empty())
+		if(name.isEmpty())
 			return 0;
 
 		ElementObject * element = createElementObject(type, name);
@@ -108,9 +108,9 @@ namespace element
 
 	  \sa element::ElementObject::qualifiedName
 	*/
-	ElementObject* UMLDiagram::findElement(const std::string & qualifiedName) const
+	ElementObject* UMLDiagram::findElement(const QString & qualifiedName) const
 	{
-		std::vector<ElementObject*>::iterator i = _dd->findElement(qualifiedName);
+		QList<ElementObject*>::iterator i = _dd->findElement(qualifiedName);
 
 		if(i == _dd->_elements.end())
 			return 0;
@@ -121,7 +121,7 @@ namespace element
 	/*!
 	  This function returns a list of all the attached ElementObject's
 	*/
-	const std::vector<ElementObject*> &  UMLDiagram::allElements() const
+	const QList<ElementObject*> &  UMLDiagram::allElements() const
 	{
 		return _dd->_elements;
 	}
@@ -130,7 +130,7 @@ namespace element
 	  This function return all the elements that depend on \c elementObject. For example, for a certain datatype it will return all the methods that
 	  have this datatype as returntype of all the parameters that have this as a datatype.
 	*/
-	std::vector<ElementObject *> UMLDiagram::findRelatedElements(ElementObject * elementObject) const
+	QList<ElementObject *> UMLDiagram::findRelatedElements(ElementObject * elementObject) const
 	{
 		return _dd->_elementRelator.findElementsRelatedTo(elementObject);
 	}
@@ -171,7 +171,7 @@ namespace element
 
 	/*!
 	  \internal
-	  This function is used internal to update the list of all the elements. This list is implemented by a std::vector sorted on qualifiedName.
+	  This function is used internal to update the list of all the elements. This list is implemented by a QList sorted on qualifiedName.
 	  This function is called whenever new elements are added, removed, names are changed, parents are changed, ...
 	*/
 	void UMLDiagram::UMLDiagramPrivate::resortElements()
@@ -188,13 +188,13 @@ namespace element
 	 This function is a helper function that tries to find an element with a certain qualifiedName in the list an returns an iterator
 	 to this list. If the iterator is equal to _elements.end(), the element is not found.
 	*/
-	std::vector<ElementObject*>::iterator UMLDiagram::UMLDiagramPrivate::findElement(const std::string & qualifiedName)
+	QList<ElementObject*>::iterator UMLDiagram::UMLDiagramPrivate::findElement(const QString & qualifiedName)
 	{
 		return stf::binary_find_if(
 				_elements.begin(),
 				_elements.end(),
 				boost::bind(
-						stf::comparator<std::string>(),
+						stf::comparator<QString>(),
 						boost::bind(&ElementObject::qualifiedName, _1),
 						boost::cref(qualifiedName)
 						)
@@ -205,7 +205,7 @@ namespace element
 	  \internal
 	  An overloaded method that tries to find the iterator to an element in _elements.
 	*/
-	std::vector<ElementObject*>::iterator UMLDiagram::UMLDiagramPrivate::findElement(ElementObject * elementObject)
+	QList<ElementObject*>::iterator UMLDiagram::UMLDiagramPrivate::findElement(ElementObject * elementObject)
 	{
 		if(elementObject == 0)
 			return _elements.end();
@@ -228,7 +228,7 @@ namespace element
 		INT_addElementToLists(elementObject);
 
 		// attach the children
-		const std::vector<ElementObject*> & vct = elementObject->children();
+		const QList<ElementObject*> & vct = elementObject->children();
 		std::for_each(
 				vct.begin(),
 				vct.end(),
@@ -249,7 +249,7 @@ namespace element
 		INT_removeElementFromLists(elementObject);
 
 		// detach the children
-		const std::vector<ElementObject*> & vct = elementObject->children();
+		const QList<ElementObject*> & vct = elementObject->children();
 		std::for_each(
 				vct.begin(),
 				vct.end(),
@@ -264,7 +264,7 @@ namespace element
 	void UMLDiagram::UMLDiagramPrivate::INT_removeElementFromLists(ElementObject * elementObject)
 	{
 		// remove from elements
-		std::vector<ElementObject*>::iterator i = std::find(
+		QList<ElementObject*>::iterator i = std::find(
 				_elements.begin(),
 				_elements.end(),
 				elementObject);
@@ -310,7 +310,7 @@ namespace element
 		checkForDetaching(elementObject);
 
 		// check for detaching of attached elements
-		std::vector<ElementObject*> attachedVct = _elementRelator.findElementsRelatedTo(elementObject);
+		QList<ElementObject*> attachedVct = _elementRelator.findElementsRelatedTo(elementObject);
 		std::for_each(
 				attachedVct.begin(),
 				attachedVct.end(),
@@ -318,7 +318,7 @@ namespace element
 				);
 
 		// recursive on children
-		const std::vector<ElementObject*> & vct = elementObject->children();
+		const QList<ElementObject*> & vct = elementObject->children();
 		std::for_each(
 				vct.begin(),
 				vct.end(),

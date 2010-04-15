@@ -29,8 +29,9 @@
 #include "element.hpp"
 #include "algorithm.hpp"
 #include "elementhelper.hpp"
-#include <vector>
-#include <string>
+#include <QVector>
+#include <QString>
+#include <QList>
 
 namespace element
 {
@@ -56,24 +57,26 @@ namespace element
 		~UMLDiagram();
 
 		// create & add functions
-		ElementObject * createElement(ElementType type, const std::string & name, const std::string & parentName);
+		ElementObject * createElement(ElementType type, const QString & name, const QString & parentName);
 
 		// element "find" functions
-		ElementObject * findElement(const std::string & qualifiedName) const;
-		const std::vector<ElementObject*> & allElements() const;
-		std::vector<ElementObject *> findRelatedElements(ElementObject * elementObject) const;
-		template <typename T> std::vector<T *> findElements() const;
+		ElementObject * findElement(const QString & qualifiedName) const;
+		const QList<ElementObject*> & allElements() const;
+		QList<ElementObject *> findRelatedElements(ElementObject * elementObject) const;
+		template <typename T> QList<T *> findElements() const;
 
 	private:
 		boost::shared_ptr<UMLDiagramPrivate> _dd;
 	};
 
 
-	template <typename T> std::vector<T*> UMLDiagram::findElements() const
+	template <typename T> QList<T*> UMLDiagram::findElements() const
 	{
-		std::vector<T*> vct(allElements().size());
+		typedef QVector<T*> elementvct;
 
-		typename std::vector<T*>::iterator i = stf::copy_transformed_if(
+		elementvct vct(allElements().size());
+
+		typename elementvct::iterator i = stf::copy_transformed_if(
 				allElements().begin(),
 				allElements().end(),
 				vct.begin(),
@@ -87,7 +90,7 @@ namespace element
 				);
 
 		vct.erase(i, vct.end());
-		return vct;
+		return QList<T*>::fromVector(vct);
 	}
 }
 

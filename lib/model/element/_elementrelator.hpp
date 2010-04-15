@@ -37,13 +37,13 @@ namespace element
 	public:
 		ElementRelator();
 
-		std::vector<ElementObject *> findElementsRelatedTo(ElementObject * relatedElement);
+		QList<ElementObject *> findElementsRelatedTo(ElementObject * relatedElement);
 		void updateElementObject(ElementObject * elementObject, ElementObject * oldRelatedElement);
 		void removeElementObject(ElementObject * elementObject);
 		void addElementObject(ElementObject * elementObject);
 
 	private:
-		typedef boost::unordered_map<ElementObject*, boost::shared_ptr<std::vector<ElementObject*> > > relatedElements_map;
+		typedef boost::unordered_map<ElementObject*, boost::shared_ptr<QList<ElementObject*> > > relatedElements_map;
 		relatedElements_map _relatedElements;
 
 		void removeElementFromRelator(ElementObject * key, ElementObject * value);

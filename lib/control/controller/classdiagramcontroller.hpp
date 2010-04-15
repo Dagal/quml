@@ -43,34 +43,34 @@ public:
 	element::UMLDiagram * diagram() const;
 
 	// element methods
-	Error detachElement(const std::string & qualifiedElementName, element::ElementObject ** elementObject = 0);
-	Error renameElement(const std::string & qualifiedElementName, const std::string & newName);
+	Error detachElement(const QString & qualifiedElementName, element::ElementObject ** elementObject = 0);
+	Error renameElement(const QString & qualifiedElementName, const QString & newName);
 
 	// class methods
-	Error createClass(const std::string & className, const std::string & qualifiedParentName, element::ClassObject ** elementObject = 0);
-	Error moveClass(const std::string & classQualifiedName, const std::string & newParentQualifiedName);
+	Error createClass(const QString & className, const QString & qualifiedParentName, element::ClassObject ** elementObject = 0);
+	Error moveClass(const QString & classQualifiedName, const QString & newParentQualifiedName);
 
 	// package methods
-	Error createPackage(const std::string & packageName, const std::string & newParentQualifiedName, element::PackageObject ** elementObject = 0);
-	Error movePackage(const std::string & packageQualifiedName, const std::string & newParentQualifiedName);
+	Error createPackage(const QString & packageName, const QString & newParentQualifiedName, element::PackageObject ** elementObject = 0);
+	Error movePackage(const QString & packageQualifiedName, const QString & newParentQualifiedName);
 
 	// find/get methods
-	element::ElementObject * getElement(const std::string & qualifiedName) const;
-	template <typename T> T * getElement(const std::string & qualifiedName) const;
-	std::vector<element::ElementObject *> getElements(const std::string & name, const std::string & parentQualifiedName) const;
-	std::vector<element::ElementObject *> getElements(const std::string & name, element::ElementObject * parentObject) const;
+	element::ElementObject * getElement(const QString & qualifiedName) const;
+	template <typename T> T * getElement(const QString & qualifiedName) const;
+	QList<element::ElementObject *> getElements(const QString & name, const QString & parentQualifiedName) const;
+	QList<element::ElementObject *> getElements(const QString & name, element::ElementObject * parentObject) const;
 
 	const Notifier<Action> & actionListener() const { return _actionListener; }
 
 protected:
-	bool checkNameAgainstSiblings(element::ElementObject * element, const std::string & newName, element::ElementObject * parentObject) const;
+	bool checkNameAgainstSiblings(element::ElementObject * element, const QString & newName, element::ElementObject * parentObject) const;
 
 private:
 	boost::shared_ptr<ClassDiagramControllerPrivate> _dd;
 	Notifier<Action> _actionListener;
 };
 
-template <typename T> T * ClassDiagramController::getElement(const std::string & qualifiedName) const
+template <typename T> T * ClassDiagramController::getElement(const QString & qualifiedName) const
 {
 	return element::element_cast<T>(getElement(qualifiedName));
 }

@@ -31,22 +31,25 @@
 #include "packageobject.hpp"
 #include "operationobject.hpp"
 #include "primitiveobject.hpp"
+#include <QVector>
 
 namespace element
 {
-	std::vector<ElementObject*> findChildren(ElementObject * element, const std::string & name)
+	QList<ElementObject*> findChildren(ElementObject * element, const QString & name)
 	{
-		typedef std::vector<ElementObject*> elementvct;
+
+		typedef QVector<ElementObject*> elementvct;
+		typedef QList<ElementObject*> elementlst;
 		typedef elementvct::iterator elementvctit;
 
 		if(!element)
-			return elementvct();
+			return elementlst();
 
-		const std::vector<ElementObject * >	& children = element->children();
+		const QList<ElementObject * >	& children = element->children();
 		elementvct transf(children.size());
 
 		boost::function<bool (ElementObject*)> pred;
-		if(name.empty())
+		if(name.isEmpty())
 			pred = boost::bind(checkForValidElement<ElementObject>, _1);
 		else
 			pred = boost::bind(checkForValidNamedElement<ElementObject>, _1, boost::cref(name));
@@ -63,7 +66,7 @@ namespace element
 				);
 
 		transf.erase(it, transf.end());
-		return transf;
+		return elementlst::fromVector(transf);
 	}
 
 	ElementObject * findRelatedElement(ElementObject * elementObject)
@@ -80,7 +83,7 @@ namespace element
 		else return 0;
 	}
 
-	ElementObject * createElementObject(ElementType type, const std::string & name)
+	ElementObject * createElementObject(ElementType type, const QString & name)
 	{
 		switch(type)
 		{

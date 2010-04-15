@@ -27,8 +27,8 @@
 #define ELEMENTOBJECT_HPP
 
 #include "element.hpp"
-#include <string>
-#include <vector>
+#include <QString>
+#include <QList>
 
 
 namespace element
@@ -49,19 +49,19 @@ namespace element
 		enum { elementtype = Element /*!<  Reimplement this enum value in the inheriting classes so ensure casting to different element types is possible. \sa element_cast*/};
 
 		// constructor & destructor
-		ElementObject(const std::string & name);
+		ElementObject(const QString & name);
 		virtual ~ElementObject() = 0;
 
 		// simple getters
-		const std::string & name() const;
+		const QString & name() const;
 		ElementObject * parent() const;
 		UMLDiagram * umlDiagram() const;
-		const std::vector<ElementObject *> & children() const;
-		std::vector<const ElementObject*> ancestors() const;
+		const QList<ElementObject *> & children() const;
+		QList<const ElementObject*> ancestors() const;
 
 		// virtual functions
-		virtual std::string qualifiedName() const;
-		virtual std::string umlName() const;
+		virtual QString qualifiedName() const;
+		virtual QString umlName() const;
 
 		/*!
 		Reimplement this abstract to return the right ElementType. This is necessary for casting different element types.
@@ -70,7 +70,7 @@ namespace element
 		virtual ElementType type() const  = 0;
 
 		// setters
-		void setName(const std::string & name);
+		void setName(const QString & name);
 		void setParent(ElementObject * parent);
 		void setUMLDiagram(UMLDiagram * diagram);
 

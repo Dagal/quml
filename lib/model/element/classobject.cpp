@@ -31,7 +31,7 @@
 
 namespace element
 {
-	ClassObject::ClassObject(const std::string & name)
+	ClassObject::ClassObject(const QString & name)
 		: DatatypeObject(name), _dd(new ClassObjectPrivate)
 	{
 	}
@@ -48,16 +48,16 @@ namespace element
 		_dd->_properties.removeElement(element_cast<PropertyObject>(child));
 	}
 
-	const std::vector<OperationObject*> & ClassObject::operations() const
+	const QList<OperationObject*> & ClassObject::operations() const
 	{
 		return _dd->_operations.vector();
 	}
-	const std::vector<PropertyObject*> & ClassObject::properties() const
+	const QList<PropertyObject*> & ClassObject::properties() const
 	{
 		return _dd->_properties.vector();
 	}
 
-	std::string ClassObject::umlName() const
+	QString ClassObject::umlName() const
 	{
 		return name();
 	}

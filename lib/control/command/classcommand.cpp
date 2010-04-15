@@ -29,7 +29,7 @@
 
 using namespace element;
 
-CreateClassCommand::CreateClassCommand(ClassDiagramController * controller, const std::string & className, const std::string & parentQualifiedName)
+CreateClassCommand::CreateClassCommand(ClassDiagramController * controller, const QString & className, const QString & parentQualifiedName)
 	: _controller(controller),
 	_className(className),
 	_parentQualifiedName(parentQualifiedName),
@@ -52,7 +52,7 @@ bool CreateClassCommand::undo()
 }
 
 
-MoveClassCommand::MoveClassCommand(ClassDiagramController * controller, const std::string & oldclassQualifiedName, const std::string & newparentQualifiedName)
+MoveClassCommand::MoveClassCommand(ClassDiagramController * controller, const QString & oldclassQualifiedName, const QString & newparentQualifiedName)
 	: _controller(controller),
 	_oldclassQualifiedName(oldclassQualifiedName),
 	_newparentQualifiedName(newparentQualifiedName)

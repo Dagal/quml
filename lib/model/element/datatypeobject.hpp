@@ -39,7 +39,7 @@ namespace element
 	public:
 		enum { elementtype = Element_Datatype };
 
-		DatatypeObject(const std::string & name);
+		DatatypeObject(const QString & name);
 	};
 }
 

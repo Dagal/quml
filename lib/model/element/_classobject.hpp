@@ -29,8 +29,6 @@
 #include "classobject.hpp"
 #include "elementcontainer.hpp"
 
-using std::vector;
-
 struct element::ClassObject::ClassObjectPrivate
 {
 	ElementContainer<PropertyObject> _properties;

@@ -43,7 +43,7 @@ public:
 
 	void setType(VisibilityType type);
 	VisibilityType type() const;
-	std::string umlNotation() const;
+	QString umlNotation() const;
 
 private:
 	VisibilityType _type;
@@ -64,7 +64,7 @@ inline VisibilityType Visibility::type() const
 	return _type;
 }
 
-inline std::string Visibility::umlNotation() const
+inline QString Visibility::umlNotation() const
 {
 	switch(_type)
 	{
