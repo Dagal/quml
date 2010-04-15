@@ -27,13 +27,14 @@
 #define MAINWINDOW_HPP
 
 #include <QMainWindow>
+#include "umldiagram.hpp"
+#include "classdiagramcontroller.hpp"
 
 namespace Ui
 {
     class MainWindow;
 }
 
-class ClassObject;
 
 class MainWindow : public QMainWindow
 {
@@ -48,6 +49,8 @@ protected:
 
 private:
     Ui::MainWindow *ui;
+	element::UMLDiagram * diagram;
+	ClassDiagramController controller;
 };
 
 #endif // MAINWINDOW_HPP

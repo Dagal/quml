@@ -30,6 +30,7 @@
 #include "action.hpp"
 #include "macro.hpp"
 #include "notifier.hpp"
+#include "parameter.hpp"
 #include <vector>
 
 class ClassDiagramController
@@ -47,11 +48,11 @@ public:
 	Error renameElement(const QString & qualifiedElementName, const QString & newName);
 
 	// class methods
-	Error createClass(const QString & className, const QString & qualifiedParentName, element::ClassObject ** elementObject = 0);
+	Error createClass(const QString & className, const QString & qualifiedParentName, element::ClassObject ** classObject = 0);
 	Error moveClass(const QString & classQualifiedName, const QString & newParentQualifiedName);
 
 	// package methods
-	Error createPackage(const QString & packageName, const QString & newParentQualifiedName, element::PackageObject ** elementObject = 0);
+	Error createPackage(const QString & packageName, const QString & parentQualifiedName, element::PackageObject ** packageObject = 0);
 	Error movePackage(const QString & packageQualifiedName, const QString & newParentQualifiedName);
 
 	// find/get methods

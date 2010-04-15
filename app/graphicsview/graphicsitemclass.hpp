@@ -43,8 +43,11 @@ public:
 	const QFont & font() const;
 	void setFont(const QFont & font);
 
-
 	void updateItem();
+
+	// overloaded member functions
+	virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
+	virtual QRectF boundingRect() const;
 
 private:
 	QSharedPointer<GraphicsItemClassPrivate> _dd;

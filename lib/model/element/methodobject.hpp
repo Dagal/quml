@@ -48,7 +48,7 @@ namespace element
 
 		DatatypeObject * returnType() const;
 		void setReturnType(DatatypeObject * returnType);
-		const QList<Parameter> & parameters() const;
+		const parameterList & parameters() const;
 		Parameter parameterAt(unsigned int position) const;
 
 		virtual QString umlName() const;

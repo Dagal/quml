@@ -29,15 +29,23 @@
 #include "graphicsview/connection/graphicsitemconnectionpoint.hpp"
 #include "graphicsview/connection/graphicsitemconnection.hpp"
 #include "graphicsview/graphicsitemrelation.hpp"
+#include "graphicsview/graphicsitemclass.hpp"
 #include <QGraphicsPathItem>
 #include <QGraphicsPolygonItem>
 #include <QDebug>
 
+#include <propertyobject.hpp>
+#include <operationobject.hpp>
+
 using namespace connection;
 
+void initialiseClassDiagram(ClassDiagramController & controller);
+
 MainWindow::MainWindow(QWidget *parent)
-	: QMainWindow(parent),
-    ui(new Ui::MainWindow)
+	: QMainWindow(parent)
+	, ui(new Ui::MainWindow)
+	, diagram(new element::UMLDiagram())
+	, controller(diagram)
 {
     ui->setupUi(this);
 
@@ -45,14 +53,12 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->mainView->setScene(scene);
 	ui->mainView->setTransform(QTransform(), false);
 
-	GraphicsItemConnection * connection = new GraphicsItemRelation(0);
-	scene->addItem(connection);
-
-	connection->attachPoint(new GraphicsItemConnectionPoint());
-	connection->attachPoint(new GraphicsItemConnectionPoint());
-
 	scene->addItem(new QGraphicsLineItem(-100,0, 100, 0));
 	scene->addItem(new QGraphicsLineItem(0,100, 0, -100));
+
+	initialiseClassDiagram(controller);
+
+	//scene->addItem(new GraphicsItemClass());
 
 	ui->mainView->setSceneRect(QRectF());
 
@@ -61,6 +67,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+	delete diagram;
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -74,4 +81,9 @@ void MainWindow::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void initialiseClassDiagram(ClassDiagramController & controller)
+{
+	controller.createClass("Person", "");
 }

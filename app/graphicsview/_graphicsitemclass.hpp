@@ -34,6 +34,8 @@ struct GraphicsItemClass::GraphicsItemClassPrivate
 {
 	GraphicsItemClassPrivate(ClassObject * classObject)
 		: _classObject(classObject)
+		, _propertyStart(0)
+		, _operationStart(0)
 	{
 	}
 
@@ -43,6 +45,8 @@ struct GraphicsItemClass::GraphicsItemClassPrivate
 
 	element::ClassObject * _classObject;
 	QFont _font;
+	QRectF _boundingRect;
+	float _propertyStart, _operationStart;
 };
 
 #endif // _GRAPHICSITEMCLASS_HPP

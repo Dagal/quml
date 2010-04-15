@@ -53,7 +53,7 @@ namespace element
 		relatedElementChanged(oldData);
 	}
 
-	const QList<Parameter> & MethodObject::parameters() const
+	const parameterList & MethodObject::parameters() const
 	{
 		return _dd->_parameters;
 	}

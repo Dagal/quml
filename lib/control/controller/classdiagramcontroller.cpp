@@ -302,6 +302,9 @@ QList<ElementObject *> ClassDiagramController::getElements(const QString & name,
 	return elementlst::fromVector(targetVCT);
 }
 
+/*!
+  \todo: Update the ClassDiagramController::checkNameAgainstSiblings to use correct methodObject checking
+  */
 bool ClassDiagramController::checkNameAgainstSiblings(ElementObject * element, const QString & newName, ElementObject * parentObject) const
 {
 	if(newName.isEmpty())
