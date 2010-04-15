@@ -57,7 +57,7 @@ namespace element
 		ElementObject * parent() const;
 		UMLDiagram * umlDiagram() const;
 		const QList<ElementObject *> & children() const;
-		QList<const ElementObject*> ancestors() const;
+		QList<ElementObject*> ancestors() const;
 
 		// virtual functions
 		virtual QString qualifiedName() const;

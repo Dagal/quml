@@ -48,10 +48,10 @@ inline bool checkParentForClass(ElementObject * parent)
 
 bool checkForParentRecursion(ElementObject * child, ElementObject * newParent)
 {
-	if(child == 0 || newParent == 0)
+	if(child == 0 || newParent == 0 || child == newParent)
 		return true;
 
-	QList<const ElementObject*> ancestors = newParent->ancestors();
+	QList<ElementObject*> ancestors = newParent->ancestors();
 
 	return (std::find(
 			ancestors.begin(),

@@ -382,13 +382,13 @@ namespace element
 	}
 
 	/*!
-	This method returns a list of all the ancestors. The first ancestor in the line is always this element.
+	This method returns a list of all the ancestors. The first ancestor in the line is the parent and so further on.
 	*/
-	QList<const ElementObject*> ElementObject::ancestors() const
+	QList<ElementObject*> ElementObject::ancestors() const
 	{
-		QList<const ElementObject*> ancestors;
+		QList<ElementObject*> ancestors;
 
-		const ElementObject * curElement = this;
+		ElementObject * curElement = parent();
 
 		while(curElement != 0)
 		{
