@@ -15,15 +15,14 @@ HEADERS += model/element/umldiagram.hpp \
     model/element/_elementrelator.hpp \
     model/element/visibility.hpp \
     model/element/propertyobject.hpp \
-    model/element/parameterobject.hpp \
+	model/element/parameter.hpp \
     model/element/packageobject.hpp \
     model/element/operationobject.hpp \
     model/element/methodobject.hpp \
-	model/element/element.hpp \
+    model/element/element.hpp \
     model/element/datatypeobject.hpp \
     model/element/classobject.hpp \
     model/element/_propertyobject.hpp \
-    model/element/_parameterobject.hpp \
     model/element/_operationobject.hpp \
     model/element/_methodobject.hpp \
     model/element/_classobject.hpp \
@@ -45,7 +44,6 @@ SOURCES += model/element/umldiagram.cpp \
     model/element/elementhelper.cpp \
     model/element/_elementrelator.cpp \
     model/element/propertyobject.cpp \
-    model/element/parameterobject.cpp \
     model/element/packageobject.cpp \
     model/element/operationobject.cpp \
     model/element/methodobject.cpp \

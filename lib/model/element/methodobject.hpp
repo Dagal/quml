@@ -28,6 +28,7 @@
 
 #include "elementobject.hpp"
 #include "datatypeobject.hpp"
+#include "parameter.hpp"
 
 namespace element
 {
@@ -47,15 +48,11 @@ namespace element
 
 		DatatypeObject * returnType() const;
 		void setReturnType(DatatypeObject * returnType);
-		const QList<ParameterObject*> & parameters() const;
-		ParameterObject * parameterAt(unsigned int position) const;
+		const QList<Parameter> & parameters() const;
+		Parameter parameterAt(unsigned int position) const;
 
 		virtual QString umlName() const;
 		virtual ElementType type() const { return Element_Method; }
-
-	private:
-		virtual void onChildAdded(ElementObject * child);
-		virtual void onChildRemoved(ElementObject * child);
 
 	private:
 		boost::shared_ptr<MethodObjectPrivate> _dd;

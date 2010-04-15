@@ -30,7 +30,7 @@
 #include "_elementobject.hpp"
 #include "algorithm.hpp"
 #include "methodobject.hpp"
-#include "parameterobject.hpp"
+#include "propertyobject.hpp"
 
 bool elementComparator(boost::shared_ptr<element::ElementObject> elementA, boost::shared_ptr<element::ElementObject> elementB)
 {
@@ -50,9 +50,9 @@ void checkForDetaching(element::ElementObject * elementObject)
 	if(method && method->returnType() != 0 && method->returnType()->umlDiagram() != elementObject->umlDiagram())
 		method->setReturnType(0);
 
-	ParameterObject * param = element_cast<ParameterObject>(elementObject);
-	if(param && param->datatype() != 0 && param->datatype()->umlDiagram() != elementObject->umlDiagram())
-		param->setDatatype(0);
+	PropertyObject * prop = element_cast<PropertyObject>(elementObject);
+	if(prop && prop->datatype() != 0 && prop->datatype()->umlDiagram() != elementObject->umlDiagram())
+		prop->setDatatype(0);
 }
 
 namespace element

@@ -27,15 +27,19 @@
 #define _PROPERTYOBJECT_HPP
 
 #include "propertyobject.hpp"
+#include "datatypeobject.hpp"
 
 struct element::PropertyObject::PropertyObjectPrivate
 {
 	PropertyObjectPrivate()
 		: _visibility(Visibility_Private)
+		, _datatype(0)
 	{
 	}
 
 	Visibility _visibility;
+	DatatypeObject * _datatype;
+	QString _defaultValue;
 };
 
 #endif // _PROPERTYOBJECT_HPP

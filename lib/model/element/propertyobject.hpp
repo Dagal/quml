@@ -26,7 +26,8 @@
 #ifndef PROPERTYOBJECT_HPP
 #define PROPERTYOBJECT_HPP
 
-#include "parameterobject.hpp"
+#include "elementobject.hpp"
+#include "parameter.hpp"
 #include "visibility.hpp"
 
 namespace element
@@ -34,18 +35,22 @@ namespace element
 	/*!
 	  \brief The PropertyObject class contains all the information to store the UML model of a property.
 	*/
-	class PropertyObject : public ParameterObject
+	class PropertyObject : public ElementObject
 	{
 		class PropertyObjectPrivate;
 
 	public:
-		enum { elementtype = Element_Property };
-
 		PropertyObject(const QString & name);
-		void setVisibility(VisibilityType type);
+
 		VisibilityType visibility() const;
+		DatatypeObject * datatype() const;
+		const QString & defaultValue() const;
+		void setVisibility(VisibilityType type);
+		void setDatatype(DatatypeObject * datatype);
+		void setDefaultValue(const QString & defaultValue);
 
 		virtual ElementType type() const { return Element_Property; }
+		virtual QString umlName() const;
 
 	private:
 		boost::shared_ptr<PropertyObjectPrivate> _dd;

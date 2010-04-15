@@ -25,7 +25,6 @@
 
 #include "methodobject.hpp"
 #include "_methodobject.hpp"
-#include "parameterobject.hpp"
 #include "datatypeobject.hpp"
 #include "elementhelper.hpp"
 #include "_umldiagram.hpp"
@@ -54,14 +53,14 @@ namespace element
 		relatedElementChanged(oldData);
 	}
 
-	const QList<ParameterObject*> & MethodObject::parameters() const
+	const QList<Parameter> & MethodObject::parameters() const
 	{
-		return _dd->_parameters.vector();
+		return _dd->_parameters;
 	}
 
-	ParameterObject * MethodObject::parameterAt(unsigned int position) const
+	Parameter MethodObject::parameterAt(unsigned int position) const
 	{
-		return _dd->_parameters.getElement(position);
+		return _dd->_parameters[position];
 	}
 
 	QString MethodObject::umlName() const
@@ -70,7 +69,7 @@ namespace element
 
 		for(int i = 0; i < parameters().size(); i++)
 		{
-			retVal += parameterAt(i)->umlName();
+			retVal += _dd->parameterToUmlNotation(parameterAt(i));
 			if(i != parameters().size()-1)
 				retVal += ", ";
 		}
@@ -80,14 +79,11 @@ namespace element
 		return retVal;
 	}
 
-	void MethodObject::onChildAdded(ElementObject * child)
+	/*!
+	  \todo Implement this method
+	*/
+	QString MethodObject::MethodObjectPrivate::parameterToUmlNotation(const Parameter & parameter)
 	{
-		_dd->_parameters.addElement(element_cast<ParameterObject>(child));
-
-	}
-
-	void MethodObject::onChildRemoved(ElementObject * child)
-	{
-		_dd->_parameters.removeElement(element_cast<ParameterObject>(child));
+		return QString("to be implemented: ");
 	}
 }

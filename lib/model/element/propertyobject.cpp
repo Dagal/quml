@@ -29,7 +29,7 @@
 namespace element
 {
 	PropertyObject::PropertyObject(const QString & name)
-		: ParameterObject(name), _dd(new PropertyObjectPrivate)
+		: ElementObject(name), _dd(new PropertyObjectPrivate)
 	{
 	}
 
@@ -41,6 +41,43 @@ namespace element
 	VisibilityType PropertyObject::visibility() const
 	{
 		return _dd->_visibility.type();
+	}
+
+	DatatypeObject * PropertyObject::datatype() const
+	{
+		return _dd->_datatype;
+	}
+
+	const QString & PropertyObject::defaultValue() const
+	{
+		return _dd->_defaultValue;
+	}
+
+	void PropertyObject::setDatatype(DatatypeObject * datatype)
+	{
+		if(datatype != 0 && datatype->umlDiagram() != umlDiagram())
+			datatype = 0;
+
+		if(_dd->_datatype == datatype)
+			return;
+
+
+		DatatypeObject * oldData = _dd->_datatype;
+		_dd->_datatype = datatype;
+		relatedElementChanged(oldData);
+	}
+
+	void PropertyObject::setDefaultValue(const QString & defaultValue)
+	{
+		_dd->_defaultValue = defaultValue;
+	}
+
+	QString PropertyObject::umlName() const
+	{
+		if(datatype())
+			return name() + ": " + datatype()->umlName();
+		else
+			return name() + ": void";
 	}
 }
 

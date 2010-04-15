@@ -27,7 +27,6 @@
 #include "classobject.hpp"
 #include "methodobject.hpp"
 #include "propertyobject.hpp"
-#include "parameterobject.hpp"
 #include "packageobject.hpp"
 #include "operationobject.hpp"
 #include "primitiveobject.hpp"
@@ -77,8 +76,8 @@ namespace element
 		MethodObject * method = element_cast<MethodObject>(elementObject);
 		if(method) return method->returnType();
 
-		ParameterObject * param = element_cast<ParameterObject>(elementObject);
-		if(param) return param->datatype();
+		PropertyObject * prop = element_cast<PropertyObject>(elementObject);
+		if(prop) return prop->datatype();
 
 		else return 0;
 	}
@@ -95,8 +94,6 @@ namespace element
 			return new OperationObject(name);
 		case Element_Package:
 			return new PackageObject(name);
-		case Element_Parameter:
-			return new ParameterObject(name);
 		case Element_Primitive:
 			return new PrimitiveObject(name);
 		case Element_Property:

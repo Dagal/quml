@@ -23,49 +23,36 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "parameterobject.hpp"
-#include "_parameterobject.hpp"
+#ifndef PARAMETEROBJECT_HPP
+#define PARAMETEROBJECT_HPP
+
 #include "datatypeobject.hpp"
-#include "_umldiagram.hpp"
 
 namespace element
 {
-	ParameterObject::ParameterObject(const QString & name)
-		: ElementObject(name), _dd(new ParameterObjectPrivate)
+	/*!
+	  \brief The ParameterObject class contains all the information to store the UML model of a parameter for a method, it is a simple container
+	*/
+	class Parameter
 	{
-	}
+	public:
+		Parameter(const QString & name)
+			: _name(name)
+			,_datatype(0)
+		{}
 
-	DatatypeObject * ParameterObject::datatype() const
-	{
-		return _dd->_datatype;
-	}
+		DatatypeObject * datatype() const					{ return _datatype; }
+		const QString & defaultValue() const				{ return _defaultValue; }
+		const QString & name() const						{ return _name; }
+		void setDatatype(DatatypeObject * datatype)			{ _datatype = datatype; }
+		void setDefaultValue(const QString & defaultValue)	{ _defaultValue = defaultValue; }
+		void setName(const QString & name)					{ _name = name; }
 
-	const QString & ParameterObject::defaultValue() const
-	{
-		return _dd->_defaultValue;
-	}
-
-	void ParameterObject::setDatatype(DatatypeObject * datatype)
-	{
-		if(datatype != 0 && datatype->umlDiagram() != umlDiagram())
-			datatype = 0;
-
-		if(_dd->_datatype == datatype)
-			return;
-
-
-		DatatypeObject * oldData = _dd->_datatype;
-		_dd->_datatype = datatype;
-		relatedElementChanged(oldData);
-	}
-
-	void ParameterObject::setDefaultValue(const QString & defaultValue)
-	{
-		_dd->_defaultValue = defaultValue;
-	}
-
-	QString ParameterObject::umlName() const
-	{
-		return name() + ": " + datatype()->umlName();
-	}
+	private:
+		QString _name;
+		DatatypeObject * _datatype;
+		QString _defaultValue;
+	};
 }
+
+#endif // PARAMETEROBJECT_HPP

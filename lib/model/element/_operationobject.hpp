@@ -33,10 +33,13 @@ struct element::OperationObject::OperationObjectPrivate
 {
 	OperationObjectPrivate()
 		: _visibility(Visibility_Public)
+		, _datatype(0)
 	{
 	}
 
 	Visibility _visibility;
+	DatatypeObject * _datatype;
+	QString _defaultValue;
 };
 
 #endif // _OPERATIONOBJECT_HPP

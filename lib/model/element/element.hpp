@@ -40,7 +40,7 @@ namespace element
 	class DatatypeObject;
 	class ElementObject;
 	class OperationObject;
-	class ParameterObject;
+	class Parameter;
 	class PropertyObject;
 
 	//! This enum specifies the type of the element
@@ -61,8 +61,7 @@ namespace element
 		Element_Method = 16 /*!< Method element with binary value 00100000 */,
 		Element_Operation = 32 /*!< Operation element with binary value 00110000 */,
 
-		Element_Parameter = 128 /*!< Parameter element with binary value 10000000 */,
-		Element_Property = 192 /*!< Property element with binary value 11000000 */,
+		Element_Property = 64 /*!< Property element with binary value 01000000 */,
 	};
 
 	typedef boost::shared_ptr<ElementObject> ElementObjectPtr;

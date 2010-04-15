@@ -25,7 +25,6 @@
 
 #include "_elementrelator.hpp"
 #include "methodobject.hpp"
-#include "parameterobject.hpp"
 #include "elementhelper.hpp"
 
 namespace element
