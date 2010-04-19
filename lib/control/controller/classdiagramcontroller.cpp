@@ -72,16 +72,31 @@ ElementObject * helperDetachElement(ElementObject * element)
 	return element;
 }
 
+/*!
+  The default constructor for a ClassDiagramController. Note that ClassDiagramController works on the same
+  \c diagram, but does not take control over that diagram.
+*/
 ClassDiagramController::ClassDiagramController(UMLDiagram * diagram)
-	: _dd(new ClassDiagramControllerPrivate(diagram))
+	: _dd(new ClassDiagramControllerPrivate(diagram ? diagram : new UMLDiagram()))
 {
 }
 
+/*!
+  Returns a pointer to the UMLDiagram
+*/
 UMLDiagram * ClassDiagramController::diagram() const
 {
 	return _dd->_diagram;
 }
 
+/*!
+  This function tries to detach an element with a certain \c qualifiedElementName from this UMLDiagram. If a double pointer
+  is passed on by \c elementObject, the value of the detached element is stored herein.
+
+  possible return types are:
+  \li Error_ElementUndefined: No element with this qualifiedName could be found
+  \li Error_NoError: The element was succesfully detached from this diagram
+*/
 Error ClassDiagramController::detachElement(const QString & qualifiedElementName, ElementObject ** elementObject)
 {
 	DetachAction a;
@@ -98,6 +113,14 @@ Error ClassDiagramController::detachElement(const QString & qualifiedElementName
 	SEND_AND_RETURN(Error_NoError);
 }
 
+/*!
+  This function tries to rename an element with a certain \c qualifiedName to \c newName.
+
+  Possible return types are:
+  \li Error_ElementUndefined: No element with this qualifiedName could be found
+  \li Error_ElementNameAlreadyUsed: Renaming this element would give conflict with another element
+  \li Error_NoError: The element was succesfully renamed
+*/
 Error ClassDiagramController::renameElement(const QString & qualifiedElementName, const QString & newName)
 {
 	RenameAction a;
@@ -120,6 +143,17 @@ Error ClassDiagramController::renameElement(const QString & qualifiedElementName
 	SEND_AND_RETURN(Error_NoError);
 }
 
+/*!
+  This function tries to create a ClassObject with \c className in the container \c qualifiedParentName.
+  If the qualifiedParentName is empty or not found, the class is created with no parent. If the double pointer
+  \c elementObject is not zero, the new ClassObject is stored herein.
+
+  possible returns types are:
+  \li Error_ElementNameEmpty: The className is empty
+  \li Error_ElementNameAlreadyUsed: Creating an element with this name would give conflict with another element
+  \li Error_ElementParentBadContainer: The qualifiedParentName is not the right type to store a class in
+  \li Error_NoError: The class was sucessfully created
+*/
 Error ClassDiagramController::createClass(const QString & className, const QString & qualifiedParentName, ClassObject ** elementObject)
 {
 	CreateAction a;
@@ -131,7 +165,7 @@ Error ClassDiagramController::createClass(const QString & className, const QStri
 
 	// check for the names
 	if(!checkNameAgainstSiblings(0, className, parentElement))
-		SEND_AND_RETURN(Error_ElementNameEmpty);
+		SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
 
 	// check for the right type of parent
 	if(!checkParentForClass(parentElement))
@@ -151,6 +185,17 @@ Error ClassDiagramController::createClass(const QString & className, const QStri
 	SEND_AND_RETURN(Error_NoError);
 }
 
+/*!
+  This function tries to move a class with a certain \c classQualifiedName to a new container \c newParentQualifiedName.
+  If the \c newParentQualifiedName is empty or not found, the parent is set to zero.
+
+  possible return types are:
+  \li Error_ElementNameEmpty: The classQualifiedName is empty
+  \li Error_ElementUndefined: There is no ClassObject with this classQualifiedName
+  \li Error_ElementParentBadContainer: The newParentQualifiedName is not the right type to store a class in
+  \li Error_ElementParentRecursion: By performing this operation the umlDiagram would contain recursion.
+  \li Error_NoError: the class was succesfully moved
+*/
 Error ClassDiagramController::moveClass(const QString & classQualifiedName, const QString & newParentQualifiedName)
 {
 	MoveAction a;
