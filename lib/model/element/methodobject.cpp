@@ -50,7 +50,7 @@ namespace element
 
 		DatatypeObject * oldData = _dd->_returnType;
 		_dd->_returnType = returnType;
-		relatedElementChanged(oldData);
+		attachedElementChanged(oldData);
 	}
 
 	const parameterList & MethodObject::parameters() const

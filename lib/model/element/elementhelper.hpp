@@ -31,10 +31,11 @@
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include <iostream>
+#include "singleton.hpp"
 
 namespace element
 {
-	/*!
+/*!
   This method checks if a certain element is castable to certain type. This is based on the type of an element.
 
   \sa ElementObject::type, \sa ElementObject::elementtype, \sa element_cast
@@ -117,22 +118,12 @@ namespace element
 		return transf;
 	}
 
-	/*!
+/*!
   This method returns a list of all the children from \c element whose name is equal to \c name. If name is empty, all the children are returned.
 */
 	QList<ElementObject*> findChildren(ElementObject * element, const QString & name = QString());
 
-	/*!
-  Return the related element for \c elementObject. If elementObject is method, it will return the returntype. If elementObject is a parameter, it will
-  return the datatype.
-
-  This function returns zero if no related element was found.
-
-  \todo Make it possible to add new related element types
-*/
-	ElementObject * findRelatedElement(ElementObject * elementObject);
-
-	/*!
+/*!
   Creates an element of type \c type and sets the name.
 */
 	ElementObject * createElementObject(ElementType type, const QString & name);

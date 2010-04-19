@@ -24,9 +24,13 @@
 *******************************************************************/
 
 #include "elementdiagramtest.hpp"
+#include "elementrelatortest.hpp"
 
 int main()
 {
 	ElementDiagramTest t1;
 	QTest::qExec(&t1);
+
+	ElementRelatorTest t2;
+	QTest::qExec(&t2);
 }

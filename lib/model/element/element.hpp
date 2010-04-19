@@ -65,6 +65,8 @@ namespace element
 	};
 
 	typedef boost::shared_ptr<ElementObject> ElementObjectPtr;
+
+	void initialise();
 }
 
 #endif // DEFINES_HPP

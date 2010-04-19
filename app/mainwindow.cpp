@@ -49,6 +49,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+	element::initialise();
+
 	QGraphicsScene * scene = new QGraphicsScene(this);
 	ui->mainView->setScene(scene);
 	ui->mainView->setTransform(QTransform(), false);

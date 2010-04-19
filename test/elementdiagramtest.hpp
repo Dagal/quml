@@ -35,13 +35,13 @@ class ElementDiagramTest : public QObject
 {
 	Q_OBJECT
 
+public:
+	ElementDiagramTest();
+
 private slots:
 	void checkBasics();
 	void removeChild();
 	void removeParent();
-
-	void methodTest();
-
 
 	void cleanup();
 	void init();

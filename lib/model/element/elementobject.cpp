@@ -63,6 +63,7 @@ namespace element
 				childrenCopy.end(),
 				boost::bind<void>(&deleter<ElementObject>, _1)
 				);
+
 	}
 
 	/*!
@@ -372,13 +373,14 @@ namespace element
 	}
 
 	/*!
-	This method should be called whenever the related element of this ElementObject is changed. For example, if the return type of a operation is changed,
-	this method is called. This informs the UMLDiagram of recent changes.
+	This method should be called whenever the attached element of this ElementObject is changed. For
+	example, if the return type of a operation is changed, this method is called. This informs the
+	UMLDiagram of recent changes.
 	*/
-	void ElementObject::relatedElementChanged(ElementObject * oldRelatedElement)
+	void ElementObject::attachedElementChanged(ElementObject * oldAttachedElement)
 	{
 		if(umlDiagram())
-			umlDiagram()->_dd->_elementRelator.updateElementObject(this, oldRelatedElement);
+			umlDiagram()->_dd->_elementRelator.update(this, oldAttachedElement);
 	}
 
 	/*!

@@ -39,10 +39,13 @@ enum Error
 
 	Error_CommandNotInitialised,
 	Error_UndefinedUMLDiagram,
+
 	Error_ClassNameEmpty,
 	Error_ClassNameAlreadyUsed,
-
 	Error_ClassUndefined,
+
+	Error_ParameterListWrongOrder,
+	Error_ParameterListUndefinedTypes,
 };
 
 #endif // ERROR_HPP

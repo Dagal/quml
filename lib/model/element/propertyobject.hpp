@@ -40,6 +40,8 @@ namespace element
 		class PropertyObjectPrivate;
 
 	public:
+		enum { elementtype = Element_Property };
+
 		PropertyObject(const QString & name);
 
 		VisibilityType visibility() const;

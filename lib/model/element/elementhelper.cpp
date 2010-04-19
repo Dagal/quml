@@ -30,6 +30,7 @@
 #include "packageobject.hpp"
 #include "operationobject.hpp"
 #include "primitiveobject.hpp"
+#include "_elementrelator.hpp"
 #include <QVector>
 
 namespace element
@@ -68,19 +69,6 @@ namespace element
 		return elementlst::fromVector(transf);
 	}
 
-	ElementObject * findRelatedElement(ElementObject * elementObject)
-	{
-		if(elementObject == 0)
-			return 0;
-
-		MethodObject * method = element_cast<MethodObject>(elementObject);
-		if(method) return method->returnType();
-
-		PropertyObject * prop = element_cast<PropertyObject>(elementObject);
-		if(prop) return prop->datatype();
-
-		else return 0;
-	}
 
 	ElementObject * createElementObject(ElementType type, const QString & name)
 	{
@@ -101,5 +89,55 @@ namespace element
 		default:
 			return 0;
 		}
+	}
+
+	ElementObject * MethodObjectGetRelator(ElementObject * elementObject)
+	{
+		MethodObject * method = element_cast<MethodObject>(elementObject);
+
+		if(method == 0)
+			return 0;
+
+		return method->returnType();
+	}
+
+	bool MethodObjectSetRelator(ElementObject * elementObject, ElementObject * newRelatedElement)
+	{
+		MethodObject * method = element_cast<MethodObject>(elementObject);
+		DatatypeObject * datatype = element_cast<DatatypeObject>(newRelatedElement);
+
+		if(method == 0 || (int)datatype != (int)newRelatedElement)
+			return false;
+
+		method->setReturnType(datatype);
+		return true;
+	}
+
+	ElementObject * PropertyObjectGetRelator(ElementObject * elementObject)
+	{
+		PropertyObject * prop = element_cast<PropertyObject>(elementObject);
+
+		if(prop == 0)
+			return 0;
+
+		return prop->datatype();
+	}
+
+	bool PropertyObjectSetRelator(ElementObject * elementObject, ElementObject * newRelatedElement)
+	{
+		PropertyObject * prop = element_cast<PropertyObject>(elementObject);
+		DatatypeObject * datatype = element_cast<DatatypeObject>(newRelatedElement);
+
+		if(prop == 0 || (int)datatype != (int)newRelatedElement)
+			return false;
+
+		prop->setDatatype(datatype);
+		return true;
+	}
+
+	void initialise()
+	{
+		ElementRelator::AddElementRelator(Element_Method, ElementRelator::Relator(MethodObjectGetRelator, MethodObjectSetRelator));
+		ElementRelator::AddElementRelator(Element_Property, ElementRelator::Relator(PropertyObjectGetRelator, PropertyObjectSetRelator));
 	}
 }

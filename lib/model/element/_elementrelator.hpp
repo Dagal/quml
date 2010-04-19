@@ -27,27 +27,63 @@
 #define ELEMENTRELATOR_HPP
 
 #include "elementobject.hpp"
-#include <boost/unordered_map.hpp>
+#include <QMap>
 #include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
 
 namespace element
 {
+	/*!
+	  This class is used as a helper to retain the connection between relatedElements and attachedElements.
+	  A relatedElement is an element who contains a reference to an attachedElement in it's data type.
+
+	  e.g.: A property is a relatedElement and it's attachedElement will be it's datatype. Similary we can
+	  see that a method is a relatedElement and it's attachedElement is it's returntype.
+	*/
 	class ElementRelator
 	{
 	public:
+		/*!
+		  This struct contains the necessary information to go from an element to the attachedElement. The
+		  getter returns the attachedElement and the setter will set a new value for the attachedElement.
+		*/
+		struct Relator
+		{
+			typedef boost::function<ElementObject* (ElementObject*)> GetAttachedElementFunction;
+			typedef boost::function<bool (ElementObject*, ElementObject*)> SetAttachedElementFunction;
+
+			Relator(GetAttachedElementFunction getter, SetAttachedElementFunction setter)
+			{
+				this->getter = getter;
+				this->setter = setter;
+			}
+
+			Relator()
+			{
+			}
+
+			GetAttachedElementFunction getter;
+			SetAttachedElementFunction setter;
+		};
+
 		ElementRelator();
 
-		QList<ElementObject *> findElementsRelatedTo(ElementObject * relatedElement);
-		void updateElementObject(ElementObject * elementObject, ElementObject * oldRelatedElement);
-		void removeElementObject(ElementObject * elementObject);
-		void addElementObject(ElementObject * elementObject);
+		QList<ElementObject *> findAllRelatedElementsTo(ElementObject * attachedElement);
+		void update(ElementObject * relatedElement, ElementObject * oldAttachedElement);
+		void remove(ElementObject * elementObject);
+		void add(ElementObject * relatedElement);
+
+		static void AddElementRelator(ElementType type, Relator relator);
+		static ElementObject * GetAttachedElement(ElementObject * elementObject);
+		static bool SetAttachedElement(ElementObject * elementObject, ElementObject * newAttachedElement);
 
 	private:
-		typedef boost::unordered_map<ElementObject*, boost::shared_ptr<QList<ElementObject*> > > relatedElements_map;
+		typedef QMap<ElementObject*, boost::shared_ptr<QList<ElementObject*> > > relatedElements_map;
 		relatedElements_map _relatedElements;
 
-		void removeElementFromRelator(ElementObject * key, ElementObject * value);
-		void addElementToRelator(ElementObject * key, ElementObject * value);
+		void removeElementFromRelator(ElementObject * relatedElement, ElementObject * attachedElement);
+
+		static QMap<ElementType, Relator> _Relators;
 	};
 }
 #endif // _ELEMENTRELATOR_HPP

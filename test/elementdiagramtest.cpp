@@ -34,6 +34,11 @@
 
 using namespace element;
 
+ElementDiagramTest::ElementDiagramTest()
+{
+	element::initialise();
+}
+
 void ElementDiagramTest::init()
 {
 	_diagram = new UMLDiagram;
@@ -72,18 +77,6 @@ void ElementDiagramTest::removeChild()
 	QCOMPARE(_parent->children().size(), 0);
 }
 
-void ElementDiagramTest::methodTest()
-{
-	PropertyObject * prop = new PropertyObject("testNaam");
-	prop->setParent(_parent);
-	prop->setDatatype((ClassObject*)_child);
-
-	QCOMPARE(_diagram->findRelatedElements(_child).size(), 1);
-
-	_parent->setUMLDiagram(0);
-
-	QCOMPARE(prop->datatype(), (DatatypeObject*)_child);
-}
 
 void ElementDiagramTest::removeParent()
 {

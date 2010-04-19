@@ -30,6 +30,7 @@
 #include "classobject.hpp"
 #include "methodobject.hpp"
 #include "packageobject.hpp"
+#include "parameter.hpp"
 #include <QVector>
 
 using namespace element;
@@ -326,6 +327,57 @@ bool ClassDiagramController::checkNameAgainstSiblings(ElementObject * element, c
 				)
 			== sameNamedElements.end())
 			return false;
+	}
+
+	return true;
+}
+
+/*!
+  This methods checks whether the given list is correct.
+  Possible returns types are:
+  \li Error_NoError: the list is okay
+  \li Error_ParameterListWrongOrder: There are parameters without default values after parameters with default values
+  \li Error_ParameterListUndefinedTypes: Some of the parameters don't have a valid dataType
+*/
+Error ClassDiagramController::checkParameterList(const parameterList & list)
+{
+	bool defaultStarted = false;
+
+	for(int i = 0; i < list.size(); i++)
+	{
+		const Parameter & curParam = list[i];
+
+		// check for order in parameters
+		if(curParam.defaultValue().isEmpty() && defaultStarted)
+			return Error_ParameterListWrongOrder;
+
+		if(!curParam.defaultValue().isEmpty())
+			defaultStarted = true;
+
+		if(curParam.datatype() == 0)
+			return Error_ParameterListUndefinedTypes;
+	}
+
+	return Error_NoError;
+}
+
+/*!
+  This method checks whether two lists of parameters are similar. This is the case as soon as the parameters in listA and listB have the same datatype
+  from the first parameter to the the last non-default parameter. The function returns true if they are similar.
+*/
+bool ClassDiagramController::checkForSimilarParameterLists(const element::parameterList & listA, const element::parameterList & listB)
+{
+	int i = 0;
+
+	while(i < listA.size() && i < listB.size())
+	{
+		if(listA[i].datatype() != listB[i].datatype())
+			return false;
+
+		if(!listA[i].defaultValue().isEmpty() || !listB[i].defaultValue().isEmpty())
+			return true;
+
+		i++;
 	}
 
 	return true;

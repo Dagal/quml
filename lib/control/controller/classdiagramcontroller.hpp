@@ -61,6 +61,10 @@ public:
 	QList<element::ElementObject *> getElements(const QString & name, const QString & parentQualifiedName) const;
 	QList<element::ElementObject *> getElements(const QString & name, element::ElementObject * parentObject) const;
 
+	// helper methods
+	Error checkParameterList(const element::parameterList & list);
+	bool checkForSimilarParameterLists(const element::parameterList & listA, const element::parameterList & listB);
+
 	const Notifier<Action> & actionListener() const { return _actionListener; }
 
 protected:

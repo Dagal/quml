@@ -23,61 +23,44 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#include "propertyobject.hpp"
-#include "_propertyobject.hpp"
+#ifndef ELEMENTRELATORTEST_HPP
+#define ELEMENTRELATORTEST_HPP
 
-namespace element
+#include <QObject>
+#include <QtTest/QtTest>
+
+#include "element.hpp"
+
+class ElementRelatorTest : public QObject
 {
-	PropertyObject::PropertyObject(const QString & name)
-		: ElementObject(name), _dd(new PropertyObjectPrivate)
-	{
-	}
+	Q_OBJECT
 
-	void PropertyObject::setVisibility(VisibilityType type)
-	{
-		_dd->_visibility.setType(type);
-	}
-
-	VisibilityType PropertyObject::visibility() const
-	{
-		return _dd->_visibility.type();
-	}
-
-	DatatypeObject * PropertyObject::datatype() const
-	{
-		return _dd->_datatype;
-	}
-
-	const QString & PropertyObject::defaultValue() const
-	{
-		return _dd->_defaultValue;
-	}
-
-	void PropertyObject::setDatatype(DatatypeObject * datatype)
-	{
-		if(datatype != 0 && datatype->umlDiagram() != umlDiagram())
-			datatype = 0;
-
-		if(_dd->_datatype == datatype)
-			return;
+public:
+    ElementRelatorTest();
 
 
-		DatatypeObject * oldData = _dd->_datatype;
-		_dd->_datatype = datatype;
-		attachedElementChanged(oldData);
-	}
+private slots:
+	void cleanup();
+	void init();
 
-	void PropertyObject::setDefaultValue(const QString & defaultValue)
-	{
-		_dd->_defaultValue = defaultValue;
-	}
+	void relatorTest();
 
-	QString PropertyObject::umlName() const
-	{
-		if(datatype())
-			return name() + ": " + datatype()->umlName();
-		else
-			return name() + ": void";
-	}
-}
+	void propertyDatatypeDetachFromUML();
+	void propertyDetachFromUML();
+	void propertyParentDetachFromUML();
+	void propertyParentAndDatatypeParentDetachFromUML();
+	void propertyDatatypeAttachToNewUML();
+	void propertyAttachToNewUML();
+	void propertyParentAttachToNewUML();
+	void propertyParentAndDatatypeParentAttachToNewUML();
 
+private:
+	element::ClassObject * data1;
+	element::ClassObject * data2;
+	element::PackageObject* pack1;
+	element::PropertyObject * prop1;
+	element::UMLDiagram * diagram;
+	element::UMLDiagram * newdiagram;
+};
+
+#endif // ELEMENTRELATORTEST_HPP

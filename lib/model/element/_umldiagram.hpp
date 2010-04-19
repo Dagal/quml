@@ -66,6 +66,7 @@ namespace element
 		void INT_recursiveRemoveStrangeAttachedElements(ElementObject * elementObject);
 		void INT_removeElementFromLists(ElementObject * elementObject);
 		void INT_addElementToLists(ElementObject * elementObject);
+		void INT_checkForDetaching(element::ElementObject * elementObject);
 	};
 }
 

@@ -29,7 +29,7 @@
 #include "element.hpp"
 #include <QString>
 #include <QList>
-
+#include <QMap>
 
 namespace element
 {
@@ -79,7 +79,7 @@ namespace element
 		virtual void onChildRemoved(ElementObject * child);
 
 	protected:
-		void relatedElementChanged(ElementObject * oldRelatedElement);
+		void attachedElementChanged(ElementObject * oldAttachedElement);
 
 	private:
 		boost::shared_ptr<ElementObjectPrivate> _dd;

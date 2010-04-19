@@ -42,19 +42,6 @@ int elementFinder(boost::shared_ptr<element::ElementObject> element, const QStri
 	return element->qualifiedName().compare(qualifiedName);
 }
 
-void checkForDetaching(element::ElementObject * elementObject)
-{
-	using namespace element;
-
-	MethodObject * method = element_cast<MethodObject>(elementObject);
-	if(method && method->returnType() != 0 && method->returnType()->umlDiagram() != elementObject->umlDiagram())
-		method->setReturnType(0);
-
-	PropertyObject * prop = element_cast<PropertyObject>(elementObject);
-	if(prop && prop->datatype() != 0 && prop->datatype()->umlDiagram() != elementObject->umlDiagram())
-		prop->setDatatype(0);
-}
-
 namespace element
 {
 
@@ -127,12 +114,13 @@ namespace element
 	}
 
 	/*!
-	  This function return all the elements that depend on \c elementObject. For example, for a certain datatype it will return all the methods that
-	  have this datatype as returntype of all the parameters that have this as a datatype.
+	  This function return all the elements that depend on \c elementObject. For example, for a certain
+	  datatype it will return all the methods that have this datatype as returntype of all the
+	  parameters that have this as a datatype.
 	*/
 	QList<ElementObject *> UMLDiagram::findRelatedElements(ElementObject * elementObject) const
 	{
-		return _dd->_elementRelator.findElementsRelatedTo(elementObject);
+		return _dd->_elementRelator.findAllRelatedElementsTo(elementObject);
 	}
 
 	/*!
@@ -307,14 +295,14 @@ namespace element
 	void UMLDiagram::UMLDiagramPrivate::INT_recursiveRemoveStrangeAttachedElements(ElementObject * elementObject)
 	{
 		// check for detaching of this element
-		checkForDetaching(elementObject);
+		INT_checkForDetaching(elementObject);
 
 		// check for detaching of attached elements
-		QList<ElementObject*> attachedVct = _elementRelator.findElementsRelatedTo(elementObject);
+		QList<ElementObject*> attachedVct = _elementRelator.findAllRelatedElementsTo(elementObject);
 		std::for_each(
 				attachedVct.begin(),
 				attachedVct.end(),
-				boost::bind(checkForDetaching, _1)
+				boost::bind(&UMLDiagram::UMLDiagramPrivate::INT_checkForDetaching, this, _1)
 				);
 
 		// recursive on children
@@ -324,5 +312,24 @@ namespace element
 				vct.end(),
 				boost::bind(&UMLDiagram::UMLDiagramPrivate::INT_recursiveRemoveStrangeAttachedElements, this, _1)
 				);
+	}
+
+	/*!
+	  \internal
+	  This internal helper method checks the link between elementObject and it's attachedObject. They should
+	  both be in the same UMLDiagram. If not, the link is removed and ElementRelator is updated (if necessary).
+	*/
+	void UMLDiagram::UMLDiagramPrivate::INT_checkForDetaching(element::ElementObject * elementObject)
+	{
+		using namespace element;
+
+		ElementObject * attachedElement = ElementRelator::GetAttachedElement(elementObject);
+
+		if(attachedElement != 0 && attachedElement->umlDiagram() != elementObject->umlDiagram())
+		{
+			// the link should be deleted
+			_elementRelator.remove(elementObject);
+			ElementRelator::SetAttachedElement(elementObject, 0);
+		}
 	}
 }
