@@ -62,13 +62,14 @@ public:
 	QList<element::ElementObject *> getElements(const QString & name, element::ElementObject * parentObject) const;
 
 	// helper methods
-	Error checkParameterList(const element::parameterList & list);
-	bool checkForSimilarParameterLists(const element::parameterList & listA, const element::parameterList & listB);
+	Error checkParameterList(const element::parameterList & list) const;
+	bool checkForSimilarParameterLists(const element::parameterList & listA, const element::parameterList & listB) const;
 
 	const Notifier<Action> & actionListener() const { return _actionListener; }
 
 protected:
 	bool checkNameAgainstSiblings(element::ElementObject * element, const QString & newName, element::ElementObject * parentObject) const;
+	bool checkNameAgainstSiblings(element::ElementType type, const QString & newName, element::ElementObject * parentObject) const;
 
 private:
 	boost::shared_ptr<ClassDiagramControllerPrivate> _dd;

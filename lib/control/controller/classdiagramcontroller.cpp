@@ -61,6 +61,11 @@ bool checkForParentRecursion(ElementObject * child, ElementObject * newParent)
 
 }
 
+template <class T> canAttachRenamedElement(T * elementObject, const QString & newName, QList<ElementObject *> & children)
+{
+
+}
+
 ElementObject * helperDetachElement(ElementObject * element)
 {
 	if(element == 0)
@@ -194,6 +199,7 @@ Error ClassDiagramController::createClass(const QString & className, const QStri
   \li Error_ElementUndefined: There is no ClassObject with this classQualifiedName
   \li Error_ElementParentBadContainer: The newParentQualifiedName is not the right type to store a class in
   \li Error_ElementParentRecursion: By performing this operation the umlDiagram would contain recursion.
+  \li Error_ElementNameAlreadyUsed: The parent element already contains an element with that name.
   \li Error_NoError: the class was succesfully moved
 */
 Error ClassDiagramController::moveClass(const QString & classQualifiedName, const QString & newParentQualifiedName)
@@ -221,6 +227,10 @@ Error ClassDiagramController::moveClass(const QString & classQualifiedName, cons
 	// check for recursion
 	if(!checkForParentRecursion(classObject, parentElement))
 		SEND_AND_RETURN(Error_ElementParentRecursion);
+
+	// check if we can add this class to the parent
+	if(!checkNameAgainstSiblings(classObject, classObject->name(), parentElement))
+		SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
 
 	// perform the operation
 	classObject->setParent(parentElement);
@@ -349,28 +359,72 @@ QList<ElementObject *> ClassDiagramController::getElements(const QString & name,
 }
 
 /*!
-  \todo: Update the ClassDiagramController::checkNameAgainstSiblings to use correct methodObject checking
-  */
-bool ClassDiagramController::checkNameAgainstSiblings(ElementObject * element, const QString & newName, ElementObject * parentObject) const
+  This method checks whether an c\ elementObject can be renamed to \c newName in the \c parentObject. If the parent is not specified, the element is
+  supposed to have no parent. The elementObject cannot be zero (necessary to check its type). If you want to use this function for a object
+  you want to create, check the overloaded function.
+*/
+bool ClassDiagramController::checkNameAgainstSiblings(ElementObject * elementObject, const QString & newName, ElementObject * parentObject) const
+{
+	if(elementObject == 0 || newName.isEmpty())
+		return false;
+
+	// are there elements with the same name?
+	QList<ElementObject*> sameNamedElements = getElements(newName, parentObject);
+	if(sameNamedElements.isEmpty())
+		return true;
+
+	// everything should be castable to a method
+
+	// start with the basic element
+	MethodObject * methodObject = element_cast<MethodObject>(elementObject);
+	if(!methodObject)
+		return false;
+
+	// loop over all the elements, check if there a method and compare the parameterlists
+	foreach(ElementObject * sameNamedElement, sameNamedElements)
+	{
+		MethodObject * tmpObject = element_cast<MethodObject>(sameNamedElement);
+		if(!tmpObject)
+			return false;
+
+		if(checkForSimilarParameterLists(methodObject->parameters(), tmpObject->parameters()))
+			return false;
+	}
+
+	return true;
+
+}
+
+/*!
+  This method checks whether a ElementObject of type \c type can be created in a certain \c parentObject with a name \c newName. If the parent is
+  not specified, the element is supposed to have no parent
+*/
+bool ClassDiagramController::checkNameAgainstSiblings(ElementType type, const QString & newName, ElementObject * parentObject) const
 {
 	if(newName.isEmpty())
 		return false;
 
-	// check for the names
-	QList<ElementObject *> sameNamedElements = getElements(newName, parentObject);
-	if(!sameNamedElements.empty())
+	// are there elements with the same name?
+	QList<ElementObject*> sameNamedElements = getElements(newName, parentObject);
+	if(sameNamedElements.isEmpty())
+		return true;
+
+	// everything should be castable to a method
+
+	// start with the basic element
+	if((type & Element_Method) != Element_Method)
+		return false;
+
+	element::parameterList lst;
+
+	// loop over all the elements, check if there a method and compare the parameterlists
+	foreach(ElementObject * sameNamedElement, sameNamedElements)
 	{
-		// not empty, than element should be a methodObject
-		if(element != 0 && !element_castable<MethodObject>(element))
+		MethodObject * tmpObject = element_cast<MethodObject>(sameNamedElement);
+		if(!tmpObject)
 			return false;
 
-		// and all the found children should also be a methodObject
-		if(std::find_if(
-				sameNamedElements.begin(),
-				sameNamedElements.end(),
-				!boost::bind(element_castable<MethodObject>, _1)
-				)
-			== sameNamedElements.end())
+		if(checkForSimilarParameterLists(lst, tmpObject->parameters()))
 			return false;
 	}
 
@@ -384,7 +438,7 @@ bool ClassDiagramController::checkNameAgainstSiblings(ElementObject * element, c
   \li Error_ParameterListWrongOrder: There are parameters without default values after parameters with default values
   \li Error_ParameterListUndefinedTypes: Some of the parameters don't have a valid dataType
 */
-Error ClassDiagramController::checkParameterList(const parameterList & list)
+Error ClassDiagramController::checkParameterList(const parameterList & list) const
 {
 	bool defaultStarted = false;
 
@@ -410,7 +464,7 @@ Error ClassDiagramController::checkParameterList(const parameterList & list)
   This method checks whether two lists of parameters are similar. This is the case as soon as the parameters in listA and listB have the same datatype
   from the first parameter to the the last non-default parameter. The function returns true if they are similar.
 */
-bool ClassDiagramController::checkForSimilarParameterLists(const element::parameterList & listA, const element::parameterList & listB)
+bool ClassDiagramController::checkForSimilarParameterLists(const element::parameterList & listA, const element::parameterList & listB) const
 {
 	int i = 0;
 

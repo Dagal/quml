@@ -57,7 +57,8 @@ namespace element
 		~UMLDiagram();
 
 		// create & add functions
-		ElementObject * createElement(ElementType type, const QString & name, const QString & parentName);
+		ElementObject * createElement(ElementType type, const QString & name, const QString & parentQualifiedName);
+		void addElement(ElementObject * element, const QString & newName, const QString & parentQualifiedName);
 
 		// element "find" functions
 		ElementObject * findElement(const QString & qualifiedName) const;

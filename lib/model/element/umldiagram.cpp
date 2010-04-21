@@ -90,6 +90,28 @@ namespace element
 	}
 
 	/*!
+	  This functions detaches \c element from its parent and its UMLDiagram. Afterwards it changes the name to \c newName and sets
+	  the new parent to the element at \c parentQualifiedName. If the parentQualifiedName is not found, the element is added to this
+	  UMLDiagram with no parent.
+	*/
+	void UMLDiagram::addElement(ElementObject * element, const QString & newName, const QString & parentQualifiedName)
+	{
+		if(!element || newName.isEmpty())
+			return;
+
+		// detach the element
+		element->setUMLDiagram(0);
+		element->setParent(0);
+
+		// set the new name
+		element->setName(newName);
+
+		ElementObject * newParent = findElement(parentQualifiedName);
+		element->setParent(newParent);
+		element->setUMLDiagram(this);
+	}
+
+	/*!
 	  This function searches the UMLDiagram for an element with the specified qualifiedName, and returns the element. If no element was found
 	  the function returns zero.
 
