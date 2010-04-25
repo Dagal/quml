@@ -61,11 +61,6 @@ bool checkForParentRecursion(ElementObject * child, ElementObject * newParent)
 
 }
 
-template <class T> canAttachRenamedElement(T * elementObject, const QString & newName, QList<ElementObject *> & children)
-{
-
-}
-
 ElementObject * helperDetachElement(ElementObject * element)
 {
 	if(element == 0)
@@ -82,7 +77,7 @@ ElementObject * helperDetachElement(ElementObject * element)
   \c diagram, but does not take control over that diagram.
 */
 ClassDiagramController::ClassDiagramController(UMLDiagram * diagram)
-	: _dd(new ClassDiagramControllerPrivate(diagram ? diagram : new UMLDiagram()))
+	: _dd(new ClassDiagramControllerPrivate(this, diagram ? diagram : new UMLDiagram()))
 {
 }
 
@@ -415,7 +410,7 @@ bool ClassDiagramController::checkNameAgainstSiblings(ElementType type, const QS
 	if((type & Element_Method) != Element_Method)
 		return false;
 
-	element::parameterList lst;
+	ParameterList lst;
 
 	// loop over all the elements, check if there a method and compare the parameterlists
 	foreach(ElementObject * sameNamedElement, sameNamedElements)
@@ -438,7 +433,7 @@ bool ClassDiagramController::checkNameAgainstSiblings(ElementType type, const QS
   \li Error_ParameterListWrongOrder: There are parameters without default values after parameters with default values
   \li Error_ParameterListUndefinedTypes: Some of the parameters don't have a valid dataType
 */
-Error ClassDiagramController::checkParameterList(const parameterList & list) const
+Error ClassDiagramController::checkParameterList(const ParameterList & list) const
 {
 	bool defaultStarted = false;
 
@@ -464,7 +459,7 @@ Error ClassDiagramController::checkParameterList(const parameterList & list) con
   This method checks whether two lists of parameters are similar. This is the case as soon as the parameters in listA and listB have the same datatype
   from the first parameter to the the last non-default parameter. The function returns true if they are similar.
 */
-bool ClassDiagramController::checkForSimilarParameterLists(const element::parameterList & listA, const element::parameterList & listB) const
+bool ClassDiagramController::checkForSimilarParameterLists(const ParameterList & listA, const ParameterList & listB) const
 {
 	int i = 0;
 

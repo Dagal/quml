@@ -47,6 +47,11 @@ namespace element
 		return ((element->type() & ElementClass::elementtype) == ElementClass::elementtype);
 	}
 
+	template <typename ElementClassA, typename ElementClassB> bool isACastableToB(const ElementClassA * /*elementA*/ = 0, const ElementClassB * /*elementB*/ = 0)
+	{
+		return (ElementClassA::elementtype & ElementClassB::elementtype) == ElementClassB::elementtype;
+	}
+
 	/*!
   This method tries to cast an element to a certain type. If unable it returns a zero value.
 

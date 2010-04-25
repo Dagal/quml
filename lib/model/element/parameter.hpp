@@ -30,7 +30,7 @@
 
 namespace element
 {
-	typedef QList<Parameter> parameterList;
+	typedef QList<Parameter> ParameterList;
 
 	/*!
 	  \brief The ParameterObject class contains all the information to store the UML model of a parameter for a method, it is a simple container

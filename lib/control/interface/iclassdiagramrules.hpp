@@ -23,40 +23,21 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef METHODOBJECT_HPP
-#define METHODOBJECT_HPP
+#ifndef ICLASSDIAGRAMRULES_HPP
+#define ICLASSDIAGRAMRULES_HPP
 
+#include <QString>
 #include "elementobject.hpp"
-#include "datatypeobject.hpp"
-#include "parameter.hpp"
 
-namespace element
+
+class IClassDiagramRules
 {
-	/*!
-	  \brief The MethodObject class contains all the information to store the UML model of a method.
-	*/
-	class MethodObject : public ElementObject
-	{
-		class MethodObjectPrivate;
+public:
+	virtual ~IClassDiagramRules() {};
 
-	public:
-		enum { elementtype = Element_Method };
+	virtual bool isValidName(const QString & newName) const = 0;
+	virtual bool isParentRightContainerType(element::ElementObject * newParent) const = 0;
+	virtual bool isNameValidWithinParent(element::ElementObject * elementObject, element::ElementObject * parent, const QString & newName) const = 0;
+};
 
-		MethodObject(const QString & name);
-		~MethodObject() {}
-
-
-		DatatypeObject * returnType() const;
-		void setReturnType(DatatypeObject * returnType);
-		const ParameterList & parameters() const;
-		Parameter parameterAt(unsigned int position) const;
-
-		virtual QString umlName() const;
-		virtual ElementType type() const { return Element_Method; }
-
-	private:
-		boost::shared_ptr<MethodObjectPrivate> _dd;
-	};
-}
-
-#endif // METHODOBJECT_HPP
+#endif // ICLASSDIAGRAMRULES_HPP

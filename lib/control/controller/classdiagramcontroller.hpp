@@ -62,8 +62,8 @@ public:
 	QList<element::ElementObject *> getElements(const QString & name, element::ElementObject * parentObject) const;
 
 	// helper methods
-	Error checkParameterList(const element::parameterList & list) const;
-	bool checkForSimilarParameterLists(const element::parameterList & listA, const element::parameterList & listB) const;
+	Error checkParameterList(const element::ParameterList & list) const;
+	bool checkForSimilarParameterLists(const element::ParameterList & listA, const element::ParameterList & listB) const;
 
 	const Notifier<Action> & actionListener() const { return _actionListener; }
 

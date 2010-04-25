@@ -53,7 +53,7 @@ namespace element
 		attachedElementChanged(oldData);
 	}
 
-	const parameterList & MethodObject::parameters() const
+	const ParameterList & MethodObject::parameters() const
 	{
 		return _dd->_parameters;
 	}

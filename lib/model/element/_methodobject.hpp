@@ -39,7 +39,7 @@ struct element::MethodObject::MethodObjectPrivate
 	QString parameterToUmlNotation(const Parameter & parameter);
 
 	DatatypeObject * _returnType;
-	parameterList _parameters;
+	ParameterList _parameters;
 };
 
 #endif // _METHODOBJECT_HPP

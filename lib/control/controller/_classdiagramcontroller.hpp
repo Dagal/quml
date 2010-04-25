@@ -27,15 +27,48 @@
 #define _CLASSDIAGRAMCONTROLLER_HPP
 
 #include "classdiagramcontroller.hpp"
+#include "iclassdiagramrules.hpp"
+#include "classdiagramrules.hpp"
 
 struct ClassDiagramController::ClassDiagramControllerPrivate
 {
-	ClassDiagramControllerPrivate(element::UMLDiagram * diagram)
-		: _diagram(diagram)
+	typedef boost::shared_ptr<IClassDiagramRules> rulePtr;
+
+	ClassDiagramControllerPrivate(ClassDiagramController * controller, element::UMLDiagram * diagram)
+		: _controller(controller)
+		, _diagram(diagram)
 	{
+		// fill all the rules for the classDiagram
+		_rules[element::Element] = rulePtr();
+		_rules[element::Element_Class] = rulePtr(new ClassObjectDiagramRules(_controller));
+		_rules[element::Element_Method] = rulePtr(new MethodObjectDiagramRules(_controller));
+		_rules[element::Element_Operation] = rulePtr(new OperationObjectDiagramRules(_controller));
+		_rules[element::Element_Package] = rulePtr(new PackageObjectDiagramRules(_controller));
+		_rules[element::Element_Property] = rulePtr(new PropertyObjectDiagramRules(_controller));
 	}
 
+	template <class T> IClassDiagramRules * getRulesFor()
+	{
+		if(_rules.contains(T::elementtype))
+			return _rules[T::elementtype].get();
+		else
+			return 0;
+	}
+	IClassDiagramRules * getRulesFor(element::ElementObject * elementObject)
+	{
+		if(elementObject == 0)
+			return 0;
+
+		if(_rules.contains(elementObject->type()))
+			return _rules[elementObject->type()].get();
+		else
+			return 0;
+	}
+
+
+	ClassDiagramController * const _controller;
 	element::UMLDiagram * const _diagram;
+	QMap<element::ElementType, boost::shared_ptr<IClassDiagramRules> > _rules;
 };
 
 #endif // _CLASSDIAGRAMCONTROLLER_HPP
