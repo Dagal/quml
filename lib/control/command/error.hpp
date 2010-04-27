@@ -31,7 +31,7 @@ enum Error
 	Error_NoError,
 	Error_ElementUndefined,
 	Error_ElementNameAlreadyUsed,
-	Error_ElementNameEmpty,
+	Error_ElementNameInvalid,
 	Error_ElementParentRecursion,
 	Error_ElementParentBadContainer,
 

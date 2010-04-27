@@ -29,7 +29,7 @@
 #include "element.hpp"
 #include "macro.hpp"
 #include "error.hpp"
-#include <string>
+#include <QString>
 
 enum ActionType
 {
@@ -37,6 +37,7 @@ enum ActionType
 	Action_DetachElement,
 	Action_MoveElement,
 	Action_RenameElement,
+	Action_MoveAndRenameElement,
 };
 
 struct Action
@@ -62,6 +63,14 @@ struct RenameAction : public Action
 {
 	RenameAction() : Action(Action_RenameElement), oldName("") {}
 
+	QString oldName;
+};
+
+struct MoveAndRenameAction : public Action
+{
+	MoveAndRenameAction() : Action(Action_MoveAndRenameElement), oldParent(0), oldName("") {}
+
+	element::ElementObject * oldParent;
 	QString oldName;
 };
 

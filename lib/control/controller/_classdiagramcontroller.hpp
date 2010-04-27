@@ -26,6 +26,13 @@
 #ifndef _CLASSDIAGRAMCONTROLLER_HPP
 #define _CLASSDIAGRAMCONTROLLER_HPP
 
+#define INT_SEND_AND_RETURN(ERROR) \
+{\
+	a.error = ERROR;\
+	_controller->actionListener().sendMessage(a); \
+	return ERROR; \
+}
+
 #include "classdiagramcontroller.hpp"
 #include "iclassdiagramrules.hpp"
 #include "classdiagramrules.hpp"
@@ -47,28 +54,48 @@ struct ClassDiagramController::ClassDiagramControllerPrivate
 		_rules[element::Element_Property] = rulePtr(new PropertyObjectDiagramRules(_controller));
 	}
 
-	template <class T> IClassDiagramRules * getRulesFor()
-	{
-		if(_rules.contains(T::elementtype))
-			return _rules[T::elementtype].get();
-		else
-			return _rules[element::Element];
-	}
-	IClassDiagramRules * getRulesFor(element::ElementObject * elementObject)
-	{
-		if(elementObject == 0)
-			return 0;
+	IClassDiagramRules * getRulesFor(element::ElementType elementType) const;
+	IClassDiagramRules * getRulesFor(element::ElementObject * elementObject) const;
 
-		if(_rules.contains(elementObject->type()))
-			return _rules[elementObject->type()].get();
-		else
-			return _rules[element::Element];
-	}
-
+	template <class T> Error CreateElement(const QString & name, const QString & newParentQualifiedName, T ** elementObject) const;
 
 	ClassDiagramController * const _controller;
 	element::UMLDiagram * const _diagram;
 	QMap<element::ElementType, boost::shared_ptr<IClassDiagramRules> > _rules;
 };
+
+template <class T> Error ClassDiagramController::ClassDiagramControllerPrivate::CreateElement(const QString & name, const QString & qualifiedParentName, T ** elementObject) const
+{
+	CreateAction a;
+
+	IClassDiagramRules * rule = getRulesFor(static_cast<element::ElementType>(T::elementtype));
+
+	// useful new name?
+	if(!rule->isValidName(name))
+		INT_SEND_AND_RETURN(Error_ElementNameInvalid);
+
+	element::ElementObject * parentElement = _controller->getElement(qualifiedParentName);
+
+	// check for the right type of parent
+	if(!rule->isParentRightContainerType(parentElement))
+		INT_SEND_AND_RETURN(Error_ElementParentBadContainer);
+
+	// check for the names
+	if(!rule->isNameValidWithinParent(0, parentElement, name))
+		INT_SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
+
+	// perform the operation
+	T * element = new T(name);
+	element->setParent(parentElement);
+	element->setUMLDiagram(_diagram);
+
+	a.elementObject = element;
+
+	// should we hand over the pointer?
+	if(elementObject != 0)
+		(*elementObject) = element;
+
+	INT_SEND_AND_RETURN(Error_NoError);
+}
 
 #endif // _CLASSDIAGRAMCONTROLLER_HPP

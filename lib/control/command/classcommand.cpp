@@ -69,7 +69,7 @@ bool MoveClassCommand::redo()
 	if(classObject->parent())
 		_oldparentQualifiedName = classObject->parent()->qualifiedName();
 
-	Error error = _controller->moveClass(oldclassQualifiedName(), newparentQualifiedName());
+	Error error = _controller->moveElement(oldclassQualifiedName(), newparentQualifiedName());
 
 	_newclassQualifiedName = classObject->qualifiedName();
 
@@ -78,5 +78,5 @@ bool MoveClassCommand::redo()
 
 bool MoveClassCommand::undo()
 {
-	return _controller->moveClass(_newclassQualifiedName, _oldparentQualifiedName) == Error_NoError;
+	return _controller->moveElement(_newclassQualifiedName, _oldparentQualifiedName) == Error_NoError;
 }

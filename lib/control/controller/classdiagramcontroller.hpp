@@ -51,11 +51,9 @@ public:
 
 	// class methods
 	Error createClass(const QString & className, const QString & qualifiedParentName, element::ClassObject ** classObject = 0);
-	Error moveClass(const QString & classQualifiedName, const QString & newParentQualifiedName);
 
 	// package methods
-	Error createPackage(const QString & packageName, const QString & parentQualifiedName, element::PackageObject ** packageObject = 0);
-	Error movePackage(const QString & packageQualifiedName, const QString & newParentQualifiedName);
+	Error createPackage(const QString & packageName, const QString & qualifiedParentName, element::PackageObject ** packageObject = 0);
 
 	// find/get methods
 	element::ElementObject * getElement(const QString & qualifiedName) const;

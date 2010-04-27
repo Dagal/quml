@@ -54,7 +54,7 @@ bool DefaultClassDiagramRules::isNameValidWithinParent(ElementObject * elementOb
 	return false;
 }
 
-bool DefaultClassDiagramRules::isParentRightContainerType(element::ElementObject * newParent) const
+bool DefaultClassDiagramRules::isParentRightContainerType(element::ElementObject * /*newParent*/) const
 {
 	return true;
 }

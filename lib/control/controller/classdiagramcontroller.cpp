@@ -113,6 +113,7 @@ Error ClassDiagramController::detachElement(const QString & qualifiedElementName
 
   Possible return types are:
   \li Error_ElementUndefined: No element with this qualifiedName could be found
+  \li Error_ElementNameInvalid: The specified name is invalid for this element
   \li Error_ElementNameAlreadyUsed: Renaming this element would give conflict with another element
   \li Error_NoError: The element was succesfully renamed
 */
@@ -129,7 +130,7 @@ Error ClassDiagramController::renameElement(const QString & qualifiedElementName
 	IClassDiagramRules * rule = _dd->getRulesFor(a.elementObject);
 
 	if(!rule->isValidName(newName))
-		SEND_AND_RETURN(Error_ElementNameEmpty);
+		SEND_AND_RETURN(Error_ElementNameInvalid);
 
 	// check for the names
 	if(!rule->isNameValidWithinParent(a.elementObject, a.elementObject->parent(), newName))
@@ -149,7 +150,7 @@ Error ClassDiagramController::renameElement(const QString & qualifiedElementName
   \li Error_ElementParentBadContainer: The newParentQualifiedName is not the right type to store this element in
   \li Error_ElementParentRecursion: By performing this operation the umlDiagram would contain recursion.
   \li Error_ElementNameAlreadyUsed: The parent element already contains an element with that name.
-  \li Error_NoError: the class was succesfully moved
+  \li Error_NoError: The element was succesfully moved
 */
 Error ClassDiagramController::moveElement(const QString & qualifiedElementName, const QString & newParentQualifiedName)
 {
@@ -182,7 +183,57 @@ Error ClassDiagramController::moveElement(const QString & qualifiedElementName, 
 	SEND_AND_RETURN(Error_NoError);
 }
 
-Error moveAndRenameElement(const QString & qualifiedElementName, const QString & newParentQualifiedName, const QString & newName);
+
+/*!
+  This function tries to move and rename a certain \c qualifiedElementName to a new parent with name \c
+  newParentQualifiedName and renames the element to \c newName.
+
+  Possible return types are:
+  \li Error_ElementUndefined: There is no ElementObject with this qualifiedName
+  \li Error_ElementNameInvalid: The specified new name is invalid for this element
+  \li Error_ElementParentBadContainer: The newParentQualifedName is tno the right type to store this element in
+  \li Error_ElementParentRecursion: By performing this operation the umlDiagram wuold contain recursion
+  \li Error_ElementNameAlreadyUsed: The new parent already contains an element  with new name
+  \li Error_NoError: The element was succesfully removed
+*/
+Error ClassDiagramController::moveAndRenameElement(const QString & qualifiedElementName, const QString & newParentQualifiedName, const QString & newName)
+{
+	MoveAndRenameAction a;
+
+	a.elementObject = getElement(qualifiedElementName);
+
+	if(!a.elementObject)
+		SEND_AND_RETURN(Error_ElementUndefined);
+
+	a.oldParent = a.elementObject->parent();
+	a.oldName = a.elementObject->name();
+	ElementObject * newParent = getElement(newParentQualifiedName);
+
+	IClassDiagramRules * rule = _dd->getRulesFor(a.elementObject);
+
+	// check for right name
+	if(!rule->isValidName(newName))
+		SEND_AND_RETURN(Error_ElementNameInvalid);
+
+	// check for the right container type
+	if(!rule->isParentRightContainerType(newParent))
+		SEND_AND_RETURN(Error_ElementParentBadContainer);
+
+	// check for no recursion
+	if(isNewParentRecursive(a.elementObject, newParent))
+		SEND_AND_RETURN(Error_ElementParentRecursion);
+
+	// check for the right name
+	if(!rule->isNameValidWithinParent(a.elementObject, newParent, a.elementObject->name()))
+		SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
+
+	// perform the operation
+	a.elementObject->setUMLDiagram(0);
+	a.elementObject->setName(newName);
+	a.elementObject->setParent(newParent);
+
+	SEND_AND_RETURN(Error_NoError);
+}
 
 /*!
   This function tries to create a ClassObject with \c className in the container \c qualifiedParentName.
@@ -190,163 +241,54 @@ Error moveAndRenameElement(const QString & qualifiedElementName, const QString &
   \c elementObject is not zero, the new ClassObject is stored herein.
 
   possible returns types are:
-  \li Error_ElementNameEmpty: The className is empty
-  \li Error_ElementNameAlreadyUsed: Creating an element with this name would give conflict with another element
+  \li Error_ElementNameInvalid: The className is invalid
   \li Error_ElementParentBadContainer: The qualifiedParentName is not the right type to store a class in
+  \li Error_ElementNameAlreadyUsed: Creating an element with this name would give conflict with another element
   \li Error_NoError: The class was sucessfully created
 */
 Error ClassDiagramController::createClass(const QString & className, const QString & qualifiedParentName, ClassObject ** elementObject)
 {
-	CreateAction a;
+	return _dd->CreateElement<ClassObject>(className, qualifiedParentName, elementObject);
+}
 
-	// useful new name?
-	if(className.isEmpty()) SEND_AND_RETURN(Error_ElementNameEmpty);
 
-	ElementObject * parentElement = getElement(qualifiedParentName);
+/*!
+  This function tries to create a PackageObject with \c packageName in the container \c qualifiedParentName.
+  If the qualifiedParentName is empty or not found, the package is created with no parent. If the double pointer
+  \c elementObject is not zero, the new PackageObject is stored herein.
 
-	// check for the names
-	if(!checkNameAgainstSiblings(0, className, parentElement))
-		SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
-
-	// check for the right type of parent
-	if(!checkParentForClass(parentElement))
-		SEND_AND_RETURN(Error_ElementParentBadContainer);
-
-	// perform the operation
-	ClassObject * element = new ClassObject(className);
-	element->setParent(parentElement);
-	element->setUMLDiagram(diagram());
-
-	a.elementObject = element;
-
-	// should we hand over the pointer?
-	if(elementObject != 0)
-		(*elementObject) = element;
-
-	SEND_AND_RETURN(Error_NoError);
+  possible returns types are:
+  \li Error_ElementNameEmpty: The packageName is empty
+  \li Error_ElementNameAlreadyUsed: Creating an element with this name would give conflict with another element
+  \li Error_ElementParentBadContainer: The qualifiedParentName is not the right type to store a package in
+  \li Error_NoError: The class was sucessfully created
+*/
+Error ClassDiagramController::createPackage(const QString & packageName, const QString & qualifiedParentName, PackageObject ** elementObject)
+{
+	return _dd->CreateElement<PackageObject>(packageName, qualifiedParentName, elementObject);
 }
 
 /*!
-  This function tries to move a class with a certain \c classQualifiedName to a new container \c newParentQualifiedName.
-  If the \c newParentQualifiedName is empty or not found, the parent is set to zero.
-
-  possible return types are:
-  \li Error_ElementNameEmpty: The classQualifiedName is empty
-  \li Error_ElementUndefined: There is no ClassObject with this classQualifiedName
-  \li Error_ElementParentBadContainer: The newParentQualifiedName is not the right type to store a class in
-  \li Error_ElementParentRecursion: By performing this operation the umlDiagram would contain recursion.
-  \li Error_ElementNameAlreadyUsed: The parent element already contains an element with that name.
-  \li Error_NoError: the class was succesfully moved
+  This method returns an ElementObject with a certain qualifiedName.
 */
-Error ClassDiagramController::moveClass(const QString & classQualifiedName, const QString & newParentQualifiedName)
-{
-	MoveAction a;
-
-	// useful name?
-	if(classQualifiedName.isEmpty())
-		SEND_AND_RETURN(Error_ElementNameEmpty);
-
-	// check if we found a class
-	ClassObject * classObject = getElement<ClassObject>(classQualifiedName);
-	if(!classObject)
-		SEND_AND_RETURN(Error_ElementUndefined);
-
-	a.elementObject = classObject;
-	a.oldParent = classObject->parent();
-
-	ElementObject * parentElement = getElement(newParentQualifiedName);
-
-	// check for the right type of parent
-	if(!checkParentForClass(parentElement))
-		SEND_AND_RETURN(Error_ElementParentBadContainer);
-
-	// check for recursion
-	if(!isNewParentRecursive(classObject, parentElement))
-		SEND_AND_RETURN(Error_ElementParentRecursion);
-
-	// check if we can add this class to the parent
-	if(!checkNameAgainstSiblings(classObject, classObject->name(), parentElement))
-		SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
-
-	// perform the operation
-	classObject->setParent(parentElement);
-
-	SEND_AND_RETURN(Error_NoError);
-}
-
-Error ClassDiagramController::createPackage(const QString & packageName, const QString & newParentQualifiedName, PackageObject ** elementObject)
-{
-	CreateAction a;
-
-	// useful name?
-	if(packageName.isEmpty()) SEND_AND_RETURN(Error_ElementNameEmpty);
-
-	ElementObject * parentElement = getElement(newParentQualifiedName);
-
-	// check for the names
-	if(!checkNameAgainstSiblings(0, packageName, parentElement))
-		SEND_AND_RETURN(Error_ElementNameEmpty);
-
-	// check for the right type of parent
-	if(parentElement != 0 && parentElement->type() != Element_Package)
-		SEND_AND_RETURN(Error_ElementParentBadContainer);
-
-	// perform the operation
-	PackageObject * packageObject = new PackageObject(packageName);
-	packageObject->setParent(parentElement);
-	packageObject->setUMLDiagram(diagram());
-	a.elementObject = packageObject;
-
-	// should we hand over the pointer?
-	if(elementObject != 0)
-		(*elementObject) = packageObject;
-
-	SEND_AND_RETURN(Error_NoError);
-}
-
-Error ClassDiagramController::movePackage(const QString & packageQualifiedName, const QString & newParentQualifiedName)
-{
-	MoveAction a;
-
-	// useful name?
-	if(packageQualifiedName.isEmpty())
-		SEND_AND_RETURN(Error_ElementNameEmpty);
-
-	// check if we found a package?
-	PackageObject * packageObject = getElement<PackageObject>(packageQualifiedName);
-	if(!packageObject)
-		SEND_AND_RETURN(Error_ElementUndefined);
-
-	a.elementObject = packageObject;
-	a.oldParent = packageObject->parent();
-
-	ElementObject * parentElement = getElement(newParentQualifiedName);
-
-	// check for the right type of parent
-	if(parentElement != 0 && parentElement->type() != Element_Package)
-		SEND_AND_RETURN(Error_ElementParentBadContainer);
-
-	// check for recursion
-	if(!isNewParentRecursive(packageObject, parentElement))
-		SEND_AND_RETURN(Error_ElementParentRecursion);
-
-	// perform the operation
-	packageObject->setParent(parentElement);
-
-	SEND_AND_RETURN(Error_NoError);
-
-}
-
 ElementObject * ClassDiagramController::getElement(const QString & qualifiedName) const
 {
 	return diagram()->findElement(qualifiedName);
 }
 
+/*!
+  Finds all the elements in the element with name \c parentQualifiedName with a certain name. If the \c
+  parentQualifiedName is empty or not used, all elements with no parent and name \c name are returned.
+*/
 QList<ElementObject *> ClassDiagramController::getElements(const QString & name, const QString & parentQualifiedName) const
 {
 	return getElements(name, getElement(parentQualifiedName));
 }
 
+/*!
+  Finds all the elements in the element \c parentObject with a certain name. If the \c parentObject is
+  zero, all elements with no parent and name \c name are returned.
+*/
 QList<ElementObject *> ClassDiagramController::getElements(const QString & name, ElementObject * parentObject) const
 {
 	typedef QVector<ElementObject*> elementvct;
@@ -354,8 +296,6 @@ QList<ElementObject *> ClassDiagramController::getElements(const QString & name,
 
 	if(parentObject != 0 && parentObject->umlDiagram() != diagram())
 		return elementlst();
-
-
 
 	boost::function<bool (ElementObject *)> conditionChecker;
 	const elementlst * toCheckVCT = 0;
@@ -394,78 +334,6 @@ QList<ElementObject *> ClassDiagramController::getElements(const QString & name,
 	return elementlst::fromVector(targetVCT);
 }
 
-/*!
-  This method checks whether an c\ elementObject can be renamed to \c newName in the \c parentObject. If the parent is not specified, the element is
-  supposed to have no parent. The elementObject cannot be zero (necessary to check its type). If you want to use this function for a object
-  you want to create, check the overloaded function.
-*/
-bool ClassDiagramController::checkNameAgainstSiblings(ElementObject * elementObject, const QString & newName, ElementObject * parentObject) const
-{
-	if(elementObject == 0 || newName.isEmpty())
-		return false;
-
-	// are there elements with the same name?
-	QList<ElementObject*> sameNamedElements = getElements(newName, parentObject);
-	if(sameNamedElements.isEmpty())
-		return true;
-
-	// everything should be castable to a method
-
-	// start with the basic element
-	MethodObject * methodObject = element_cast<MethodObject>(elementObject);
-	if(!methodObject)
-		return false;
-
-	// loop over all the elements, check if there a method and compare the parameterlists
-	foreach(ElementObject * sameNamedElement, sameNamedElements)
-	{
-		MethodObject * tmpObject = element_cast<MethodObject>(sameNamedElement);
-		if(!tmpObject)
-			return false;
-
-		if(checkForSimilarParameterLists(methodObject->parameters(), tmpObject->parameters()))
-			return false;
-	}
-
-	return true;
-
-}
-
-/*!
-  This method checks whether a ElementObject of type \c type can be created in a certain \c parentObject with a name \c newName. If the parent is
-  not specified, the element is supposed to have no parent
-*/
-bool ClassDiagramController::checkNameAgainstSiblings(ElementType type, const QString & newName, ElementObject * parentObject) const
-{
-	if(newName.isEmpty())
-		return false;
-
-	// are there elements with the same name?
-	QList<ElementObject*> sameNamedElements = getElements(newName, parentObject);
-	if(sameNamedElements.isEmpty())
-		return true;
-
-	// everything should be castable to a method
-
-	// start with the basic element
-	if((type & Element_Method) != Element_Method)
-		return false;
-
-	ParameterList lst;
-
-	// loop over all the elements, check if there a method and compare the parameterlists
-	foreach(ElementObject * sameNamedElement, sameNamedElements)
-	{
-		MethodObject * tmpObject = element_cast<MethodObject>(sameNamedElement);
-		if(!tmpObject)
-			return false;
-
-		if(checkForSimilarParameterLists(lst, tmpObject->parameters()))
-			return false;
-	}
-
-	return true;
-}
 
 /*!
   This methods checks whether the given list is correct.
@@ -516,4 +384,24 @@ bool ClassDiagramController::checkForSimilarParameterLists(const ParameterList &
 	}
 
 	return true;
+}
+
+
+IClassDiagramRules * ClassDiagramController::ClassDiagramControllerPrivate::getRulesFor(element::ElementType elementType) const
+{
+	if(_rules.contains(elementType))
+		return _rules[elementType].get();
+	else
+		return _rules[element::Element].get();
+}
+
+IClassDiagramRules * ClassDiagramController::ClassDiagramControllerPrivate::getRulesFor(element::ElementObject * elementObject) const
+{
+	if(elementObject == 0)
+		return 0;
+
+	if(_rules.contains(elementObject->type()))
+		return _rules[elementObject->type()].get();
+	else
+		return _rules[element::Element].get();
 }
