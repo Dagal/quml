@@ -39,7 +39,7 @@ struct ClassDiagramController::ClassDiagramControllerPrivate
 		, _diagram(diagram)
 	{
 		// fill all the rules for the classDiagram
-		_rules[element::Element] = rulePtr();
+		_rules[element::Element] = rulePtr(new DefaultClassDiagramRules(_controller));
 		_rules[element::Element_Class] = rulePtr(new ClassObjectDiagramRules(_controller));
 		_rules[element::Element_Method] = rulePtr(new MethodObjectDiagramRules(_controller));
 		_rules[element::Element_Operation] = rulePtr(new OperationObjectDiagramRules(_controller));
@@ -52,7 +52,7 @@ struct ClassDiagramController::ClassDiagramControllerPrivate
 		if(_rules.contains(T::elementtype))
 			return _rules[T::elementtype].get();
 		else
-			return 0;
+			return _rules[element::Element];
 	}
 	IClassDiagramRules * getRulesFor(element::ElementObject * elementObject)
 	{
@@ -62,7 +62,7 @@ struct ClassDiagramController::ClassDiagramControllerPrivate
 		if(_rules.contains(elementObject->type()))
 			return _rules[elementObject->type()].get();
 		else
-			return 0;
+			return _rules[element::Element];
 	}
 
 

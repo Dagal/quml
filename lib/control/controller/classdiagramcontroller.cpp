@@ -42,23 +42,18 @@ using namespace element;
 	return ERROR; \
 }
 
-inline bool checkParentForClass(ElementObject * parent)
-{
-	return parent == 0 || parent->type() == Element_Class || parent->type() == Element_Package;
-}
 
-bool checkForParentRecursion(ElementObject * child, ElementObject * newParent)
+bool isNewParentRecursive(ElementObject * child, ElementObject * newParent)
 {
 	if(child == 0 || newParent == 0 || child == newParent)
-		return true;
+		return false;
 
 	QList<ElementObject*> ancestors = newParent->ancestors();
 
 	return (std::find(
 			ancestors.begin(),
 			ancestors.end(),
-			child) == ancestors.end());
-
+			child) != ancestors.end());
 }
 
 ElementObject * helperDetachElement(ElementObject * element)
@@ -114,7 +109,7 @@ Error ClassDiagramController::detachElement(const QString & qualifiedElementName
 }
 
 /*!
-  This function tries to rename an element with a certain \c qualifiedName to \c newName.
+  This function tries to rename an element with a certain \c qualifiedElementName to \c newName.
 
   Possible return types are:
   \li Error_ElementUndefined: No element with this qualifiedName could be found
@@ -131,10 +126,13 @@ Error ClassDiagramController::renameElement(const QString & qualifiedElementName
 
 	a.oldName = a.elementObject->name();
 
-	if(newName.isEmpty()) SEND_AND_RETURN(Error_ElementNameEmpty);
+	IClassDiagramRules * rule = _dd->getRulesFor(a.elementObject);
+
+	if(!rule->isValidName(newName))
+		SEND_AND_RETURN(Error_ElementNameEmpty);
 
 	// check for the names
-	if(!checkNameAgainstSiblings(a.elementObject, newName, a.elementObject->parent()))
+	if(!rule->isNameValidWithinParent(a.elementObject, a.elementObject->parent(), newName))
 		SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
 
 	// perform the operation
@@ -142,6 +140,49 @@ Error ClassDiagramController::renameElement(const QString & qualifiedElementName
 
 	SEND_AND_RETURN(Error_NoError);
 }
+
+/*!
+  This function tries to move an element with a certain \c qualifiedElementName to a new parent with name \c newParentQualfiedName
+
+  Possible return types are:
+  \li Error_ElementUndefined: There is no ElementObject with this qualifiedElementName
+  \li Error_ElementParentBadContainer: The newParentQualifiedName is not the right type to store this element in
+  \li Error_ElementParentRecursion: By performing this operation the umlDiagram would contain recursion.
+  \li Error_ElementNameAlreadyUsed: The parent element already contains an element with that name.
+  \li Error_NoError: the class was succesfully moved
+*/
+Error ClassDiagramController::moveElement(const QString & qualifiedElementName, const QString & newParentQualifiedName)
+{
+	MoveAction a;
+
+	a.elementObject = getElement(qualifiedElementName);
+	if(!a.elementObject)
+		SEND_AND_RETURN(Error_ElementUndefined);
+
+	a.oldParent = a.elementObject->parent();
+	ElementObject * newParent = getElement(newParentQualifiedName);
+
+	IClassDiagramRules * rule = _dd->getRulesFor(a.elementObject);
+
+	// check for the right container type
+	if(!rule->isParentRightContainerType(newParent))
+		SEND_AND_RETURN(Error_ElementParentBadContainer);
+
+	// check for no recursion
+	if(isNewParentRecursive(a.elementObject, newParent))
+		SEND_AND_RETURN(Error_ElementParentRecursion);
+
+	// check for the right name
+	if(!rule->isNameValidWithinParent(a.elementObject, newParent, a.elementObject->name()))
+		SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
+
+	// perform the operation
+	a.elementObject->setParent(newParent);
+
+	SEND_AND_RETURN(Error_NoError);
+}
+
+Error moveAndRenameElement(const QString & qualifiedElementName, const QString & newParentQualifiedName, const QString & newName);
 
 /*!
   This function tries to create a ClassObject with \c className in the container \c qualifiedParentName.
@@ -220,7 +261,7 @@ Error ClassDiagramController::moveClass(const QString & classQualifiedName, cons
 		SEND_AND_RETURN(Error_ElementParentBadContainer);
 
 	// check for recursion
-	if(!checkForParentRecursion(classObject, parentElement))
+	if(!isNewParentRecursive(classObject, parentElement))
 		SEND_AND_RETURN(Error_ElementParentRecursion);
 
 	// check if we can add this class to the parent
@@ -286,7 +327,7 @@ Error ClassDiagramController::movePackage(const QString & packageQualifiedName, 
 		SEND_AND_RETURN(Error_ElementParentBadContainer);
 
 	// check for recursion
-	if(!checkForParentRecursion(packageObject, parentElement))
+	if(!isNewParentRecursive(packageObject, parentElement))
 		SEND_AND_RETURN(Error_ElementParentRecursion);
 
 	// perform the operation

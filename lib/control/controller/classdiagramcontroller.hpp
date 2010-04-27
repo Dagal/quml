@@ -46,6 +46,8 @@ public:
 	// element methods
 	Error detachElement(const QString & qualifiedElementName, element::ElementObject ** elementObject = 0);
 	Error renameElement(const QString & qualifiedElementName, const QString & newName);
+	Error moveElement(const QString & qualifiedElementName, const QString & newParentQualifiedName);
+	Error moveAndRenameElement(const QString & qualifiedElementName, const QString & newParentQualifiedName, const QString & newName);
 
 	// class methods
 	Error createClass(const QString & className, const QString & qualifiedParentName, element::ClassObject ** classObject = 0);

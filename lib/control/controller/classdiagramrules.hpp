@@ -36,6 +36,7 @@ public:
 
 	virtual bool isValidName(const QString & newName) const;
 	virtual bool isNameValidWithinParent(element::ElementObject * elementObject, element::ElementObject * parent, const QString & newName) const;
+	virtual bool isParentRightContainerType(element::ElementObject * newParent) const;
 
 	const ClassDiagramController * controller() const { return _controller; }
 

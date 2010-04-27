@@ -40,6 +40,9 @@ bool DefaultClassDiagramRules::isValidName(const QString & newName) const
 
 bool DefaultClassDiagramRules::isNameValidWithinParent(ElementObject * elementObject, ElementObject * parent, const QString & newName) const
 {
+	if(parent != 0 && parent == elementObject)
+		return false;
+
 	QList<ElementObject*> siblings = controller()->getElements(newName, parent);
 
 	if(siblings.size() == 0)
@@ -49,6 +52,11 @@ bool DefaultClassDiagramRules::isNameValidWithinParent(ElementObject * elementOb
 		return true;
 
 	return false;
+}
+
+bool DefaultClassDiagramRules::isParentRightContainerType(element::ElementObject * newParent) const
+{
+	return true;
 }
 
 bool ClassObjectDiagramRules::isParentRightContainerType(ElementObject * newParent) const
