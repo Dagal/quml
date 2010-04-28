@@ -50,6 +50,7 @@ namespace element
 		void setReturnType(DatatypeObject * returnType);
 		const ParameterList & parameters() const;
 		Parameter parameterAt(unsigned int position) const;
+		void setParameterList(const ParameterList & list);
 
 		virtual QString umlName() const;
 		virtual ElementType type() const { return Element_Method; }

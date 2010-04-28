@@ -30,6 +30,7 @@
 #include "classobject.hpp"
 #include "methodobject.hpp"
 #include "packageobject.hpp"
+#include "operationobject.hpp"
 #include "parameter.hpp"
 #include <QVector>
 
@@ -258,14 +259,71 @@ Error ClassDiagramController::createClass(const QString & className, const QStri
   \c elementObject is not zero, the new PackageObject is stored herein.
 
   possible returns types are:
-  \li Error_ElementNameEmpty: The packageName is empty
+  \li Error_ElementNameInvalid: The packageName is invalid.
   \li Error_ElementNameAlreadyUsed: Creating an element with this name would give conflict with another element
   \li Error_ElementParentBadContainer: The qualifiedParentName is not the right type to store a package in
-  \li Error_NoError: The class was sucessfully created
+  \li Error_NoError: The package was sucessfully created
 */
 Error ClassDiagramController::createPackage(const QString & packageName, const QString & qualifiedParentName, PackageObject ** elementObject)
 {
 	return _dd->CreateElement<PackageObject>(packageName, qualifiedParentName, elementObject);
+}
+
+/*!
+  This function tries to create a OperationObject with \c operationName in the container \c qualifiedParentName.
+  If the double pointer \c operationObject is not zero, the OperationObject is stored herein.
+
+  possible return types are:
+  \li Error_ElementNameInvalid: The operationName is invalid.
+  \li Error_ElementNameAlreadyUsed: Creating an element with this name would give conflict with another element.
+  \li Error_ElementParentBadContainer: The qualifiedParentName is not the right type to store a operation in.
+  \li Error_ParameterListUndefinedTypes: The supplied parameterlist does contain undefined types.
+  \li Error_ParameterListWrongOrder: The parameterlist contains element with no default value after elements with a default value.
+  \li Error_NoError: The operation was succesfully created
+*/
+Error ClassDiagramController::createOperation(const QString & operationName, const QString & qualifiedParentName, const ParameterList & parameters, OperationObject ** operationObject)
+{
+	CreateAction a;
+
+	IClassDiagramRules * rule = _dd->getRulesFor(Element_Operation);
+
+	// useful new name?
+	if(!rule->isValidName(operationName))
+		SEND_AND_RETURN(Error_ElementNameInvalid);
+
+	element::ElementObject * parentElement = getElement(qualifiedParentName);
+
+	// check for the right type of parent
+	if(!rule->isParentRightContainerType(parentElement))
+		SEND_AND_RETURN(Error_ElementParentBadContainer);
+
+	// check the parameter list
+	Error parameterListError = checkParameterList(parameters);
+	if(parameterListError != Error_NoError)
+		SEND_AND_RETURN(parameterListError);
+
+	// we should already create the operation to  store the paramaters
+	OperationObject * operation = new OperationObject(operationName);
+	operation->setParameterList(parameters);
+
+	// check for the names
+	if(!rule->isNameValidWithinParent(operation, parentElement, operationName))
+	{
+		delete operation;
+		SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
+	}
+
+	// perform the operation
+	operation->setParent(parentElement);
+	operation->setUMLDiagram(diagram());
+
+	a.elementObject = operation;
+
+	// should we hand over the pointer?
+	if(operationObject != 0)
+		(*operationObject) = operation;
+
+	SEND_AND_RETURN(Error_NoError);
 }
 
 /*!
@@ -368,7 +426,7 @@ Error ClassDiagramController::checkParameterList(const ParameterList & list) con
   This method checks whether two lists of parameters are similar. This is the case as soon as the parameters in listA and listB have the same datatype
   from the first parameter to the the last non-default parameter. The function returns true if they are similar.
 */
-bool ClassDiagramController::checkForSimilarParameterLists(const ParameterList & listA, const ParameterList & listB) const
+bool ClassDiagramController::AreParameterListsSimilar(const ParameterList & listA, const ParameterList & listB) const
 {
 	int i = 0;
 

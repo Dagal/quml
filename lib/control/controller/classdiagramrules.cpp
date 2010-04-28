@@ -97,7 +97,7 @@ bool MethodObjectDiagramRules::isNameValidWithinParent(ElementObject * elementOb
 			continue;
 
 		// and the parameterlist should not be similar
-		if(controller()->checkForSimilarParameterLists(list, siblingObject->parameters()))
+		if(controller()->AreParameterListsSimilar(list, siblingObject->parameters()))
 			return false;
 	}
 

@@ -49,11 +49,10 @@ public:
 	Error moveElement(const QString & qualifiedElementName, const QString & newParentQualifiedName);
 	Error moveAndRenameElement(const QString & qualifiedElementName, const QString & newParentQualifiedName, const QString & newName);
 
-	// class methods
+	// create methods
 	Error createClass(const QString & className, const QString & qualifiedParentName, element::ClassObject ** classObject = 0);
-
-	// package methods
 	Error createPackage(const QString & packageName, const QString & qualifiedParentName, element::PackageObject ** packageObject = 0);
+	Error createOperation(const QString & operationName, const QString & qualifiedParentName, const element::ParameterList & parameters = element::ParameterList(), element::OperationObject ** operationObject = 0);
 
 	// find/get methods
 	element::ElementObject * getElement(const QString & qualifiedName) const;
@@ -63,7 +62,7 @@ public:
 
 	// helper methods
 	Error checkParameterList(const element::ParameterList & list) const;
-	bool checkForSimilarParameterLists(const element::ParameterList & listA, const element::ParameterList & listB) const;
+	bool AreParameterListsSimilar(const element::ParameterList & listA, const element::ParameterList & listB) const;
 
 	const Notifier<Action> & actionListener() const { return _actionListener; }
 

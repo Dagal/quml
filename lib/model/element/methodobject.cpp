@@ -86,4 +86,9 @@ namespace element
 	{
 		return QString("to be implemented: ");
 	}
+
+	void MethodObject::setParameterList(const ParameterList & list)
+	{
+		_dd->_parameters = list;
+	}
 }
