@@ -29,29 +29,10 @@
 
 namespace element
 {
-	QMap<ElementType, ElementRelator::Relator> ElementRelator::_Relators = QMap<ElementType, ElementRelator::Relator>();
+	//QMap<ElementType, ElementRelator::Relator> ElementRelator::_Relators = QMap<ElementType, ElementRelator::Relator>();
 
 	ElementRelator::ElementRelator()
 	{
-	}
-
-	/*!
-	  This helper method removes the combination attachedElement -> relatedElement from the list of
-	  know links.
-	*/
-	void ElementRelator::removeElementFromRelator(ElementObject * relatedElement, ElementObject * attachedElement)
-	{
-		if(attachedElement == 0 || relatedElement == 0)
-			return;
-
-		if(_relatedElements.contains(attachedElement))
-		{
-			QList<ElementObject*> & relatedElements = *(_relatedElements[attachedElement]);
-			relatedElements.removeAll(relatedElement);
-
-			if(relatedElements.empty())
-				_relatedElements.remove(attachedElement);
-		}
 	}
 
 	/*!
@@ -59,10 +40,16 @@ namespace element
 	*/
 	QList<ElementObject *> ElementRelator::findAllRelatedElementsTo(ElementObject * attachedElement)
 	{
-		if(_relatedElements.contains(attachedElement))
-			return *(_relatedElements[attachedElement]);
-		else
+		if(!_relatedElements.contains(attachedElement))
 			return QList<ElementObject*>();
+
+		QList<ElementObject*> returnList;
+		QList<RelatedElementDetails> & relatedList = _relatedElements[attachedElement];
+		for(int i = 0; i < relatedList.size(); i++)
+			if(relatedList[i]._relatedElement != 0)
+				returnList << relatedList[i]._relatedElement;
+
+		return returnList;
 	}
 
 	/*!
@@ -70,26 +57,69 @@ namespace element
 	  and a new link between the new attachedElement and the relatedElement is stored. If oldAttachedElement
 	  is zero, this method just add's the link from the new attachedElement to the relatedElement.
 	*/
-	void ElementRelator::update(ElementObject * relatedElement, ElementObject * oldAttachedElement)
+	void ElementRelator::update(ElementObject * relatedElement, int position, ElementObject * oldAttachedElement)
 	{
-		if(oldAttachedElement != 0)
-			removeElementFromRelator(relatedElement, oldAttachedElement);
+		RelatedElementDetails detail(relatedElement, position);
 
-		add(relatedElement);
+		if(oldAttachedElement != 0)
+			removeRelation(oldAttachedElement, detail);
+
+		addRelation(relatedElement->getAttachedElementAt(position), detail);
 	}
 
 	/*!
-	  This method remove a certain \c elementObject completely from the list of known links
+	  This method remove a certain \c elementObject completely from the list of known relations, as a relatedElement but also as a attachedElement
 	*/
 	void ElementRelator::remove(ElementObject * elementObject)
 	{
+		if(elementObject == 0)
+			return;
+
 		// remove from key side (where elementObject is the attached element)
-		relatedElements_map::iterator i = _relatedElements.find(elementObject);
-		if(i != _relatedElements.end())
-			_relatedElements.erase(i);
+		_relatedElements.remove(elementObject);
 
 		// remove value side (where elementObject is the related element)
-		removeElementFromRelator(elementObject, GetAttachedElement(elementObject));
+		for(int i = 0; i < elementObject->attachedElementCount(); i++)
+		{
+			ElementObject * attachedElement = elementObject->getAttachedElementAt(i);
+			if(_relatedElements.contains(attachedElement))
+			{
+				QList<RelatedElementDetails> & lst = _relatedElements[attachedElement];
+				QList<RelatedElementDetails>::iterator i = std::find(
+						lst.begin(),
+						lst.end(),
+						elementObject
+						);
+
+				if(i != lst.end())
+					lst.erase(i);
+			}
+		}
+	}
+
+	/*!
+	  This is a helper method to add a certain relation from attachedElement to RelatedElement. If the attachedElement or the RelatedElement
+	  is zero, no adding is performed.
+	*/
+	void ElementRelator::addRelation(ElementObject * attachedElement, RelatedElementDetails elementDetails)
+	{
+		if(attachedElement == 0 || elementDetails._relatedElement == 0)
+			return;
+
+		QList<RelatedElementDetails> & lst = _relatedElements[attachedElement];
+		lst.push_back(elementDetails);
+	}
+
+	/*!
+	  This ia helper method to remove a certain relation from attachedElement to RelatedElement.
+	*/
+	void ElementRelator::removeRelation(ElementObject * attachedElement, RelatedElementDetails details)
+	{
+		if(attachedElement == 0 || details._relatedElement == 0)
+			return;
+
+		if(_relatedElements.contains(attachedElement))
+			_relatedElements[attachedElement].removeAll(details);
 	}
 
 	/*!
@@ -98,68 +128,14 @@ namespace element
 	*/
 	void ElementRelator::add(ElementObject * relatedElement)
 	{
-		if(relatedElement == 0)
+		if(relatedElement == 0 || relatedElement->attachedElementCount() == 0)
 			return;
 
-		ElementObject * attachedElement = GetAttachedElement(relatedElement);
-		if(attachedElement == 0)
-			return;
-
-		boost::shared_ptr<QList<ElementObject*> > relatedList;
-
-		if(_relatedElements.contains(attachedElement))
-			relatedList = _relatedElements[attachedElement];
-		else
+		for(int i = 0 ; i < relatedElement->attachedElementCount(); i++)
 		{
-			relatedList = boost::shared_ptr<QList<ElementObject*> >(new QList<ElementObject*>);
-			_relatedElements[attachedElement] = relatedList;
+			ElementObject * attachedElement = relatedElement->getAttachedElementAt(i);
+			addRelation(attachedElement, RelatedElementDetails(relatedElement, i));
 		}
-
-		relatedList->push_back(relatedElement);
 	}
 
-	/*!
-	  This method registers a \c relator for a certain elementtype. This Relator will be used to get the
-	  attached element and to set the attached element of elements of this type.
-
-	  \sa ElementRelator::Relator
-	*/
-	void ElementRelator::AddElementRelator(ElementType type, Relator relator)
-	{
-		_Relators[type] = relator;
-	}
-
-	/*!
-	  This method returns the attached element for \c elementObject. If there is no Relator registered
-	  for \c elementObject's type, it will return 0.
-
-	  \sa ElementRelator::AddElementRelator
-	*/
-	ElementObject * ElementRelator::GetAttachedElement(ElementObject * elementObject)
-	{
-		if(elementObject == 0)
-			return 0;
-
-		if(!_Relators.contains(elementObject->type()))
-			return 0;
-		else
-			return _Relators[elementObject->type()].getter(elementObject);
-	}
-
-	/*!
-	  This method sets the attached element for \c elementObject. If there is no Relator registered
-	  for \c elementObject's type, it will return false. If for some reason it is unable to set the attached
-	  element, it will also return false. (e.g. \c newAttachedElements is the wrong type).
-
-	  \sa ElementRelator::AddElementRelator
-	*/
-	bool ElementRelator::SetAttachedElement(ElementObject * elementObject, ElementObject * newAttachedElement)
-	{
-		if(elementObject == 0)
-			return false;
-
-		if(!_Relators.contains(elementObject->type()))
-			return false;
-		return _Relators[elementObject->type()].setter(elementObject, newAttachedElement);
-	}
 }

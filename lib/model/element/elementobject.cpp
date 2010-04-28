@@ -373,14 +373,38 @@ namespace element
 	}
 
 	/*!
+	  Reimplement this method to return the number of attached elements to this element.
+	*/
+	int ElementObject::attachedElementCount() const
+	{
+		return 0;
+	}
+
+	/*!
+	  Reimplement this method to return an attached element at a specified position. This method is used to keep track of all the attached elements.
+	  If position is invalid, this function should return 0.
+	*/
+	ElementObject * ElementObject::getAttachedElementAt(int /*position*/) const
+	{
+		return 0;
+	}
+
+	/*!
+	  Reimplement this method to update the value of the attached element at a certain position.
+	*/
+	void ElementObject::setAttachedElementAt(int /*position*/, ElementObject * /*attachedElement*/)
+	{
+	}
+
+	/*!
 	This method should be called whenever the attached element of this ElementObject is changed. For
 	example, if the return type of a operation is changed, this method is called. This informs the
 	UMLDiagram of recent changes.
 	*/
-	void ElementObject::attachedElementChanged(ElementObject * oldAttachedElement)
+	void ElementObject::attachedElementChanged(int position, ElementObject * oldAttachedElement)
 	{
 		if(umlDiagram())
-			umlDiagram()->_dd->_elementRelator.update(this, oldAttachedElement);
+			umlDiagram()->_dd->_elementRelator.update(this, position, oldAttachedElement);
 	}
 
 	/*!

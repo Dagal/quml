@@ -25,6 +25,7 @@
 
 #include "propertyobject.hpp"
 #include "_propertyobject.hpp"
+#include "elementhelper.hpp"
 
 namespace element
 {
@@ -64,7 +65,7 @@ namespace element
 
 		DatatypeObject * oldData = _dd->_datatype;
 		_dd->_datatype = datatype;
-		attachedElementChanged(oldData);
+		attachedElementChanged(0, oldData);
 	}
 
 	void PropertyObject::setDefaultValue(const QString & defaultValue)
@@ -78,6 +79,22 @@ namespace element
 			return name() + ": " + datatype()->umlName();
 		else
 			return name() + ": void";
+	}
+
+	ElementObject * PropertyObject::getAttachedElementAt(int position) const
+	{
+		if(position == 0)
+			return datatype();
+		else
+			return 0;
+	}
+
+	void PropertyObject::setAttachedElementAt(int position, ElementObject * attachedElement)
+	{
+		DatatypeObject * object = element_cast<DatatypeObject>(attachedElement);
+
+		if(position == 0 )
+			setDatatype(object);
 	}
 }
 

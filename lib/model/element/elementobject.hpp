@@ -63,6 +63,17 @@ namespace element
 		virtual QString qualifiedName() const;
 		virtual QString umlName() const;
 
+		// related - attached elements functions
+		virtual int attachedElementCount() const;
+		virtual ElementObject * getAttachedElementAt(int position) const;
+		virtual void setAttachedElementAt(int position, ElementObject * attachedElement);
+
+	protected:
+		void attachedElementChanged(int position, ElementObject * oldAttachedElement);
+
+	public:
+
+
 		/*!
 		Reimplement this abstract to return the right ElementType. This is necessary for casting different element types.
 		\sa element_cast
@@ -78,8 +89,7 @@ namespace element
 		virtual void onChildAdded(ElementObject * child);
 		virtual void onChildRemoved(ElementObject * child);
 
-	protected:
-		void attachedElementChanged(ElementObject * oldAttachedElement);
+
 
 	private:
 		boost::shared_ptr<ElementObjectPrivate> _dd;

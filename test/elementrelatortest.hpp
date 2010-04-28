@@ -54,6 +54,10 @@ private slots:
 	void propertyParentAttachToNewUML();
 	void propertyParentAndDatatypeParentAttachToNewUML();
 
+
+
+
+
 private:
 	element::ClassObject * data1;
 	element::ClassObject * data2;
@@ -61,6 +65,7 @@ private:
 	element::PropertyObject * prop1;
 	element::UMLDiagram * diagram;
 	element::UMLDiagram * newdiagram;
+	element::OperationObject * oper1;
 };
 
 #endif // ELEMENTRELATORTEST_HPP

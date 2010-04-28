@@ -345,13 +345,16 @@ namespace element
 	{
 		using namespace element;
 
-		ElementObject * attachedElement = ElementRelator::GetAttachedElement(elementObject);
-
-		if(attachedElement != 0 && attachedElement->umlDiagram() != elementObject->umlDiagram())
+		for(int i = 0; i < elementObject->attachedElementCount(); i++)
 		{
-			// the link should be deleted
-			_elementRelator.remove(elementObject);
-			ElementRelator::SetAttachedElement(elementObject, 0);
+			ElementObject * attachedElement = elementObject->getAttachedElementAt(i);
+
+			if(attachedElement != 0 && attachedElement->umlDiagram() != elementObject->umlDiagram())
+			{
+				elementObject->setAttachedElementAt(i, 0);
+				_elementRelator.update(elementObject, i, attachedElement);
+			}
 		}
+
 	}
 }

@@ -49,9 +49,19 @@ namespace element
 		DatatypeObject * returnType() const;
 		void setReturnType(DatatypeObject * returnType);
 		const ParameterList & parameters() const;
-		Parameter parameterAt(unsigned int position) const;
+		const Parameter & parameterAt(unsigned int position) const;
+
+		void setParameter(int position, const Parameter & parameter);
+		void insertParameter(int position, const Parameter & parameter);
+		void addParameter(const Parameter & parameter);
+		void removeParameter(int position);
+
 		void setParameterList(const ParameterList & list);
 
+		// overridden member functions
+		virtual int attachedElementCount() const;
+		virtual ElementObject * getAttachedElementAt(int position) const;
+		virtual void setAttachedElementAt(int position, ElementObject * attachedElement);
 		virtual QString umlName() const;
 		virtual ElementType type() const { return Element_Method; }
 

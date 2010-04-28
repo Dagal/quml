@@ -50,7 +50,7 @@ namespace element
 
 		DatatypeObject * oldData = _dd->_returnType;
 		_dd->_returnType = returnType;
-		attachedElementChanged(oldData);
+		attachedElementChanged(0, oldData);
 	}
 
 	const ParameterList & MethodObject::parameters() const
@@ -58,7 +58,7 @@ namespace element
 		return _dd->_parameters;
 	}
 
-	Parameter MethodObject::parameterAt(unsigned int position) const
+	const Parameter & MethodObject::parameterAt(unsigned int position) const
 	{
 		return _dd->_parameters[position];
 	}
@@ -74,7 +74,8 @@ namespace element
 				retVal += ", ";
 		}
 
-		retVal += "): " + returnType()->umlName();
+		if(returnType())
+			retVal += "): " + returnType()->umlName();
 
 		return retVal;
 	}
@@ -84,11 +85,134 @@ namespace element
 	*/
 	QString MethodObject::MethodObjectPrivate::parameterToUmlNotation(const Parameter & parameter)
 	{
-		return QString("to be implemented: ");
+		QString retVal = parameter.name();
+		if(parameter.datatype())
+			retVal += ": " + parameter.datatype()->qualifiedName();
+
+		return retVal;
 	}
 
+	/*!
+	  This method gets rid of the complete parameterList and sets its to \c list.
+	*/
 	void MethodObject::setParameterList(const ParameterList & list)
 	{
-		_dd->_parameters = list;
+		// perform cleanup
+		while(parameters().size() != 0)
+			removeParameter(parameters().size()-1);
+
+		// add the new value
+		for(int i = 0; i < list.size(); i++)
+			addParameter(list[i]);
+	}
+
+	/*!
+	  This method sets the parameter at \c position to value \c parameter. If no parameter exists at the position (position < 0 || position >= parameterCount)
+	  the parameter is added to the end of the parameterList.
+
+	  \sa addParameter, insertParameter
+	*/
+	void MethodObject::setParameter(int position, const Parameter & parameter)
+	{
+		if(position < 0 || position >= parameters().size())
+		{
+			addParameter(parameter);
+			return;
+		}
+
+		DatatypeObject * oldDatatype = _dd->_parameters[position].datatype();
+
+		_dd->_parameters[position] = parameter;
+		attachedElementChanged(position+1, oldDatatype);
+	}
+
+	/*!
+	  This method insert a parameter at the given \c position with the value \c parameter. If the position is invalid, the parameter is inserted at the end
+
+	  \sa addParameter
+	*/
+	void MethodObject::insertParameter(int position, const Parameter & parameter)
+	{
+		if(position < 0 || position >= parameters().size())
+		{
+			addParameter(parameter);
+			return;
+		}
+
+		// insert the parameter
+		_dd->_parameters.insert(position, parameter);
+
+		// send the message tot the relator
+		for(int i = position; i < parameters().size(); i++)
+		{
+			ElementObject * oldDatatype = (position == parameters().size()-1 ? 0 : parameters()[position+1].datatype());
+			attachedElementChanged(position+1, oldDatatype);
+		}
+	}
+
+	/*!
+	  This methods add a parameter to the end of the parameterlist. This parameter is the last parameter in the method.
+	*/
+	void MethodObject::addParameter(const Parameter & parameter)
+	{
+		_dd->_parameters.push_back(parameter);
+		attachedElementChanged(parameters().size(), 0);
+	}
+
+	/*!
+	  THis function removes the parameter at the position.
+	*/
+	void MethodObject::removeParameter(int position)
+	{
+		if(position < 0 || position >= parameters().size())
+			return;
+
+		ElementObject * oldDatatype = parameters()[position].datatype();
+
+		// remove the parameter
+		_dd->_parameters.removeAt(position);
+
+		// send the message to the relator
+		for(int i = position; i < parameters().size(); i++)
+		{
+			attachedElementChanged(position+1, oldDatatype);
+			oldDatatype = parameters()[position].datatype();
+		}
+
+		attachedElementChanged(position+1, oldDatatype);
+	}
+
+	int MethodObject::attachedElementCount() const
+	{
+		return parameters().size() + 1;
+
+	}
+
+	ElementObject * MethodObject::getAttachedElementAt(int position) const
+	{
+		if(position > parameters().size() || position < 0)
+			return 0;
+
+		if(position == 0)
+			return returnType();
+		else
+			return parameters()[position-1].datatype();
+	}
+
+	void MethodObject::setAttachedElementAt(int position, ElementObject * attachedElement)
+	{
+		if(position > parameters().size() || position < 0)
+			return;
+
+		DatatypeObject * datatypeObject = element_cast<DatatypeObject>(attachedElement);
+
+		if(position == 0)
+			setReturnType(datatypeObject);
+		else
+		{
+			Parameter p = _dd->_parameters[position-1];
+			p.setDatatype(datatypeObject);
+			setParameter(position-1, p);
+		}
 	}
 }

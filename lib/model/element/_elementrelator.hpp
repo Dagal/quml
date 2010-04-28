@@ -28,8 +28,6 @@
 
 #include "elementobject.hpp"
 #include <QMap>
-#include <boost/shared_ptr.hpp>
-#include <boost/function.hpp>
 
 namespace element
 {
@@ -47,43 +45,43 @@ namespace element
 		  This struct contains the necessary information to go from an element to the attachedElement. The
 		  getter returns the attachedElement and the setter will set a new value for the attachedElement.
 		*/
-		struct Relator
+		struct RelatedElementDetails
 		{
-			typedef boost::function<ElementObject* (ElementObject*)> GetAttachedElementFunction;
-			typedef boost::function<bool (ElementObject*, ElementObject*)> SetAttachedElementFunction;
-
-			Relator(GetAttachedElementFunction getter, SetAttachedElementFunction setter)
-			{
-				this->getter = getter;
-				this->setter = setter;
-			}
-
-			Relator()
+			RelatedElementDetails(ElementObject * relatedElement = 0, int position = 0)
+				: _relatedElement(relatedElement)
+				, _position(position)
 			{
 			}
 
-			GetAttachedElementFunction getter;
-			SetAttachedElementFunction setter;
+
+			ElementObject * _relatedElement;
+			int _position;
+
+			bool operator==(ElementObject * relatedElement) const
+			{
+				return _relatedElement == relatedElement;
+			}
+			bool operator==(const RelatedElementDetails & rhs) const
+			{
+				return _relatedElement == rhs._relatedElement && _position == rhs._position;
+			}
 		};
+
 
 		ElementRelator();
 
 		QList<ElementObject *> findAllRelatedElementsTo(ElementObject * attachedElement);
-		void update(ElementObject * relatedElement, ElementObject * oldAttachedElement);
+		void update(ElementObject * relatedElement, int position, ElementObject * oldAttachedElement);
 		void remove(ElementObject * elementObject);
 		void add(ElementObject * relatedElement);
 
-		static void AddElementRelator(ElementType type, Relator relator);
-		static ElementObject * GetAttachedElement(ElementObject * elementObject);
-		static bool SetAttachedElement(ElementObject * elementObject, ElementObject * newAttachedElement);
 
 	private:
-		typedef QMap<ElementObject*, boost::shared_ptr<QList<ElementObject*> > > relatedElements_map;
+		typedef QMap<ElementObject *, QList<RelatedElementDetails> > relatedElements_map;
 		relatedElements_map _relatedElements;
 
-		void removeElementFromRelator(ElementObject * relatedElement, ElementObject * attachedElement);
-
-		static QMap<ElementType, Relator> _Relators;
+		void removeRelation(ElementObject * attachedElement, RelatedElementDetails details);
+		void addRelation(ElementObject * attachedElement, RelatedElementDetails elementDetails);
 	};
 }
 #endif // _ELEMENTRELATOR_HPP

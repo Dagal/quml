@@ -28,10 +28,10 @@
 #include "umldiagram.hpp"
 #include "propertyobject.hpp"
 #include "packageobject.hpp"
+#include "operationobject.hpp"
 
 ElementRelatorTest::ElementRelatorTest()
 {
-	element::initialise();
 }
 
 void ElementRelatorTest::cleanup()
@@ -42,7 +42,8 @@ void ElementRelatorTest::cleanup()
 
 void ElementRelatorTest::relatorTest()
 {
-	QCOMPARE(diagram->findRelatedElements(data2).size(), 1);
+	QCOMPARE(diagram->findRelatedElements(data2).size(), 2);
+	QCOMPARE(diagram->findRelatedElements(data1).size(), 1);
 }
 
 void ElementRelatorTest::propertyDatatypeDetachFromUML()
@@ -113,10 +114,18 @@ void ElementRelatorTest::init()
 	data2 = new element::ClassObject("data2");
 	prop1 = new element::PropertyObject("prop1");
 	pack1 = new element::PackageObject("package");
+	oper1 = new element::OperationObject("oper1");
 
 	data1->setParent(pack1);
 	prop1->setParent(data1);
+	oper1->setParent(data1);
 	data2->setParent(pack1);
 	pack1->setUMLDiagram(diagram);
+
 	prop1->setDatatype(data2);
+
+	oper1->addParameter(element::Parameter("param1", data1));
+	oper1->addParameter(element::Parameter("param2", data2));
+
+
 }

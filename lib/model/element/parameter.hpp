@@ -38,9 +38,10 @@ namespace element
 	class Parameter
 	{
 	public:
-		Parameter(const QString & name)
+		Parameter(const QString & name, DatatypeObject * datatype = 0, const QString & defaultValue = "")
 			: _name(name)
-			,_datatype(0)
+			,_datatype(datatype)
+			,_defaultValue(defaultValue)
 		{}
 
 		DatatypeObject * datatype() const					{ return _datatype; }

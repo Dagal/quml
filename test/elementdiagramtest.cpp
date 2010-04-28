@@ -36,7 +36,6 @@ using namespace element;
 
 ElementDiagramTest::ElementDiagramTest()
 {
-	element::initialise();
 }
 
 void ElementDiagramTest::init()

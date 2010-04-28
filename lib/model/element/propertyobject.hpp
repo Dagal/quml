@@ -51,6 +51,10 @@ namespace element
 		void setDatatype(DatatypeObject * datatype);
 		void setDefaultValue(const QString & defaultValue);
 
+		// overridden member functions
+		virtual int attachedElementCount() const { return 1; }
+		virtual ElementObject * getAttachedElementAt(int position) const;
+		virtual void setAttachedElementAt(int position, ElementObject * attachedElement);
 		virtual ElementType type() const { return Element_Property; }
 		virtual QString umlName() const;
 
