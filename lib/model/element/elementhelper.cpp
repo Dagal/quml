@@ -108,11 +108,7 @@ namespace element
 		return 0;
 	}
 
-	/*!
-	  This method searches a list of elements for all the elements with a certain \c name. By default only in this list is searched,
-	  but if \c isRecursive is set to true, the method searches recursively.
-	*/
-	QList<ElementObject *> findName(const QList<ElementObject*> & elements, const QString & name, bool isRecursive)
+	namespace
 	{
 		struct RecursiveNameFinder : public ElementFunctor
 		{
@@ -130,7 +126,14 @@ namespace element
 					_foundElements->append(elementObject);
 			}
 		};
+	}
 
+	/*!
+	  This method searches a list of elements for all the elements with a certain \c name. By default only in this list is searched,
+	  but if \c isRecursive is set to true, the method searches recursively.
+	*/
+	QList<ElementObject *> findName(const QList<ElementObject*> & elements, const QString & name, bool isRecursive)
+	{
 		QList<ElementObject *> foundElements;
 
 		if(!isRecursive)

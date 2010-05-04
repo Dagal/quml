@@ -53,6 +53,19 @@ void ElementDiagramTest::cleanup()
 	delete _diagram;
 }
 
+void ElementDiagramTest::checkQualifiedNameParser()
+{
+	QStringList lst = UMLDiagram::parseQualifiedName("test::test1::(test1::a)");
+
+	QCOMPARE(lst.size(), 3);
+	QVERIFY(lst[0] == "test");
+	QVERIFY(lst[1] == "test1");
+	QVERIFY(lst[2] == "(test1::a)");
+
+	QStringList ls2 = UMLDiagram::parseQualifiedName("test1:<test2)::1");
+	QCOMPARE(ls2.size(), 0);
+}
+
 void ElementDiagramTest::checkBasics()
 {
 	QCOMPARE(_diagram->upperLevelElements().size(), 1);

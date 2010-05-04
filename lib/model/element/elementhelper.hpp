@@ -129,6 +129,11 @@ namespace element
 	ElementObject * findUMLName(const QList<ElementObject*> & elements, const QString & umlName);
 	QList<ElementObject *> findName(const QList<ElementObject*> & elements, const QString & name, bool isRecursive = false);
 
+	/*!
+	  Inherit from this struct to create a functor you can use to recursively loop over elements.
+
+	  \sa recursivelyPerformOperation
+	*/
 	struct ElementFunctor
 	{
 		virtual void operator()(ElementObject * element) = 0;

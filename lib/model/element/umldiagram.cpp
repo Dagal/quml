@@ -31,6 +31,7 @@
 #include "algorithm.hpp"
 #include "methodobject.hpp"
 #include "propertyobject.hpp"
+#include <QStack>
 
 bool elementComparator(boost::shared_ptr<element::ElementObject> elementA, boost::shared_ptr<element::ElementObject> elementB)
 {
@@ -270,19 +271,47 @@ namespace element
 	*/
 	QStringList UMLDiagram::parseQualifiedName(const QString & qualifiedName)
 	{
-		int firstPos = qualifiedName.indexOf('(');
-		int lastPos = qualifiedName.lastIndexOf(')');
+		QStack<QPair<QChar, QChar> > stack;
+		QStringList lst;
 
-		QString name;
+		int prevPos = 0;
 
-		if(firstPos == -1)
-			name = qualifiedName;
-		else if(lastPos == -1)
-			name = qualifiedName.right(firstPos);
-		else
-			name = qualifiedName.mid(firstPos, lastPos);
+		for(int i = 0; i < qualifiedName.size(); i++)
+		{
+			if(stack.isEmpty() && qualifiedName.mid(i, ScopeOperator.size()) == ScopeOperator)
+			{
+				// perform "intersection"
+				lst.push_back(qualifiedName.mid(prevPos, i-prevPos));
+				i += ScopeOperator.size();
+				prevPos = i;
+			}
 
+			// check for new
+			QChar curChar = qualifiedName.at(i);
 
-		return name.split(ScopeOperator, QString::SkipEmptyParts);
+			// check for popping of stack
+			if(!stack.isEmpty() && curChar == stack.top().second)
+			{
+				stack.pop();
+				continue;
+			}
+
+			// check for pushing onto the stack
+			for(int i = 0; i < Brackets.size(); i++)
+			{
+				if(curChar == Brackets[i].first)
+				{
+					stack.push(Brackets[i]);
+					break;
+				}
+			}
+		}
+
+		// is it a valid name?
+		if(!stack.isEmpty())
+			return QStringList();
+
+		lst.push_back(qualifiedName.mid(prevPos));
+		return lst;
 	}
 }

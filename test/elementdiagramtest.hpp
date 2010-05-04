@@ -39,6 +39,7 @@ public:
 	ElementDiagramTest();
 
 private slots:
+	void checkQualifiedNameParser();
 	void checkBasics();
 	void removeChild();
 	void removeParent();
