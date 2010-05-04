@@ -157,9 +157,10 @@ namespace element
 	}
 
 	/*!
-  This method is used to change the attached UML Diagram. To detach an element, just supply 0 as input parameter.
-  If the parent is selected and in a different umlDiagram, this element will be detached from the parent. All the children
-  will also change to this new UMLDiagram.
+	  This method is used to attach or detach an element from a UMLDiagram. If the diagram is the same as the current,
+	  no action is performed. Otherwise, the parent is set to zero and the diagram is set to the current diagram. This
+	  means that the element is added to the default namespace. If \c diagram is set to zero, the element is detached
+	  from its parent and from the current diagram.
 */
 	void ElementObject::setUMLDiagram(UMLDiagram * diagram)
 	{
@@ -167,20 +168,14 @@ namespace element
 		if(umlDiagram() == diagram)
 			return;
 
-		// detach from parent if possible
-		if(parent() != 0)
-			_dd->detachFromParent();
+		// we were attached to a umlDiagram? remove us completely
+		if(umlDiagram())
+			_dd->INT_detachFromUMLAndParent();
 
-		// detach from umlDiagram if possible
-		if(umlDiagram() != 0)
-			_dd->detachFromUML();
-
-		if(diagram == 0)
-			return;
-
-		diagram->_dd->attachElement(this);
+		// should we be attached to a new umlDiagram()
+		if(diagram)
+			_dd->INT_attachToUMLDiagram(diagram);
 	}
-
 
 	/*!
 	Changes the name of the ElementObject. The name is used to compose the umlName and the qualifiedName. Make sure that the new qualifiedElement
@@ -196,33 +191,13 @@ namespace element
 		if(name == _dd->_name)
 			return;
 
-		// attached to umlDiagram?
-		if(umlDiagram())
-		{
-			// find the "new" qualified name
-			QString oldName = _dd->_name;
-			_dd->_name  = name;
-			QString qualName = qualifiedName();
-			_dd->_name = oldName;
-
-			// name already taken?
-			ElementObject * rivalElement = umlDiagram()->findElement(qualName);
-			if(rivalElement != 0)
-			{
-				rivalElement->setUMLDiagram(0);
-				rivalElement->setParent(0);
-
-				delete rivalElement;
-			}
-		}
-
 		_dd->_name = name;
-		if(umlDiagram())
-			umlDiagram()->_dd->resortElements();
 	}
 
 	/*!
-	This function changes the parent ElementObject. If parent is set to zero, the element will be detached from it's parent.
+	This function changes the parent ElementObject. If parent is set to zero, the element will be detached from it's parent. If the parent is in a different
+	umlDiagram, it is detached from its current diagram.
+
 
 	Depending on this elements ElementObject::umlDiagram and the parents ElementObject::umlDiagram this function performs different operations:
 	\li simply detach from the old parent
@@ -238,138 +213,33 @@ namespace element
 		if(_dd->_parent == parent)
 			return;
 
-		/* **********************************************
-	   Find which case we are dealing with:
-	   1) simply detach from parent
-	   2) attach to new parent
-	   3) 1 & 2 together
-	   4) attach to new parent in different umlDiagram
-	   5) detach from umlDiagram, from parent and attach to new parent in different umlDiagram
-	   6) detach from umlDiagram, from parent and attach to new parent (with no umlDiagram)
-	   */
+		bool isSameUML = (parent == 0) || (parent->umlDiagram() == umlDiagram());
 
-		if(parent == 0)
+		if(isSameUML)
 		{
-			// (1)
-			_dd->detachFromParent();
+			// remove from upperList
+			if(_dd->_parent == 0)
+			{
+				if(umlDiagram()) umlDiagram()->_dd->removeFromUpperLevel(this);
+			}
+			// remove from parent
+			else
+			{
+				_dd->INT_detachFromParent();
+			}
+
+			// attach to new parent?
+			if(parent)
+				_dd->INT_attachToParent(parent);
 		}
 		else
 		{
-			// uml diagram the same?
-			if(parent->umlDiagram() == umlDiagram())
-			{
-				// (2) or (3)
-				if(_dd->_parent != 0)
-					_dd->detachFromParent();
+			// start with detaching from the current umlDiagram
+			setUMLDiagram(0);
 
-				_dd->attachToParentInSameUML(parent);
-			}
-			else
-			{
-				// (4), (5) or (6)
-				if(umlDiagram() != 0)
-					_dd->detachFromUML();
-
-				if(parent->umlDiagram() == 0)
-					// (6)
-					_dd->attachToParentInSameUML(parent);
-				else
-					// (5)
-					_dd->attachToParentInDifferentUML(parent);
-			}
+			// attach to new parent && umlDiagram
+			_dd->INT_attachToUMLAndParent(parent);
 		}
-	}
-
-	/*!
-	  \internal
-	  This function is a helper function for ElementObject::setUmlDiagram and ElementObject::setParent to detach an element from its parent
-	*/
-	void ElementObject::ElementObjectPrivate::detachFromParent()
-	{
-		assert(_parent != 0);
-
-		// remove the parent
-		ElementObject * oldParent = _parent;
-		_parent = 0;
-
-		// remove from the parents children
-		oldParent->_dd->INT_removeChild(_element);
-
-		// send the message to the parent
-		oldParent->onChildRemoved(_element);
-	}
-
-	/*!
-	  \internal
-	  This function is an helper function for ElementObject::setParent to set the element's parent to \c newParent without changing the UMLDiagram
-	*/
-	void ElementObject::ElementObjectPrivate::attachToParentInSameUML(ElementObject * newParent)
-	{
-		assert(newParent != 0 && _parent == 0);
-
-		// set the new parent
-		_parent = newParent;
-
-		// add to the parents children
-		_parent->_dd->INT_addChild(_element);
-
-		// send the message
-		_parent->onChildAdded(_element);
-	}
-
-	/*!
-	  \internal
-	  This function is a helper function for ElementObject::setParent to set the element's parent to \c parent and also changing the UMLDiagram
-	*/
-	void ElementObject::ElementObjectPrivate::attachToParentInDifferentUML(ElementObject * parent)
-	{
-		assert(parent != 0 && parent->umlDiagram() != 0 && _parent == 0 && _diagram == 0);
-
-		// set the new parent & diagram
-		_parent = parent;
-		_diagram = parent->umlDiagram();
-
-		// add to the parent
-		_parent->_dd->INT_addChild(_element);
-
-		// add to the umlDiagram
-		_diagram->_dd->attachElement(_element);
-
-		// send the message
-		_parent->onChildAdded(_element);
-	}
-
-	/*!
-	  \internal
-	  This function is helper function for ElementObject::setUMLDiagram and ElementObject::setParent
-	*/
-	void ElementObject::ElementObjectPrivate::detachFromUML()
-	{
-		assert(_diagram != 0);
-
-		// detach the diagram
-		_diagram->_dd->detachElement(_element);
-	}
-
-	/*!
-	  \internal
-	  This function is used internal in ElementObject to remove a child from the list of childs
-	*/
-	void ElementObject::ElementObjectPrivate::INT_removeChild(ElementObject * child)
-	{
-		QList<ElementObject*>::iterator i = std::find( _children.begin(), _children.end(), child);
-
-		if(i != _children.end())
-			_children.erase(i);
-	}
-
-	/*!
-	  \internal
-	  This function is used internal in ElementObject to add a child to the list of childs
-	*/
-	void ElementObject::ElementObjectPrivate::INT_addChild(ElementObject * child)
-	{
-		_children.push_back(child);
 	}
 
 	/*!
@@ -424,4 +294,90 @@ namespace element
 
 		return ancestors;
 	}
+
+
+	/*!
+	  This method removes the element from its parent and from its umlDiagram.
+	*/
+	void ElementObject::ElementObjectPrivate::detachFromParentAndDiagram()
+	{
+		if(_diagram)
+		{
+			if(_parent == 0)
+				_diagram->_dd->removeFromUpperLevel(_element);
+
+			_diagram->_dd->removeFromUMLDiagram(_element);
+		}
+
+		if(_parent)
+			_parent->_dd->_children.removeAll(_element);
+	}
+
+	/*!
+	  This helper method removes an element from its parent and sends the parent the message.
+	*/
+	void ElementObject::ElementObjectPrivate::INT_detachFromParent()
+	{
+		assert(_parent);
+
+		ElementObject * oldParent = _parent;
+		_parent->_dd->_children.removeAll(_element);
+		_parent = 0;
+
+		oldParent->onChildRemoved(_element);
+	}
+
+	/*!
+	  This helper method attaches an element to its parent and sends the parent the message.
+	*/
+	void ElementObject::ElementObjectPrivate::INT_attachToParent(ElementObject * parent)
+	{
+		assert(parent && !_parent);
+
+		_parent = parent;
+		_parent->_dd->_children.push_back(_element);
+
+		_parent->onChildAdded(_element);
+	}
+
+	/*!
+	  This helper method removes an element from its diagram
+	*/
+	void ElementObject::ElementObjectPrivate::INT_detachFromUMLAndParent()
+	{
+		assert(_diagram);
+
+		if(!_parent)
+			_diagram->_dd->removeFromUpperLevel(_element);
+		else
+			INT_detachFromParent();
+
+		_diagram->_dd->removeFromUMLDiagram(_element);
+	}
+
+	/*!
+	  This helper method adds an element to a new diagram to the upperLevel
+	*/
+	void ElementObject::ElementObjectPrivate::INT_attachToUMLDiagram(UMLDiagram * diagram)
+	{
+		assert(diagram && ! _diagram && !_parent);
+
+		diagram->_dd->attachToUpperLevel(_element);
+		diagram->_dd->attachToUMLDiagram(_element);
+	}
+
+	/*!
+	  This helper methods adds an element to a new parent. If the parent is attached to a umlDiagram,
+	  the element is also added to that umlDiagram.
+	*/
+	void ElementObject::ElementObjectPrivate::INT_attachToUMLAndParent(ElementObject * parent)
+	{
+		assert(parent && !_parent && !_diagram);
+
+		if(parent->umlDiagram())
+			parent->umlDiagram()->_dd->attachToUMLDiagram(_element);
+
+		INT_attachToParent(parent);
+	}
 }
+

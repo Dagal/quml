@@ -26,7 +26,7 @@
 #ifndef VISIBILITY_HPP
 #define VISIBILITY_HPP
 
-#include <string>
+#include <QString>
 
 enum VisibilityType
 {
@@ -72,6 +72,7 @@ inline QString Visibility::umlNotation() const
 	case Visibility_Protected:	return "#";
 	case Visibility_Private:	return "-";
 	case Visibility_Package:	return "~";
+	default:					return "";
 	}
 }
 

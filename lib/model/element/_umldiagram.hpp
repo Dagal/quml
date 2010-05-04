@@ -44,29 +44,24 @@ namespace element
 	*/
 	struct UMLDiagram::UMLDiagramPrivate
 	{
-		typedef QList<ElementObject* > element_vector;
-
-		UMLDiagramPrivate()
+		UMLDiagramPrivate(UMLDiagram * diagram)
+			: _diagram(diagram)
 		{
 		}
 
-		element_vector _elements;
 		UMLDiagram * _diagram;
+		QList<ElementObject *> _upperLevel;
 		ElementRelator _elementRelator;
 
-		void attachElement(ElementObject * elementObject);
-		void detachElement(ElementObject * elementObject);
-		void resortElements();
-		QList<ElementObject*>::iterator findElement(const QString & qualifiedName);
-		QList<ElementObject*>::iterator findElement(ElementObject * elementObject);
+		void attachToUMLDiagram(ElementObject * elementObject);
+		void removeFromUMLDiagram(ElementObject * elementObject);
+		void attachToUpperLevel(ElementObject * elementObject);
+		void removeFromUpperLevel(ElementObject * elementObject);
 
-	private:
-		void INT_recursiveAttachElement(ElementObject * elementObject);
-		void INT_recursiveDetachElement(ElementObject * elementObject);
-		void INT_recursiveRemoveStrangeAttachedElements(ElementObject * elementObject);
-		void INT_removeElementFromLists(ElementObject * elementObject);
-		void INT_addElementToLists(ElementObject * elementObject);
-		void INT_checkForDetaching(element::ElementObject * elementObject);
+		void INT_recursivelyAddRelations(ElementObject * elementObject);
+		void INT_recursivelyRemoveRelations(ElementObject * elementObject);
+
+		static void INT_recursivelySetUMLDiagram(ElementObject * elementObject, UMLDiagram * diagram);
 	};
 }
 

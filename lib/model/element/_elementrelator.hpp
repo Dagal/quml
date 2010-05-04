@@ -71,6 +71,7 @@ namespace element
 		ElementRelator();
 
 		QList<ElementObject *> findAllRelatedElementsTo(ElementObject * attachedElement);
+		QList<RelatedElementDetails> findAllRelatedElementDetailsTo(ElementObject * attachedElement);
 		void update(ElementObject * relatedElement, int position, ElementObject * oldAttachedElement);
 		void remove(ElementObject * elementObject);
 		void add(ElementObject * relatedElement);

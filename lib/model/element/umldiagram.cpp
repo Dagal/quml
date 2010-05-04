@@ -44,14 +44,19 @@ int elementFinder(boost::shared_ptr<element::ElementObject> element, const QStri
 
 namespace element
 {
+	const QString UMLDiagram::ScopeOperator = QString("::");
+	const QList<QPair<QChar, QChar> > UMLDiagram::Brackets = QList<QPair<QChar, QChar> >()
+															 << QPair<QChar, QChar>('(', ')')
+															 << QPair<QChar, QChar>('<', '>')
+															 << QPair<QChar, QChar>('[', ']')
+															 << QPair<QChar, QChar>('{', '}');
 
 	/*!
 	  This constructor creates an empty UMLDiagram
 	*/
 	UMLDiagram::UMLDiagram()
-		: _dd(new UMLDiagram::UMLDiagramPrivate)
+		: _dd(new UMLDiagram::UMLDiagramPrivate(this))
 	{
-		_dd->_diagram = this;
 	}
 
 	/*!
@@ -60,9 +65,9 @@ namespace element
 	UMLDiagram::~UMLDiagram()
 	{
 		// remove all the elements
-		while(!_dd->_elements.empty())
+		while(!_dd->_upperLevel.empty())
 		{
-			ElementObject * curElement = _dd->_elements[0];
+			ElementObject * curElement = _dd->_upperLevel[0];
 			curElement->setUMLDiagram(0);
 			curElement->setParent(0);
 
@@ -70,46 +75,46 @@ namespace element
 		}
 	}
 
-	/*!
-	  This function creates an ElementObject of type \c type, set's the name and the parent and adds it to the UMLDiagram.
-	  if the parent is not found, the element has no parent.
-	  This functions returns a pointer to the newly created element.
-	*/
-	ElementObject * UMLDiagram::createElement(ElementType type, const QString & name, const QString & parentQualifiedName)
-	{
-		if(name.isEmpty())
-			return 0;
+//	/*!
+//	  This function creates an ElementObject of type \c type, set's the name and the parent and adds it to the UMLDiagram.
+//	  if the parent is not found, the element has no parent.
+//	  This functions returns a pointer to the newly created element.
+//	*/
+//	ElementObject * UMLDiagram::createElement(ElementType type, const QString & name, const QString & parentQualifiedName)
+//	{
+//		if(name.isEmpty())
+//			return 0;
+//
+//		ElementObject * element = createElementObject(type, name);
+//		ElementObject * parent = findElement(parentQualifiedName);
+//
+//		element->setParent(parent);
+//		element->setUMLDiagram(this);
+//
+//		return element;
+//	}
 
-		ElementObject * element = createElementObject(type, name);
-		ElementObject * parent = findElement(parentQualifiedName);
-
-		element->setParent(parent);
-		element->setUMLDiagram(this);
-
-		return element;
-	}
-
-	/*!
-	  This functions detaches \c element from its parent and its UMLDiagram. Afterwards it changes the name to \c newName and sets
-	  the new parent to the element at \c parentQualifiedName. If the parentQualifiedName is not found, the element is added to this
-	  UMLDiagram with no parent.
-	*/
-	void UMLDiagram::addElement(ElementObject * element, const QString & newName, const QString & parentQualifiedName)
-	{
-		if(!element || newName.isEmpty())
-			return;
-
-		// detach the element
-		element->setUMLDiagram(0);
-		element->setParent(0);
-
-		// set the new name
-		element->setName(newName);
-
-		ElementObject * newParent = findElement(parentQualifiedName);
-		element->setParent(newParent);
-		element->setUMLDiagram(this);
-	}
+//	/*!
+//	  This functions detaches \c element from its parent and its UMLDiagram. Afterwards it changes the name to \c newName and sets
+//	  the new parent to the element at \c parentQualifiedName. If the parentQualifiedName is not found, the element is added to this
+//	  UMLDiagram with no parent.
+//	*/
+//	void UMLDiagram::addElement(ElementObject * element, const QString & newName, const QString & parentQualifiedName)
+//	{
+//		if(!element || newName.isEmpty())
+//			return;
+//
+//		// detach the element
+//		element->setUMLDiagram(0);
+//		element->setParent(0);
+//
+//		// set the new name
+//		element->setName(newName);
+//
+//		ElementObject * newParent = findElement(parentQualifiedName);
+//		element->setParent(newParent);
+//		element->setUMLDiagram(this);
+//	}
 
 	/*!
 	  This function searches the UMLDiagram for an element with the specified qualifiedName, and returns the element. If no element was found
@@ -119,20 +124,21 @@ namespace element
 	*/
 	ElementObject* UMLDiagram::findElement(const QString & qualifiedName) const
 	{
-		QList<ElementObject*>::iterator i = _dd->findElement(qualifiedName);
+		QStringList lst = parseQualifiedName(qualifiedName);
 
-		if(i == _dd->_elements.end())
-			return 0;
-		else
-			return *i;
-	}
+		const QList<ElementObject *> * elements = &upperLevelElements();
+		ElementObject * curElement = 0;
 
-	/*!
-	  This function returns a list of all the attached ElementObject's
-	*/
-	const QList<ElementObject*> &  UMLDiagram::allElements() const
-	{
-		return _dd->_elements;
+		for(int i = 0; i < lst.size(); i++)
+		{
+			curElement = findUMLName(*elements, lst[i]);
+			if(curElement == 0)
+				return 0;
+
+			elements = &curElement->children();
+		}
+
+		return curElement;
 	}
 
 	/*!
@@ -146,215 +152,137 @@ namespace element
 	}
 
 	/*!
-	  \internal
-	  This function is called from ElementObject to attach \c elementObject to this diagram
+	  This function will attach the supplied \c elementObject to the UMLDiagram. This means that the relations
+	  for this element and all its children (recursively) will be checked and stored. The parent element is not set,
+	  nor checked.
 	*/
-	void UMLDiagram::UMLDiagramPrivate::attachElement(ElementObject * elementObject)
+	void UMLDiagram::UMLDiagramPrivate::attachToUMLDiagram(ElementObject * elementObject)
 	{
-		// add this and children to diagram
-		INT_recursiveAttachElement(elementObject);
-
-		// check this element for "strange" links
-		INT_recursiveRemoveStrangeAttachedElements(elementObject);
-
-		// resort the list
-		resortElements();
+		INT_recursivelySetUMLDiagram(elementObject, _diagram);
+		INT_recursivelyAddRelations(elementObject);
 	}
 
 	/*!
-	  \internal
-	  This function is called from ElementObject to detach \c elementObject from this diagram. The element and all its children are removed from the list
-	  and afterwards all the related links are checked. This way links between children of \c elementObject are saved where links from children of \c elementObject
-	  to external elements are removed.
+	  This function will detach the supplied \c elementObject from the UMLDiagram. The relations for this element and
+	  all the children (recursively) will be checked and removed from the relator. Broken relations will be set to zero
+	  afterwards.
 	*/
-	void UMLDiagram::UMLDiagramPrivate::detachElement(ElementObject * elementObject)
+	void UMLDiagram::UMLDiagramPrivate::removeFromUMLDiagram(ElementObject * elementObject)
 	{
-		// remove this and children from diagram
-		INT_recursiveDetachElement(elementObject);
-
-		// check this element for "strange" links
-		INT_recursiveRemoveStrangeAttachedElements(elementObject);
-
-		// resort the list
-		resortElements();
+		INT_recursivelySetUMLDiagram(elementObject, 0);
+		INT_recursivelyRemoveRelations(elementObject);
 	}
 
 	/*!
-	  \internal
-	  This function is used internal to update the list of all the elements. This list is implemented by a QList sorted on qualifiedName.
-	  This function is called whenever new elements are added, removed, names are changed, parents are changed, ...
+	  This function adds the elementObject to the upper level in the UMLDiagram. This makes sure the elements gets deleted
+	  at the right time.
 	*/
-	void UMLDiagram::UMLDiagramPrivate::resortElements()
+	void UMLDiagram::UMLDiagramPrivate::attachToUpperLevel(ElementObject * elementObject)
 	{
-		std::sort(
-				_elements.begin(),
-				_elements.end(),
-				boost::bind(&ElementObject::qualifiedName, _1) < boost::bind(&ElementObject::qualifiedName, _2)
-				);
+		elementObject->_dd->_parent = 0;
+		if(!_upperLevel.contains(elementObject))
+			_upperLevel.push_back(elementObject);
 	}
 
 	/*!
-	  \internal
-	 This function is a helper function that tries to find an element with a certain qualifiedName in the list an returns an iterator
-	 to this list. If the iterator is equal to _elements.end(), the element is not found.
+	  This function removes the elementObject from the upper level in the UMLDiagram. The diagram still remains the same.
 	*/
-	QList<ElementObject*>::iterator UMLDiagram::UMLDiagramPrivate::findElement(const QString & qualifiedName)
+	void UMLDiagram::UMLDiagramPrivate::removeFromUpperLevel(ElementObject * elementObject)
 	{
-		return stf::binary_find_if(
-				_elements.begin(),
-				_elements.end(),
-				boost::bind(
-						stf::comparator<QString>(),
-						boost::bind(&ElementObject::qualifiedName, _1),
-						boost::cref(qualifiedName)
-						)
-				);
+		elementObject->_dd->_parent = 0;
+		_upperLevel.removeAll(elementObject);
 	}
 
 	/*!
-	  \internal
-	  An overloaded method that tries to find the iterator to an element in _elements.
+	  This method checks if the attachElements for elementObject are in the UMLDiagram. If not, they are set to zero.
+	  Afterwards the element is added to the list of related elements. This method is called recursively to all the
+	  children.
 	*/
-	QList<ElementObject*>::iterator UMLDiagram::UMLDiagramPrivate::findElement(ElementObject * elementObject)
+	void UMLDiagram::UMLDiagramPrivate::INT_recursivelyAddRelations(ElementObject * elementObject)
 	{
-		if(elementObject == 0)
-			return _elements.end();
-		else
-			return findElement(elementObject->qualifiedName());
-
-	}
-
-	/*!
-	  \internal
-	  This internal method attaches an element \c elementObject to this diagram and calls this function also on all it's children. This is a helper
-	  method for UMLDiagram::UMLDiagramPrivate::attachElement.
-	*/
-	void UMLDiagram::UMLDiagramPrivate::INT_recursiveAttachElement(ElementObject * elementObject)
-	{
-		// set the diagram pointer
-		elementObject->_dd->_diagram = _diagram;
-
-		// add to the lists
-		INT_addElementToLists(elementObject);
-
-		// attach the children
-		const QList<ElementObject*> & vct = elementObject->children();
-		std::for_each(
-				vct.begin(),
-				vct.end(),
-				boost::bind(&UMLDiagram::UMLDiagramPrivate::INT_recursiveAttachElement, this, _1));
-	}
-
-	/*!
-	  \internal
-	  This internal method detaches an element \c elementObject from this diagram an calls this function also on all it's children. This is a helper
-	  method for UMLDiagram::UMLDiagramPrivate::detachElement.
-	*/
-	void UMLDiagram::UMLDiagramPrivate::INT_recursiveDetachElement(ElementObject * elementObject)
-	{
-		// detach this element
-		elementObject->_dd->_diagram = 0;
-
-		// remove from the lists
-		INT_removeElementFromLists(elementObject);
-
-		// detach the children
-		const QList<ElementObject*> & vct = elementObject->children();
-		std::for_each(
-				vct.begin(),
-				vct.end(),
-				boost::bind(&UMLDiagram::UMLDiagramPrivate::INT_recursiveDetachElement, this, _1)
-				);
-	}
-
-	/*!
-	  \internal
-	  This internal helper method removes \c elementObject from the list of elements
-	*/
-	void UMLDiagram::UMLDiagramPrivate::INT_removeElementFromLists(ElementObject * elementObject)
-	{
-		// remove from elements
-		QList<ElementObject*>::iterator i = std::find(
-				_elements.begin(),
-				_elements.end(),
-				elementObject);
-
-		if(i != _elements.end())
-			_elements.erase(i);
-	}
-
-	/*!
-	  \internal
-	  This internal helper method add \c elementObject to the list of elements and if there exists an element with same
-	  qualifiedName, destroys it.
-	*/
-	void UMLDiagram::UMLDiagramPrivate::INT_addElementToLists(ElementObject * elementObject)
-	{
-		// is there already an element with this name?
-		element_vector::iterator i = findElement(elementObject->qualifiedName());
-		if(i != _elements.end())
-		{
-			if(*i == elementObject)
-				return;
-
-			// delete the other elements
-			ElementObject * toBeDeleted = *i;
-			toBeDeleted->setUMLDiagram(0);
-			toBeDeleted->setParent(0);
-
-			delete toBeDeleted;
-		}
-
-		_elements.push_back(elementObject);
-	}
-
-	/*!
-	  \internal
-	  This internal helper method checks for problems with related elements for this \c elementObject.
-	  It checks wether the related elements are in the same umlDiagram and otherwise zeroes out the connection.
-	  This function is executed recursively when an element is detached from the UMLDiagram.
-	*/
-	void UMLDiagram::UMLDiagramPrivate::INT_recursiveRemoveStrangeAttachedElements(ElementObject * elementObject)
-	{
-		// check for detaching of this element
-		INT_checkForDetaching(elementObject);
-
-		// check for detaching of attached elements
-		QList<ElementObject*> attachedVct = _elementRelator.findAllRelatedElementsTo(elementObject);
-		std::for_each(
-				attachedVct.begin(),
-				attachedVct.end(),
-				boost::bind(&UMLDiagram::UMLDiagramPrivate::INT_checkForDetaching, this, _1)
-				);
-
-		// recursive on children
-		const QList<ElementObject*> & vct = elementObject->children();
-		std::for_each(
-				vct.begin(),
-				vct.end(),
-				boost::bind(&UMLDiagram::UMLDiagramPrivate::INT_recursiveRemoveStrangeAttachedElements, this, _1)
-				);
-	}
-
-	/*!
-	  \internal
-	  This internal helper method checks the link between elementObject and it's attachedObject. They should
-	  both be in the same UMLDiagram. If not, the link is removed and ElementRelator is updated (if necessary).
-	*/
-	void UMLDiagram::UMLDiagramPrivate::INT_checkForDetaching(element::ElementObject * elementObject)
-	{
-		using namespace element;
-
+		// check the relations: elementObject --> ...
 		for(int i = 0; i < elementObject->attachedElementCount(); i++)
 		{
 			ElementObject * attachedElement = elementObject->getAttachedElementAt(i);
-
-			if(attachedElement != 0 && attachedElement->umlDiagram() != elementObject->umlDiagram())
-			{
-				elementObject->setAttachedElementAt(i, 0);
-				_elementRelator.update(elementObject, i, attachedElement);
-			}
+			if(attachedElement && attachedElement->umlDiagram() != _diagram)
+				attachedElement->setAttachedElementAt(i, 0);
 		}
 
+		// add to the list of related elements
+		_elementRelator.add(elementObject);
+
+		// recursively on children
+		foreach(ElementObject * child, elementObject->children())
+			INT_recursivelyAddRelations(child);
+	}
+
+	/*!
+	  This method checks if all the relation with this element are in this UMLDiagram. If not, they are set to zero.
+	  Afterwards, this element is removed from the list of all the related elements.
+	*/
+	void UMLDiagram::UMLDiagramPrivate::INT_recursivelyRemoveRelations(ElementObject * elementObject)
+	{
+		// check the relations: elementObject --> ...
+		for(int i = 0; i < elementObject->attachedElementCount(); i++)
+		{
+			ElementObject * attachedElement = elementObject->getAttachedElementAt(i);
+			if(attachedElement && attachedElement->umlDiagram() != 0)
+				elementObject->setAttachedElementAt(i, 0);
+		}
+
+		// check the relations: ... -> elementObject
+		QList<ElementRelator::RelatedElementDetails> details = _elementRelator.findAllRelatedElementDetailsTo(elementObject);
+		for(int i = 0; i < details.size(); i++)
+			if(details[i]._relatedElement != 0 && details[i]._relatedElement->umlDiagram() != 0)
+				details[i]._relatedElement->setAttachedElementAt(details[i]._position, 0);
+
+		// remove from list of related elements
+		_elementRelator.remove(elementObject);
+
+		// recursively on childrenth
+		foreach(ElementObject * child, elementObject->children())
+			INT_recursivelyRemoveRelations(child);
+	}
+
+
+	/*!
+	  This simple method sets the UMLDiagram to \c diagram for \c elementObject and all its children.
+	*/
+	void UMLDiagram::UMLDiagramPrivate::INT_recursivelySetUMLDiagram(ElementObject * elementObject, UMLDiagram * diagram)
+	{
+		elementObject->_dd->_diagram = diagram;
+
+		foreach(ElementObject * child, elementObject->children())
+			INT_recursivelySetUMLDiagram(child, diagram);
+	}
+
+	/*!
+	  This method returns a list of all the upper level elements attached to this umlDiagram.
+	*/
+	const QList<ElementObject *> & UMLDiagram::upperLevelElements() const
+	{
+		return _dd->_upperLevel;
+	}
+
+	/*!
+	  This method parses a given qualifiedName in all its different elements. It returns a list of all the names of the ancestors (where the uppermost ancestor
+	  is stored at position zero in the array).
+	*/
+	QStringList UMLDiagram::parseQualifiedName(const QString & qualifiedName)
+	{
+		int firstPos = qualifiedName.indexOf('(');
+		int lastPos = qualifiedName.lastIndexOf(')');
+
+		QString name;
+
+		if(firstPos == -1)
+			name = qualifiedName;
+		else if(lastPos == -1)
+			name = qualifiedName.right(firstPos);
+		else
+			name = qualifiedName.mid(firstPos, lastPos);
+
+
+		return name.split(ScopeOperator, QString::SkipEmptyParts);
 	}
 }

@@ -355,27 +355,20 @@ QList<ElementObject *> ClassDiagramController::getElements(const QString & name,
 	if(parentObject != 0 && parentObject->umlDiagram() != diagram())
 		return elementlst();
 
-	boost::function<bool (ElementObject *)> conditionChecker;
 	const elementlst * toCheckVCT = 0;
 
 	elementvct targetVCT;
 
 	if(parentObject != 0)
-	{
 		// find in parents
 		toCheckVCT = &(parentObject->children());
-		targetVCT.reserve(toCheckVCT->size());
-		conditionChecker = boost::bind(&ElementObject::name, _1) == boost::cref(name);
-	}
 	else
-	{
 		// find in all elements (parentless)
-		toCheckVCT = &(diagram()->allElements());
-		targetVCT.reserve(toCheckVCT->size());
-		conditionChecker =(
-				boost::bind(&ElementObject::name, _1) == boost::cref(name) &&
-				boost::bind(&ElementObject::parent, _1) == (ElementObject*)0);
-	}
+		toCheckVCT = &(diagram()->upperLevelElements());
+
+
+	// reserve enough space in the target vector
+	targetVCT.reserve(toCheckVCT->size());
 
 
 	// copy from elements
@@ -384,7 +377,7 @@ QList<ElementObject *> ClassDiagramController::getElements(const QString & name,
 					toCheckVCT->begin(),
 					toCheckVCT->end(),
 					targetVCT.begin(),
-					conditionChecker
+					boost::bind(&ElementObject::name, _1) == boost::cref(name)
 					);
 
 	targetVCT.erase(i, targetVCT.end());

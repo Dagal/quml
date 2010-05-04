@@ -138,4 +138,15 @@ namespace element
 		}
 	}
 
+	/*!
+	  This method returns a list of all the RelatedElementDetails where this element is the attachedElement.
+	*/
+	QList<ElementRelator::RelatedElementDetails> ElementRelator::findAllRelatedElementDetailsTo(ElementObject * attachedElement)
+	{
+		if(_relatedElements.contains(attachedElement))
+			return _relatedElements[attachedElement];
+		else
+			return QList<RelatedElementDetails>();
+	}
+
 }

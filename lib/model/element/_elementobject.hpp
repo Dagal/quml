@@ -27,6 +27,7 @@
 #define P_ELEMENTOBJECT_HPP
 
 #include "elementobject.hpp"
+#include "elementhelper.hpp"
 
 namespace element
 {
@@ -50,14 +51,12 @@ namespace element
 		ElementObject * _element;
 		QList<ElementObject *> _children;
 
-		void detachFromParent();
-		void detachFromUML();
-		void attachToParentInSameUML(ElementObject * parent);
-		void attachToParentInDifferentUML(ElementObject * parent);
-
-	private:
-		void INT_removeChild(ElementObject * child);
-		void INT_addChild(ElementObject * chid);
+		void detachFromParentAndDiagram();
+		void INT_detachFromUMLAndParent();
+		void INT_attachToUMLAndParent(ElementObject * parent);
+		void INT_detachFromParent();
+		void INT_attachToParent(ElementObject * parent);
+		void INT_attachToUMLDiagram(UMLDiagram * diagram);
 	};
 }
 

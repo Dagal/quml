@@ -123,16 +123,18 @@ namespace element
 		return transf;
 	}
 
-/*!
-  This method returns a list of all the children from \c element whose name is equal to \c name. If name is empty, all the children are returned.
-*/
 	QList<ElementObject*> findChildren(ElementObject * element, const QString & name = QString());
 
-/*!
-  Creates an element of type \c type and sets the name.
-*/
 	ElementObject * createElementObject(ElementType type, const QString & name);
+	ElementObject * findUMLName(const QList<ElementObject*> & elements, const QString & umlName);
+	QList<ElementObject *> findName(const QList<ElementObject*> & elements, const QString & name, bool isRecursive = false);
 
+	struct ElementFunctor
+	{
+		virtual void operator()(ElementObject * element) = 0;
+	};
+
+	void recursivelyPerformOperation(const QList<ElementObject*> & elements, ElementFunctor & f);
 }
 
 #endif // ELEMENTHELPER_HPP

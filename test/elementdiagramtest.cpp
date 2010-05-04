@@ -55,7 +55,7 @@ void ElementDiagramTest::cleanup()
 
 void ElementDiagramTest::checkBasics()
 {
-	QCOMPARE(_diagram->allElements().size(), 2);
+	QCOMPARE(_diagram->upperLevelElements().size(), 1);
 	QVERIFY(_parent->qualifiedName() == "parent");
 	QVERIFY(_child->qualifiedName() == "parent::child");
 	QCOMPARE(_diagram->findElement(_parent->qualifiedName()), _parent);
@@ -69,8 +69,8 @@ void ElementDiagramTest::removeChild()
 {
 	_child->setUMLDiagram(0);
 
-	QCOMPARE(_diagram->allElements().size(), 1);
-	QCOMPARE(_diagram->allElements()[0], _parent);
+	QCOMPARE(_diagram->upperLevelElements().size(), 1);
+	QCOMPARE(_diagram->upperLevelElements()[0], _parent);
 	QCOMPARE(_child->umlDiagram(), (UMLDiagram*)0);
 	QCOMPARE(_child->parent(), (ElementObject*)0);
 	QCOMPARE(_parent->children().size(), 0);

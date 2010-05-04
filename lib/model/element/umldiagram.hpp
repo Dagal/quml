@@ -32,6 +32,8 @@
 #include <QVector>
 #include <QString>
 #include <QList>
+#include <QStringList>
+#include <QPair>
 
 namespace element
 {
@@ -57,41 +59,51 @@ namespace element
 		~UMLDiagram();
 
 		// create & add functions
-		ElementObject * createElement(ElementType type, const QString & name, const QString & parentQualifiedName);
-		void addElement(ElementObject * element, const QString & newName, const QString & parentQualifiedName);
+		//ElementObject * createElement(ElementType type, const QString & name, const QString & parentQualifiedName);
+		//void addElement(ElementObject * element, const QString & newName, const QString & parentQualifiedName);
 
 		// element "find" functions
-		ElementObject * findElement(const QString & qualifiedName) const;
-		const QList<ElementObject*> & allElements() const;
+		//const QList<ElementObject*> & allElements() const;
+
 		QList<ElementObject *> findRelatedElements(ElementObject * elementObject) const;
+		const QList<ElementObject *> & upperLevelElements() const;
+
 		template <typename T> QList<T *> findElements() const;
+
+		ElementObject * findElement(const QString & qualifiedName) const;
+
+
+		static QStringList parseQualifiedName(const QString & qualifiedName);
+		static const QList<QPair<QChar, QChar> > Brackets;
+		static const QString ScopeOperator;
 
 	private:
 		boost::shared_ptr<UMLDiagramPrivate> _dd;
 	};
 
-
 	template <typename T> QList<T*> UMLDiagram::findElements() const
 	{
-		typedef QVector<T*> elementvct;
+		struct ElementFinder : public ElementFunctor
+		{
+			ElementFinder(QList<T*> * foundElements)
+				: _foundElements(foundElements) {}
 
-		elementvct vct(allElements().size());
+			QList<T *> * _foundElements;
 
-		typename elementvct::iterator i = stf::copy_transformed_if(
-				allElements().begin(),
-				allElements().end(),
-				vct.begin(),
-				boost::bind<T*>(
-						element_cast<T>,
-						_1),
-				boost::bind(
-						std::not_equal_to<T*>(),
-						_1,
-						(T*)0)
-				);
+			virtual void operator()(ElementObject * elementObject)
+			{
+				T * element = element_cast<T>(elementObject);
+				if(element)
+					_foundElements->append(element);
+			}
+		};
 
-		vct.erase(i, vct.end());
-		return QList<T*>::fromVector(vct);
+
+		QList<T*> lst;
+		ElementFinder f(&lst);
+		recursivelyPerformOperation(upperLevelElements(), f);
+
+		return lst;
 	}
 }
 
