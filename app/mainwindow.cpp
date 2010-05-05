@@ -44,8 +44,7 @@ void initialiseClassDiagram(ClassDiagramController & controller);
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
-	, diagram(new element::UMLDiagram())
-	, controller(diagram)
+	, controller()
 {
     ui->setupUi(this);
 
@@ -58,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	initialiseClassDiagram(controller);
 
-	//scene->addItem(new GraphicsItemClass());
+	scene->addItem(new GraphicsItemClass(controller.getElement<element::ClassObject>("Person")));
 
 	ui->mainView->setSceneRect(QRectF());
 
@@ -67,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-	delete diagram;
+	delete controller.diagram();
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -86,4 +85,5 @@ void MainWindow::changeEvent(QEvent *e)
 void initialiseClassDiagram(ClassDiagramController & controller)
 {
 	controller.createClass("Person", "");
+	controller.cre
 }

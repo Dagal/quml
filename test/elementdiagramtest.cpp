@@ -55,20 +55,20 @@ void ElementDiagramTest::cleanup()
 
 void ElementDiagramTest::checkQualifiedNameParser()
 {
-	QStringList lst = UMLDiagram::parseQualifiedName("test::test1::(test1::a)");
+	QStringList lst = UMLDiagram::ParseQualifiedName("test::test1::(test1::a)");
 
 	QCOMPARE(lst.size(), 3);
 	QVERIFY(lst[0] == "test");
 	QVERIFY(lst[1] == "test1");
 	QVERIFY(lst[2] == "(test1::a)");
 
-	QStringList ls2 = UMLDiagram::parseQualifiedName("test1:<test2)::1");
+	QStringList ls2 = UMLDiagram::ParseQualifiedName("test1:<test2)::1");
 	QCOMPARE(ls2.size(), 0);
 }
 
 void ElementDiagramTest::checkBasics()
 {
-	QCOMPARE(_diagram->upperLevelElements().size(), 1);
+	QCOMPARE(_diagram->rootElements().size(), 1);
 	QVERIFY(_parent->qualifiedName() == "parent");
 	QVERIFY(_child->qualifiedName() == "parent::child");
 	QCOMPARE(_diagram->findElement(_parent->qualifiedName()), _parent);
@@ -82,8 +82,8 @@ void ElementDiagramTest::removeChild()
 {
 	_child->setUMLDiagram(0);
 
-	QCOMPARE(_diagram->upperLevelElements().size(), 1);
-	QCOMPARE(_diagram->upperLevelElements()[0], _parent);
+	QCOMPARE(_diagram->rootElements().size(), 1);
+	QCOMPARE(_diagram->rootElements()[0], _parent);
 	QCOMPARE(_child->umlDiagram(), (UMLDiagram*)0);
 	QCOMPARE(_child->parent(), (ElementObject*)0);
 	QCOMPARE(_parent->children().size(), 0);

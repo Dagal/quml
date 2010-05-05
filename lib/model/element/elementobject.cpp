@@ -112,7 +112,7 @@ namespace element
 	QString ElementObject::qualifiedName() const
 	{
 		if(parent())
-			return parent()->qualifiedName() + "::" + umlName();
+			return parent()->qualifiedName() + UMLDiagram::ScopeOperator + umlName();
 		else
 			return umlName();
 	}

@@ -35,17 +35,11 @@ enum Error
 	Error_ElementParentRecursion,
 	Error_ElementParentBadContainer,
 
-	Error_UMLDiagramWrong,
-
-	Error_CommandNotInitialised,
-	Error_UndefinedUMLDiagram,
-
-	Error_ClassNameEmpty,
-	Error_ClassNameAlreadyUsed,
-	Error_ClassUndefined,
 
 	Error_ParameterListWrongOrder,
 	Error_ParameterListUndefinedTypes,
+
+	Error_PropertyUndefinedType,
 };
 
 #endif // ERROR_HPP

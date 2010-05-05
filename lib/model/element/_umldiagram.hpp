@@ -51,6 +51,7 @@ namespace element
 
 		UMLDiagram * _diagram;
 		QList<ElementObject *> _upperLevel;
+		QList<ElementObject *> _allElements;
 		ElementRelator _elementRelator;
 
 		void attachToUMLDiagram(ElementObject * elementObject);

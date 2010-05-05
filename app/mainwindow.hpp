@@ -49,7 +49,6 @@ protected:
 
 private:
     Ui::MainWindow *ui;
-	element::UMLDiagram * diagram;
 	ClassDiagramController controller;
 };
 

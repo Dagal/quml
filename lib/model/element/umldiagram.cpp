@@ -45,7 +45,14 @@ int elementFinder(boost::shared_ptr<element::ElementObject> element, const QStri
 
 namespace element
 {
+	/*!
+	  The ScopeOperator is a QString that contains the symbol used for scope operator. By default this is set to "::".
+	*/
 	const QString UMLDiagram::ScopeOperator = QString("::");
+
+	/*!
+	  Brackets is a list of starting and closing brackets that can be used. These brackets cannot be used in a name (they can be used in a umlName, e.g. a method).
+	*/
 	const QList<QPair<QChar, QChar> > UMLDiagram::Brackets = QList<QPair<QChar, QChar> >()
 															 << QPair<QChar, QChar>('(', ')')
 															 << QPair<QChar, QChar>('<', '>')
@@ -76,46 +83,46 @@ namespace element
 		}
 	}
 
-//	/*!
-//	  This function creates an ElementObject of type \c type, set's the name and the parent and adds it to the UMLDiagram.
-//	  if the parent is not found, the element has no parent.
-//	  This functions returns a pointer to the newly created element.
-//	*/
-//	ElementObject * UMLDiagram::createElement(ElementType type, const QString & name, const QString & parentQualifiedName)
-//	{
-//		if(name.isEmpty())
-//			return 0;
-//
-//		ElementObject * element = createElementObject(type, name);
-//		ElementObject * parent = findElement(parentQualifiedName);
-//
-//		element->setParent(parent);
-//		element->setUMLDiagram(this);
-//
-//		return element;
-//	}
+	/*!
+	  This function creates an ElementObject of type \c type, set's the name and the parent and adds it to the UMLDiagram.
+	  if the parent is not found, the element has no parent.
+	  This functions returns a pointer to the newly created element.
+	*/
+	ElementObject * UMLDiagram::createElement(ElementType type, const QString & name, const QString & parentQualifiedName)
+	{
+		if(name.isEmpty())
+			return 0;
 
-//	/*!
-//	  This functions detaches \c element from its parent and its UMLDiagram. Afterwards it changes the name to \c newName and sets
-//	  the new parent to the element at \c parentQualifiedName. If the parentQualifiedName is not found, the element is added to this
-//	  UMLDiagram with no parent.
-//	*/
-//	void UMLDiagram::addElement(ElementObject * element, const QString & newName, const QString & parentQualifiedName)
-//	{
-//		if(!element || newName.isEmpty())
-//			return;
-//
-//		// detach the element
-//		element->setUMLDiagram(0);
-//		element->setParent(0);
-//
-//		// set the new name
-//		element->setName(newName);
-//
-//		ElementObject * newParent = findElement(parentQualifiedName);
-//		element->setParent(newParent);
-//		element->setUMLDiagram(this);
-//	}
+		ElementObject * element = createElementObject(type, name);
+		ElementObject * parent = findElement(parentQualifiedName);
+
+		element->setParent(parent);
+		element->setUMLDiagram(this);
+
+		return element;
+	}
+
+	/*!
+	  This functions detaches \c element from its parent and its UMLDiagram. Afterwards it changes the name to \c newName and sets
+	  the new parent to the element at \c parentQualifiedName. If the parentQualifiedName is not found, the element is added to this
+	  UMLDiagram with no parent.
+	*/
+	void UMLDiagram::addElement(ElementObject * element, const QString & newName, const QString & parentQualifiedName)
+	{
+		if(!element || newName.isEmpty())
+			return;
+
+		// detach the element
+		element->setUMLDiagram(0);
+		element->setParent(0);
+
+		// set the new name
+		element->setName(newName);
+
+		ElementObject * newParent = findElement(parentQualifiedName);
+		element->setParent(newParent);
+		element->setUMLDiagram(this);
+	}
 
 	/*!
 	  This function searches the UMLDiagram for an element with the specified qualifiedName, and returns the element. If no element was found
@@ -125,9 +132,9 @@ namespace element
 	*/
 	ElementObject* UMLDiagram::findElement(const QString & qualifiedName) const
 	{
-		QStringList lst = parseQualifiedName(qualifiedName);
+		QStringList lst = ParseQualifiedName(qualifiedName);
 
-		const QList<ElementObject *> * elements = &upperLevelElements();
+		const QList<ElementObject *> * elements = &rootElements();
 		ElementObject * curElement = 0;
 
 		for(int i = 0; i < lst.size(); i++)
@@ -212,6 +219,9 @@ namespace element
 		// add to the list of related elements
 		_elementRelator.add(elementObject);
 
+		// add to the list of element
+		_allElements << elementObject;
+
 		// recursively on children
 		foreach(ElementObject * child, elementObject->children())
 			INT_recursivelyAddRelations(child);
@@ -240,7 +250,10 @@ namespace element
 		// remove from list of related elements
 		_elementRelator.remove(elementObject);
 
-		// recursively on childrenth
+		// remove from the list of element
+		_allElements.removeAll(elementObject);
+
+		// recursively on children
 		foreach(ElementObject * child, elementObject->children())
 			INT_recursivelyRemoveRelations(child);
 	}
@@ -260,16 +273,16 @@ namespace element
 	/*!
 	  This method returns a list of all the upper level elements attached to this umlDiagram.
 	*/
-	const QList<ElementObject *> & UMLDiagram::upperLevelElements() const
+	const QList<ElementObject *> & UMLDiagram::rootElements() const
 	{
 		return _dd->_upperLevel;
 	}
 
 	/*!
-	  This method parses a given qualifiedName in all its different elements. It returns a list of all the names of the ancestors (where the uppermost ancestor
-	  is stored at position zero in the array).
+	  This static method parses a given qualifiedName in all its different elements. It returns a list of all the names of the ancestors (where the
+	  uppermost ancestor is stored at position zero in the array). If the name is unparsable (unclosed brackets, etc) it returns an empty QStringList.
 	*/
-	QStringList UMLDiagram::parseQualifiedName(const QString & qualifiedName)
+	QStringList UMLDiagram::ParseQualifiedName(const QString & qualifiedName)
 	{
 		QStack<QPair<QChar, QChar> > stack;
 		QStringList lst;
@@ -313,5 +326,38 @@ namespace element
 
 		lst.push_back(qualifiedName.mid(prevPos));
 		return lst;
+	}
+
+	/*!
+	  This static method checks a given name. The name cannot contain Brackets or the ScopeOperator.
+
+	  \sa ScopeOperator, \sa Brackets
+	*/
+	bool UMLDiagram::IsValidName(const QString & name)
+	{
+		if(name.isEmpty())
+			return false;
+
+		for(int i = 0; i < name.size(); i++)
+		{
+			if(name.mid(i, ScopeOperator.size()) == ScopeOperator)
+				return false;
+
+			QChar curChar = name[i];
+
+			for(int i = 0; i < Brackets.size(); i++)
+				if(curChar == Brackets[i].first || curChar == Brackets[i].second)
+					return false;
+		}
+
+		return true;
+	}
+
+	/*!
+	  This method returns a list of all the elements that are attached to this diagram.
+	*/
+	const QList<ElementObject *> & UMLDiagram::allElements() const
+	{
+		return _dd->_allElements;
 	}
 }

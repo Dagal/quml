@@ -25,6 +25,7 @@
 
 #include "operationobject.hpp"
 #include "_operationobject.hpp"
+#include "umldiagram.hpp"
 
 namespace element
 {
@@ -41,7 +42,7 @@ namespace element
 	QString OperationObject::qualifiedName() const
 	{
 		if(parent())
-			return parent()->qualifiedName() + "::" + MethodObject::umlName();
+			return parent()->qualifiedName() + UMLDiagram::ScopeOperator + MethodObject::umlName();
 		else
 			return MethodObject::umlName();
 	}

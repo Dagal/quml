@@ -59,49 +59,42 @@ namespace element
 		~UMLDiagram();
 
 		// create & add functions
-		//ElementObject * createElement(ElementType type, const QString & name, const QString & parentQualifiedName);
-		//void addElement(ElementObject * element, const QString & newName, const QString & parentQualifiedName);
+		ElementObject * createElement(ElementType type, const QString & name, const QString & parentQualifiedName);
+		void addElement(ElementObject * element, const QString & newName, const QString & parentQualifiedName);
+
+		// simple accessors
+		const QList<ElementObject *> & rootElements() const;
 
 		// element "find" functions
-		//const QList<ElementObject*> & allElements() const;
-
+		const QList<ElementObject *> & allElements() const;
 		QList<ElementObject *> findRelatedElements(ElementObject * elementObject) const;
-		const QList<ElementObject *> & upperLevelElements() const;
-
-		template <typename T> QList<T *> findElements() const;
-
+		template <typename T> QList<T *> findElements(const QString & name = "") const;
 		ElementObject * findElement(const QString & qualifiedName) const;
 
-
-		static QStringList parseQualifiedName(const QString & qualifiedName);
-		static const QList<QPair<QChar, QChar> > Brackets;
+		// static helper functions / variables
+		static QStringList ParseQualifiedName(const QString & qualifiedName);
+		static bool IsValidName(const QString & name);
 		static const QString ScopeOperator;
 
 	private:
+		static const QList<QPair<QChar, QChar> > Brackets;
 		boost::shared_ptr<UMLDiagramPrivate> _dd;
 	};
 
-	template <typename T> QList<T*> UMLDiagram::findElements() const
+	template <typename T> QList<T*> UMLDiagram::findElements(const QString & name) const
 	{
-		struct ElementFinder : public ElementFunctor
-		{
-			ElementFinder(QList<T*> * foundElements)
-				: _foundElements(foundElements) {}
-
-			QList<T *> * _foundElements;
-
-			virtual void operator()(ElementObject * elementObject)
-			{
-				T * element = element_cast<T>(elementObject);
-				if(element)
-					_foundElements->append(element);
-			}
-		};
-
-
 		QList<T*> lst;
-		ElementFinder f(&lst);
-		recursivelyPerformOperation(upperLevelElements(), f);
+
+		bool checkName = !name.isEmpty();
+
+		for(int i = 0; i < allElements().size(); i++)
+		{
+			T * element = element_cast<T>(allElements()[i]);
+
+			if(element)
+				if(!checkName || (checkName && element->name() == name))
+					lst << element;
+		}
 
 		return lst;
 	}

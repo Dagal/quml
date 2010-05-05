@@ -276,12 +276,12 @@ Error ClassDiagramController::createPackage(const QString & packageName, const Q
   possible return types are:
   \li Error_ElementNameInvalid: The operationName is invalid.
   \li Error_ElementNameAlreadyUsed: Creating an element with this name would give conflict with another element.
-  \li Error_ElementParentBadContainer: The qualifiedParentName is not the right type to store a operation in.
+  \li Error_ElementParentBadContainer: The qualifiedParentName is not the right type to store an operation in.
   \li Error_ParameterListUndefinedTypes: The supplied parameterlist does contain undefined types.
   \li Error_ParameterListWrongOrder: The parameterlist contains element with no default value after elements with a default value.
   \li Error_NoError: The operation was succesfully created
 */
-Error ClassDiagramController::createOperation(const QString & operationName, const QString & qualifiedParentName, const ParameterList & parameters, OperationObject ** operationObject)
+Error ClassDiagramController::createOperation(const QString & operationName, const QString & qualifiedParentName, const QString & returnValueQualifiedName, const ParameterList & parameters, OperationObject ** operationObject)
 {
 	CreateAction a;
 
@@ -302,20 +302,21 @@ Error ClassDiagramController::createOperation(const QString & operationName, con
 	if(parameterListError != Error_NoError)
 		SEND_AND_RETURN(parameterListError);
 
-	// we should already create the operation to  store the paramaters
-	OperationObject * operation = new OperationObject(operationName);
-	operation->setParameterList(parameters);
+	// create a temporary operaitonObjec to the validity of the parameters
+	OperationObject tmpObject(operationName);
+	operation.setParameterList(parameters);
 
 	// check for the names
-	if(!rule->isNameValidWithinParent(operation, parentElement, operationName))
-	{
-		delete operation;
+	if(!rule->isNameValidWithinParent(&operation, parentElement, operationName))
 		SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
-	}
+
+	DatatypeObject * returnType = getElement(returnValueQualifiedName);
 
 	// perform the operation
-	operation->setParent(parentElement);
-	operation->setUMLDiagram(diagram());
+	OperationObject * operation = new OperationObject(operationName);
+	parentElement ? operation->setParent(parentElement) : operation->setUMLDiagram(diagram());
+	operation->setParameter(parameters);
+	operation->setReturnType(returnType);
 
 	a.elementObject = operation;
 
@@ -324,6 +325,24 @@ Error ClassDiagramController::createOperation(const QString & operationName, con
 		(*operationObject) = operation;
 
 	SEND_AND_RETURN(Error_NoError);
+}
+
+/*!
+  This function tries to create a PropertyObject with \c propertyName in the container \c qualifiedParentName.
+  If the double pointer \c propertyObject is not zero, the OperationObject is stored herein.
+
+  possible return types are:
+  \li Error_ElementNameInvalid: The propertyName is invalid.
+  \li Error_ElementNameAlreadyUsed: Creating an element with this name would give conflict with another element.
+  \li Error_ElementParentBadContainer: The qualifiedParentName is not the right type to store a property in.
+  \li Error_PropertyUndefinedType: The supplied datatypeQualifiedName does not point to a valid datatype.
+  \li Error_NoError: The operation was succesfully created
+*/
+Error createProperty(const QString & propertyName, const QString & qualifiedParentName, const QString & datatypeQualifiedName, const element::PropertyObject ** propertyObject)
+{
+	CreateAction a;
+
+	IClassDiagramRules
 }
 
 /*!
@@ -364,7 +383,7 @@ QList<ElementObject *> ClassDiagramController::getElements(const QString & name,
 		toCheckVCT = &(parentObject->children());
 	else
 		// find in all elements (parentless)
-		toCheckVCT = &(diagram()->upperLevelElements());
+		toCheckVCT = &(diagram()->rootElements());
 
 
 	// reserve enough space in the target vector

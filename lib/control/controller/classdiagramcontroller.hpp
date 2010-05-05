@@ -38,7 +38,7 @@ class ClassDiagramController
 	class ClassDiagramControllerPrivate;
 
 public:
-	ClassDiagramController(element::UMLDiagram * diagram);
+	ClassDiagramController(element::UMLDiagram * diagram = 0);
 
 	// simple getters
 	element::UMLDiagram * diagram() const;
@@ -52,7 +52,8 @@ public:
 	// create methods
 	Error createClass(const QString & className, const QString & qualifiedParentName, element::ClassObject ** classObject = 0);
 	Error createPackage(const QString & packageName, const QString & qualifiedParentName, element::PackageObject ** packageObject = 0);
-	Error createOperation(const QString & operationName, const QString & qualifiedParentName, const element::ParameterList & parameters = element::ParameterList(), element::OperationObject ** operationObject = 0);
+	Error createOperation(const QString & operationName, const QString & qualifiedParentName, const QString & returnValueQualifiedName, const element::ParameterList & parameters = element::ParameterList(), element::OperationObject ** operationObject = 0);
+	Error createProperty(const QString & propertyName, const QString & qualifiedParentName, const QString & datatypeQualifiedName, const element::PropertyObject ** propertyObject = 0);
 
 	// find/get methods
 	element::ElementObject * getElement(const QString & qualifiedName) const;
