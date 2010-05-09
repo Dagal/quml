@@ -11,7 +11,6 @@ HEADERS += model/element/umldiagram.hpp \
     util/singleton.hpp \
     util/macro.hpp \
     util/algorithm.hpp \
-    control/command/error.hpp \
     model/element/_elementrelator.hpp \
     model/element/visibility.hpp \
     model/element/propertyobject.hpp \
@@ -38,9 +37,9 @@ HEADERS += model/element/umldiagram.hpp \
     control/controller/controller.hpp \
     util/notifier.hpp \
     control/command/event.hpp \
-    control/controller/action.hpp \
     control/controller/classdiagramrules.hpp \
-    control/interface/iclassdiagramrules.hpp
+    control/interface/iclassdiagramrules.hpp \
+    control/controller/command.hpp
 SOURCES += model/element/umldiagram.cpp \
     model/element/elementobject.cpp \
     model/element/elementhelper.cpp \
@@ -56,6 +55,7 @@ SOURCES += model/element/umldiagram.cpp \
     control/command/classcommand.cpp \
     control/command/elementcommand.cpp \
     control/controller/controller.cpp \
-    control/controller/classdiagramrules.cpp
+    control/controller/classdiagramrules.cpp \
+    control/controller/command.cpp
 REL_PATH = 
 include($${REL_PATH}lib.pri)

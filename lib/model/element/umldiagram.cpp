@@ -150,6 +150,24 @@ namespace element
 	}
 
 	/*!
+	  This function returns a list of all the elements with name \c name and have a parent \c parentQualifiedName. If no element with name \c parentQualifiedName
+	  is found or \c parentQualifiedName is empty, the rootElements are searched.
+	*/
+	QList<ElementObject*> UMLDiagram::findElementsIn(const QString & name, const QString & parentQualifiedName) const
+	{
+		QList<ElementObject*> lst;
+		ElementObject * parent = findElement(parentQualifiedName);
+
+		const QList<ElementObject*> & listToSearchIn = parent ? parent->children() : rootElements();
+
+		foreach(ElementObject * elementObject, listToSearchIn)
+			if(elementObject->name() == name)
+				lst << elementObject;
+
+		return lst;
+	}
+
+	/*!
 	  This function return all the elements that depend on \c elementObject. For example, for a certain
 	  datatype it will return all the methods that have this datatype as returntype of all the
 	  parameters that have this as a datatype.

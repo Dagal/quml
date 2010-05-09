@@ -178,8 +178,7 @@ namespace element
 	}
 
 	/*!
-	Changes the name of the ElementObject. The name is used to compose the umlName and the qualifiedName. Make sure that the new qualifiedElement
-	is unique within the umlDiagram, otherwise the other element will be destroyed.
+	Changes the name of the ElementObject. The name is used to compose the umlName and the qualifiedName.
 	*/
 	void ElementObject::setName(const QString & name)
 	{

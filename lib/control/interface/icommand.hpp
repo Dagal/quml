@@ -23,16 +23,30 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef COMMAND_HPP
-#define COMMAND_HPP
+#ifndef ICOMMAND_HPP
+#define ICOMMAND_HPP
 
-class ICommand
+namespace controller
 {
-public:
-	virtual ~ICommand() {};
+	class ICommand
+	{
+	public:
+		enum Error
+		{
+			Error_NoError = 0
+		};
 
-	virtual bool redo() = 0;
-	virtual bool undo() = 0;
-};
+		virtual ~ICommand() {};
+
+		/*!
+		  Implement this function to execute the command. A return value other than zero (Error_NoError) is interpreted as a failure.
+		*/
+		virtual int redo() = 0;
+		/*!
+		  Implement this function to undo the command. A return value other than zero (Error_NoError) is interpreted as a failure.
+		*/
+		virtual int undo() = 0;
+	};
+}
 
 #endif // COMMAND_HPP

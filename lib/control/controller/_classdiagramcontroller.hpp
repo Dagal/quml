@@ -37,7 +37,7 @@
 #include "iclassdiagramrules.hpp"
 #include "classdiagramrules.hpp"
 
-struct ClassDiagramController::ClassDiagramControllerPrivate
+struct controller::ClassDiagramController::ClassDiagramControllerPrivate
 {
 	typedef boost::shared_ptr<IClassDiagramRules> rulePtr;
 
@@ -46,56 +46,21 @@ struct ClassDiagramController::ClassDiagramControllerPrivate
 		, _diagram(diagram)
 	{
 		// fill all the rules for the classDiagram
-		_rules[element::Element] = rulePtr(new DefaultClassDiagramRules(_controller));
-		_rules[element::Element_Class] = rulePtr(new ClassObjectDiagramRules(_controller));
-		_rules[element::Element_Method] = rulePtr(new MethodObjectDiagramRules(_controller));
-		_rules[element::Element_Operation] = rulePtr(new OperationObjectDiagramRules(_controller));
-		_rules[element::Element_Package] = rulePtr(new PackageObjectDiagramRules(_controller));
-		_rules[element::Element_Property] = rulePtr(new PropertyObjectDiagramRules(_controller));
+//		_rules[element::Element] = rulePtr(new controller::DefaultClassDiagramRules(diagram));
+//		_rules[element::Element_Class] = rulePtr(new ClassObjectDiagramRules(_controller));
+//		_rules[element::Element_Method] = rulePtr(new MethodObjectDiagramRules(_controller));
+//		_rules[element::Element_Operation] = rulePtr(new OperationObjectDiagramRules(_controller));
+//		_rules[element::Element_Package] = rulePtr(new PackageObjectDiagramRules(_controller));
+//		_rules[element::Element_Property] = rulePtr(new PropertyObjectDiagramRules(_controller));
 	}
 
 	IClassDiagramRules * getRulesFor(element::ElementType elementType) const;
 	IClassDiagramRules * getRulesFor(element::ElementObject * elementObject) const;
-
-	template <class T> Error CreateElement(const QString & name, const QString & newParentQualifiedName, T ** elementObject) const;
 
 	ClassDiagramController * const _controller;
 	element::UMLDiagram * const _diagram;
 	QMap<element::ElementType, boost::shared_ptr<IClassDiagramRules> > _rules;
 };
 
-template <class T> Error ClassDiagramController::ClassDiagramControllerPrivate::CreateElement(const QString & name, const QString & qualifiedParentName, T ** elementObject) const
-{
-	CreateAction a;
-
-	IClassDiagramRules * rule = getRulesFor(static_cast<element::ElementType>(T::elementtype));
-
-	// useful new name?
-	if(!rule->isValidName(name))
-		INT_SEND_AND_RETURN(Error_ElementNameInvalid);
-
-	element::ElementObject * parentElement = _controller->getElement(qualifiedParentName);
-
-	// check for the right type of parent
-	if(!rule->isParentRightContainerType(parentElement))
-		INT_SEND_AND_RETURN(Error_ElementParentBadContainer);
-
-	// check for the names
-	if(!rule->isNameValidWithinParent(0, parentElement, name))
-		INT_SEND_AND_RETURN(Error_ElementNameAlreadyUsed);
-
-	// perform the operation
-	T * element = new T(name);
-	element->setParent(parentElement);
-	element->setUMLDiagram(_diagram);
-
-	a.elementObject = element;
-
-	// should we hand over the pointer?
-	if(elementObject != 0)
-		(*elementObject) = element;
-
-	INT_SEND_AND_RETURN(Error_NoError);
-}
 
 #endif // _CLASSDIAGRAMCONTROLLER_HPP

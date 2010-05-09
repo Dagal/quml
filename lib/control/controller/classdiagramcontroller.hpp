@@ -26,59 +26,30 @@
 #ifndef CLASSDIAGRAMCONTROLLER_HPP
 #define CLASSDIAGRAMCONTROLLER_HPP
 
-#include "elementhelper.hpp"
-#include "action.hpp"
-#include "macro.hpp"
-#include "notifier.hpp"
-#include "parameter.hpp"
-#include <vector>
+#include "umldiagram.hpp"
+#include "iclassdiagramrules.hpp"
 
-class ClassDiagramController
+namespace controller
 {
-	class ClassDiagramControllerPrivate;
+	class ClassDiagramController
+	{
+		class ClassDiagramControllerPrivate;
 
-public:
-	ClassDiagramController(element::UMLDiagram * diagram = 0);
+	public:
+		// constructor
+		ClassDiagramController(element::UMLDiagram * diagram);
 
-	// simple getters
-	element::UMLDiagram * diagram() const;
+		// getters and setters
+		element::UMLDiagram * diagram() const;
 
-	// element methods
-	Error detachElement(const QString & qualifiedElementName, element::ElementObject ** elementObject = 0);
-	Error renameElement(const QString & qualifiedElementName, const QString & newName);
-	Error moveElement(const QString & qualifiedElementName, const QString & newParentQualifiedName);
-	Error moveAndRenameElement(const QString & qualifiedElementName, const QString & newParentQualifiedName, const QString & newName);
+		// static elementChecker functions
+		static const IClassDiagramRules * RulesFor(element::ElementObject * elementObject);
+		static const IClassDiagramRules * RulesFor(element::ElementType elementType);
 
-	// create methods
-	Error createClass(const QString & className, const QString & qualifiedParentName, element::ClassObject ** classObject = 0);
-	Error createPackage(const QString & packageName, const QString & qualifiedParentName, element::PackageObject ** packageObject = 0);
-	Error createOperation(const QString & operationName, const QString & qualifiedParentName, const QString & returnValueQualifiedName, const element::ParameterList & parameters = element::ParameterList(), element::OperationObject ** operationObject = 0);
-	Error createProperty(const QString & propertyName, const QString & qualifiedParentName, const QString & datatypeQualifiedName, const element::PropertyObject ** propertyObject = 0);
 
-	// find/get methods
-	element::ElementObject * getElement(const QString & qualifiedName) const;
-	template <typename T> T * getElement(const QString & qualifiedName) const;
-	QList<element::ElementObject *> getElements(const QString & name, const QString & parentQualifiedName) const;
-	QList<element::ElementObject *> getElements(const QString & name, element::ElementObject * parentObject) const;
-
-	// helper methods
-	Error checkParameterList(const element::ParameterList & list) const;
-	bool AreParameterListsSimilar(const element::ParameterList & listA, const element::ParameterList & listB) const;
-
-	const Notifier<Action> & actionListener() const { return _actionListener; }
-
-protected:
-	bool checkNameAgainstSiblings(element::ElementObject * element, const QString & newName, element::ElementObject * parentObject) const;
-	bool checkNameAgainstSiblings(element::ElementType type, const QString & newName, element::ElementObject * parentObject) const;
-
-private:
-	boost::shared_ptr<ClassDiagramControllerPrivate> _dd;
-	Notifier<Action> _actionListener;
-};
-
-template <typename T> T * ClassDiagramController::getElement(const QString & qualifiedName) const
-{
-	return element::element_cast<T>(getElement(qualifiedName));
+	private:
+		boost::shared_ptr<ClassDiagramControllerPrivate> _dd;
+	};
 }
 
 #endif // CLASSDIAGRAMCONTROLLER_HPP

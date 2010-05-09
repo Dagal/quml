@@ -32,88 +32,89 @@
 
 using namespace element;
 
-bool DefaultClassDiagramRules::isValidName(const QString & newName) const
+namespace controller
 {
-	QRegExp checker("^[a-zA-Z_][a-zA-Z_0-9]*$");
-	return checker.exactMatch(newName);
-}
 
-bool DefaultClassDiagramRules::isNameValidWithinParent(ElementObject * elementObject, ElementObject * parent, const QString & newName) const
-{
-	if(parent != 0 && parent == elementObject)
-		return false;
-
-	QList<ElementObject*> siblings = controller()->getElements(newName, parent);
-
-	if(siblings.size() == 0)
-		return true;
-
-	if(siblings.size() == 1 && siblings[0] == elementObject)
-		return true;
-
-	return false;
-}
-
-bool DefaultClassDiagramRules::isParentRightContainerType(element::ElementObject * /*newParent*/) const
-{
-	return true;
-}
-
-bool ClassObjectDiagramRules::isParentRightContainerType(ElementObject * newParent) const
-{
-	return newParent == 0 || element_castable<PackageObject>(newParent) || element_castable<ClassObject>(newParent);
-}
-
-bool PackageObjectDiagramRules::isParentRightContainerType(ElementObject * newParent) const
-{
-	return newParent == 0 || element_castable<PackageObject>(newParent);
-}
+	int ClassDiagramController::checkElement(element::ElementObject *element) const;
 
 
-bool MethodObjectDiagramRules::isParentRightContainerType(ElementObject * newParent) const
-{
-	return newParent == 0 || element_castable<PackageObject>(newParent);
-}
 
-bool MethodObjectDiagramRules::isNameValidWithinParent(ElementObject * elementObject, ElementObject * parent, const QString & newName) const
-{
-	QList<ElementObject*> siblings = controller()->getElements(newName, parent);
-
-	if(siblings.size() == 0)
-		return true;
-
-	MethodObject * method = element_cast<MethodObject>(elementObject);
-	ParameterList list = (method == 0 ? ParameterList() : method->parameters());
-
-	for(int i = 0; i < siblings.size(); i++)
+	bool DefaultClassDiagramRules::isValidName(const QString & newName) const
 	{
-		// all the elements in the list should be castable to a method
-		MethodObject * siblingObject = element_cast<MethodObject>(siblings[i]);
-
-		if(siblingObject == 0)
-			return false;
-
-		if(siblingObject == method)
-			continue;
-
-		// and the parameterlist should not be similar
-		if(controller()->AreParameterListsSimilar(list, siblingObject->parameters()))
-			return false;
+		QRegExp checker("^[a-zA-Z_][a-zA-Z_0-9]*$");
+		return checker.exactMatch(newName);
 	}
 
-	return true;
+	bool DefaultClassDiagramRules::isNameValidWithinParent(ElementObject * elementObject, ElementObject * parent, const QString & newName) const
+	{
+		if(parent != 0 && parent == elementObject)
+			return false;
+
+		QList<ElementObject*> siblings; // = controller()->diagram(
+		if(siblings.size() == 0)
+			return true;
+
+		if(siblings.size() == 1 && siblings[0] == elementObject)
+			return true;
+
+		return false;
+	}
+//
+//	bool ClassObjectDiagramRules::isParentRightContainerType(ElementObject * newParent) const
+//	{
+//		return newParent == 0 || element_castable<PackageObject>(newParent) || element_castable<ClassObject>(newParent);
+//	}
+//
+//	bool PackageObjectDiagramRules::isParentRightContainerType(ElementObject * newParent) const
+//	{
+//		return newParent == 0 || element_castable<PackageObject>(newParent);
+//	}
+//
+//
+//	bool MethodObjectDiagramRules::isParentRightContainerType(ElementObject * newParent) const
+//	{
+//		return newParent == 0 || element_castable<PackageObject>(newParent);
+//	}
+//
+//	bool MethodObjectDiagramRules::isNameValidWithinParent(ElementObject * elementObject, ElementObject * parent, const QString & newName) const
+//	{
+//		QList<ElementObject*> siblings = controller()->getElements(newName, parent);
+//
+//		if(siblings.size() == 0)
+//			return true;
+//
+//		MethodObject * method = element_cast<MethodObject>(elementObject);
+//		ParameterList list = (method == 0 ? ParameterList() : method->parameters());
+//
+//		for(int i = 0; i < siblings.size(); i++)
+//		{
+//			// all the elements in the list should be castable to a method
+//			MethodObject * siblingObject = element_cast<MethodObject>(siblings[i]);
+//
+//			if(siblingObject == 0)
+//				return false;
+//
+//			if(siblingObject == method)
+//				continue;
+//
+//			// and the parameterlist should not be similar
+//			if(controller()->AreParameterListsSimilar(list, siblingObject->parameters()))
+//				return false;
+//		}
+//
+//		return true;
+//	}
+//
+//
+//	bool OperationObjectDiagramRules::isParentRightContainerType(element::ElementObject * newParent) const
+//	{
+//		return newParent != 0 && element_castable<ClassObject>(newParent);
+//	}
+//
+//	bool PropertyObjectDiagramRules::isParentRightContainerType(element::ElementObject * newParent) const
+//	{
+//		return newParent != 0 && element_castable<ClassObject>(newParent);
+//	}
+//
 }
-
-
-bool OperationObjectDiagramRules::isParentRightContainerType(element::ElementObject * newParent) const
-{
-	return newParent != 0 && element_castable<ClassObject>(newParent);
-}
-
-bool PropertyObjectDiagramRules::isParentRightContainerType(element::ElementObject * newParent) const
-{
-	return newParent != 0 && element_castable<ClassObject>(newParent);
-}
-
-
 

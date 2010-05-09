@@ -29,15 +29,20 @@
 #include <QString>
 #include "elementobject.hpp"
 
-
-class IClassDiagramRules
+namespace controller
 {
-public:
-	virtual ~IClassDiagramRules() {};
+	class IClassDiagramRules
+	{
+	public:
+		enum Error
+		{
+			Error_NoError
+		};
 
-	virtual bool isValidName(const QString & newName) const = 0;
-	virtual bool isParentRightContainerType(element::ElementObject * newParent) const = 0;
-	virtual bool isNameValidWithinParent(element::ElementObject * elementObject, element::ElementObject * parent, const QString & newName) const = 0;
-};
+		virtual ~IClassDiagramRules() {};
+
+		virtual int checkElement(element::ElementObject * element) const;
+	};
+}
 
 #endif // ICLASSDIAGRAMRULES_HPP

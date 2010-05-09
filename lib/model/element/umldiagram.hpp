@@ -68,8 +68,9 @@ namespace element
 		// element "find" functions
 		const QList<ElementObject *> & allElements() const;
 		QList<ElementObject *> findRelatedElements(ElementObject * elementObject) const;
-		template <typename T> QList<T *> findElements(const QString & name = "") const;
 		ElementObject * findElement(const QString & qualifiedName) const;
+		QList<ElementObject*> findElementsIn(const QString & parentQualifiedName, const QString & name) const;
+		template <class T> QList<T*> findElementsIn(const QString & name, const QString & parentQualifiedName) const;
 
 		// static helper functions / variables
 		static QStringList ParseQualifiedName(const QString & qualifiedName);
@@ -81,20 +82,20 @@ namespace element
 		boost::shared_ptr<UMLDiagramPrivate> _dd;
 	};
 
-	template <typename T> QList<T*> UMLDiagram::findElements(const QString & name) const
+	/*!
+	  This function returns a list of all the elements with name \c name and have a parent \c parentQualifiedName. If no element with name \c parentQualifiedName
+	  is found or \c parentQualifiedName is empty, the rootElements are searched.
+	*/
+	template <class T> QList<T*> UMLDiagram::findElementsIn(const QString & name, const QString & parentQualifiedName) const
 	{
 		QList<T*> lst;
+		ElementObject * parent = findElement(parentQualifiedName);
 
-		bool checkName = !name.isEmpty();
+		const QList<ElementObject*> & listToSearchIn = parent ? parent->children() : rootElements();
 
-		for(int i = 0; i < allElements().size(); i++)
-		{
-			T * element = element_cast<T>(allElements()[i]);
-
-			if(element)
-				if(!checkName || (checkName && element->name() == name))
-					lst << element;
-		}
+		foreach(ElementObject * elementObject, listToSearchIn)
+			if(elementObject->name() == name && element_castable<T>(elementObject))
+				lst << element_cast<T>(elementObject);
 
 		return lst;
 	}

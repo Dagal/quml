@@ -29,61 +29,59 @@
 #include "iclassdiagramrules.hpp"
 #include "classdiagramcontroller.hpp"
 
-class DefaultClassDiagramRules : public IClassDiagramRules
+namespace controller
 {
-public:
-	DefaultClassDiagramRules(const ClassDiagramController * controller) : _controller(controller) {}
+	class DefaultClassDiagramRules : public IClassDiagramRules
+	{
+	public:
+		// constructor
+		DefaultClassDiagramRules(element::UMLDiagram * umlDiagram) : _diagram(umlDiagram) {}
 
-	virtual bool isValidName(const QString & newName) const;
-	virtual bool isNameValidWithinParent(element::ElementObject * elementObject, element::ElementObject * parent, const QString & newName) const;
-	virtual bool isParentRightContainerType(element::ElementObject * newParent) const;
+		const element::UMLDiagram * diagram() const { return _diagram; }
 
-	const ClassDiagramController * controller() const { return _controller; }
+	protected:
+		// helper functions
+		bool isValidName(const QString & newName) const;
+		bool isNameValidWithinParent(element::ElementObject * elementObject, element::ElementObject * parent, const QString & newName) const;
 
-private:
-	const ClassDiagramController * _controller;
-};
+	private:
+		const element::UMLDiagram * _diagram;
+	};
 
+	class ClassObjectDiagramRules : public DefaultClassDiagramRules
+	{
+	public:
+		ClassObjectDiagramRules(element::UMLDiagram * umlDiagram) : DefaultClassDiagramRules(umlDiagram) {}
+		virtual int checkElement(element::ElementObject *element) const;
+	};
 
-class ClassObjectDiagramRules : public DefaultClassDiagramRules
-{
-public:
-	ClassObjectDiagramRules(const ClassDiagramController * controller) : DefaultClassDiagramRules(controller) {}
+	class PackageObjectDiagramRules : public DefaultClassDiagramRules
+	{
+	public:
+		PackageObjectDiagramRules(element::UMLDiagram * umlDiagram) : DefaultClassDiagramRules(umlDiagram) {}
+		virtual int checkElement(element::ElementObject *element) const;
+	};
+	class MethodObjectDiagramRules : public DefaultClassDiagramRules
+	{
+	public:
+		MethodObjectDiagramRules(element::UMLDiagram * umlDiagram) : DefaultClassDiagramRules(umlDiagram) {}
+		virtual int checkElement(element::ElementObject *element) const;
+	};
 
-	virtual bool isParentRightContainerType(element::ElementObject * newParent) const;
-};
-class PackageObjectDiagramRules : public DefaultClassDiagramRules
-{
-public:
-	PackageObjectDiagramRules(const ClassDiagramController * controller) : DefaultClassDiagramRules(controller) {}
+	class OperationObjectDiagramRules : public MethodObjectDiagramRules
+	{
+	public:
+		OperationObjectDiagramRules(element::UMLDiagram * umlDiagram) : MethodObjectDiagramRules(umlDiagram) {}
+		virtual int checkElement(element::ElementObject *element) const;
+	};
 
-	virtual bool isParentRightContainerType(element::ElementObject * newParent) const;
-};
-class MethodObjectDiagramRules : public DefaultClassDiagramRules
-{
-public:
-	MethodObjectDiagramRules(const ClassDiagramController * controller) : DefaultClassDiagramRules(controller) {}
-
-	virtual bool isParentRightContainerType(element::ElementObject * newParent) const;
-	virtual bool isNameValidWithinParent(element::ElementObject * elementObject, element::ElementObject * parent, const QString & newName) const;
-};
-
-class OperationObjectDiagramRules : public MethodObjectDiagramRules
-{
-public:
-	OperationObjectDiagramRules(const ClassDiagramController * controller) : MethodObjectDiagramRules(controller) {}
-
-	virtual bool isParentRightContainerType(element::ElementObject * newParent) const;
-};
-
-class PropertyObjectDiagramRules : public DefaultClassDiagramRules
-{
-public:
-	PropertyObjectDiagramRules(const ClassDiagramController * controller) : DefaultClassDiagramRules(controller) {}
-
-	virtual bool isParentRightContainerType(element::ElementObject * newParent) const;
-};
-
+	class PropertyObjectDiagramRules : public DefaultClassDiagramRules
+	{
+	public:
+		PropertyObjectDiagramRules(element::UMLDiagram * umlDiagram) : DefaultClassDiagramRules(umlDiagram) {}
+		virtual int checkElement(element::ElementObject *element) const;
+	};
+}
 
 
 #endif // CLASSDIAGRAMRULES_HPP
