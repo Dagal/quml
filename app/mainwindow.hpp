@@ -49,7 +49,6 @@ protected:
 
 private:
     Ui::MainWindow *ui;
-	ClassDiagramController controller;
 };
 
 #endif // MAINWINDOW_HPP

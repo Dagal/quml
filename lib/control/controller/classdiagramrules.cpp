@@ -34,23 +34,31 @@ using namespace element;
 
 namespace controller
 {
-
-	int ClassDiagramController::checkElement(element::ElementObject *element) const;
-
-
-
-	bool DefaultClassDiagramRules::isValidName(const QString & newName) const
+	bool DefaultClassDiagramRules::isValidName(element::ElementObject * elementObject) const
 	{
+		if(!elementObject)
+			return false;
+
 		QRegExp checker("^[a-zA-Z_][a-zA-Z_0-9]*$");
-		return checker.exactMatch(newName);
+		return checker.exactMatch(elementObject->name());
 	}
+
 
 	bool DefaultClassDiagramRules::isNameValidWithinParent(ElementObject * elementObject, ElementObject * parent, const QString & newName) const
 	{
-		if(parent != 0 && parent == elementObject)
+		if(elementObject == 0)
 			return false;
 
-		QList<ElementObject*> siblings; // = controller()->diagram(
+		if(parent == elementObject)
+			return false;
+
+		QList<ElementObject*> siblings;
+
+		if(elementObject->parent())
+			siblings = findName(elementObject->parent()->children(), elementObject->name());
+		else if(elementObject->umlDiagram())
+			siblings = findName(elementObject->umlDiagram()->rootElements(), elementObject->name());
+
 		if(siblings.size() == 0)
 			return true;
 

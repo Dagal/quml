@@ -39,12 +39,10 @@
 
 using namespace connection;
 
-void initialiseClassDiagram(ClassDiagramController & controller);
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
-	, controller()
 {
     ui->setupUi(this);
 
@@ -55,9 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
 	scene->addItem(new QGraphicsLineItem(-100,0, 100, 0));
 	scene->addItem(new QGraphicsLineItem(0,100, 0, -100));
 
-	initialiseClassDiagram(controller);
-
-	scene->addItem(new GraphicsItemClass(controller.getElement<element::ClassObject>("Person")));
+	//scene->addItem(new GraphicsItemClass(controller.getElement<element::ClassObject>("Person")));
 
 	ui->mainView->setSceneRect(QRectF());
 
@@ -66,7 +62,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-	delete controller.diagram();
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -82,8 +77,3 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
-void initialiseClassDiagram(ClassDiagramController & controller)
-{
-	controller.createClass("Person", "");
-	controller.cre
-}

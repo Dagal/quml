@@ -33,15 +33,9 @@ namespace controller
 {
 	class DefaultClassDiagramRules : public IClassDiagramRules
 	{
-	public:
-		// constructor
-		DefaultClassDiagramRules(element::UMLDiagram * umlDiagram) : _diagram(umlDiagram) {}
-
-		const element::UMLDiagram * diagram() const { return _diagram; }
-
 	protected:
 		// helper functions
-		bool isValidName(const QString & newName) const;
+		bool isValidName(element::ElementObject * elementObject) const;
 		bool isNameValidWithinParent(element::ElementObject * elementObject, element::ElementObject * parent, const QString & newName) const;
 
 	private:
@@ -51,34 +45,29 @@ namespace controller
 	class ClassObjectDiagramRules : public DefaultClassDiagramRules
 	{
 	public:
-		ClassObjectDiagramRules(element::UMLDiagram * umlDiagram) : DefaultClassDiagramRules(umlDiagram) {}
 		virtual int checkElement(element::ElementObject *element) const;
 	};
 
 	class PackageObjectDiagramRules : public DefaultClassDiagramRules
 	{
 	public:
-		PackageObjectDiagramRules(element::UMLDiagram * umlDiagram) : DefaultClassDiagramRules(umlDiagram) {}
 		virtual int checkElement(element::ElementObject *element) const;
 	};
 	class MethodObjectDiagramRules : public DefaultClassDiagramRules
 	{
 	public:
-		MethodObjectDiagramRules(element::UMLDiagram * umlDiagram) : DefaultClassDiagramRules(umlDiagram) {}
 		virtual int checkElement(element::ElementObject *element) const;
 	};
 
 	class OperationObjectDiagramRules : public MethodObjectDiagramRules
 	{
 	public:
-		OperationObjectDiagramRules(element::UMLDiagram * umlDiagram) : MethodObjectDiagramRules(umlDiagram) {}
 		virtual int checkElement(element::ElementObject *element) const;
 	};
 
 	class PropertyObjectDiagramRules : public DefaultClassDiagramRules
 	{
 	public:
-		PropertyObjectDiagramRules(element::UMLDiagram * umlDiagram) : DefaultClassDiagramRules(umlDiagram) {}
 		virtual int checkElement(element::ElementObject *element) const;
 	};
 }

@@ -28,27 +28,25 @@
 
 #include "umldiagram.hpp"
 #include "iclassdiagramrules.hpp"
+#include "singleton.hpp"
 
 namespace controller
 {
-	class ClassDiagramController
+	class ClassDiagramController : Singleton<ClassDiagramController>
 	{
-		class ClassDiagramControllerPrivate;
+		friend class Singleton<ClassDiagramController>;
 
 	public:
-		// constructor
-		ClassDiagramController(element::UMLDiagram * diagram);
-
-		// getters and setters
-		element::UMLDiagram * diagram() const;
-
 		// static elementChecker functions
-		static const IClassDiagramRules * RulesFor(element::ElementObject * elementObject);
-		static const IClassDiagramRules * RulesFor(element::ElementType elementType);
-
+		const IClassDiagramRules * RulesFor(element::ElementObject * elementObject) const;
+		const IClassDiagramRules * RulesFor(element::ElementType elementType) const;
 
 	private:
-		boost::shared_ptr<ClassDiagramControllerPrivate> _dd;
+		ClassDiagramController();
+		~ClassDiagramController() {};
+
+	private:
+		QMap<element::ElementType, boost::shared_ptr<IClassDiagramRules> > _rules;
 	};
 }
 

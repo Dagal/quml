@@ -24,17 +24,29 @@
 *******************************************************************/
 
 #include "classdiagramcontroller.hpp"
-#include "_classdiagramcontroller.hpp"
-#include "umldiagram.hpp"
-#include "elementobject.hpp"
-#include "classobject.hpp"
-#include "methodobject.hpp"
-#include "packageobject.hpp"
-#include "operationobject.hpp"
-#include "parameter.hpp"
-#include <QVector>
+#include "classdiagramrules.hpp"
 
 using namespace element;
+using namespace controller;
+
+namespace
+{
+	typedef boost::shared_ptr<controller::IClassDiagramRules> rulePtr;
+
+	QMap<element::ElementType, rulePtr > initRules()
+	{
+		QMap<element::ElementType, boost::shared_ptr<IClassDiagramRules> > ruleMap;
+
+		ruleMap[element::Element] = rulePtr(new controller::DefaultClassDiagramRules);
+		ruleMap[element::Element_Class] = rulePtr(new controller::ClassObjectDiagramRules);
+		ruleMap[element::Element_Method] = rulePtr(new controller::MethodObjectDiagramRules);
+		ruleMap[element::Element_Operation] = rulePtr(new controller::OperationObjectDiagramRules);
+		ruleMap[element::Element_Package] = rulePtr(new controller::PackageObjectDiagramRules);
+		ruleMap[element::Element_Property] = rulePtr(new controller::PropertyObjectDiagramRules);
+
+		return ruleMap;
+	}
+}
 
 namespace controller
 {
@@ -42,24 +54,16 @@ namespace controller
 	  The default constructor for a ClassDiagramController. Note that ClassDiagramController works on the same
 	  \c diagram, but does not take control over that diagram.
 	*/
-	ClassDiagramController::ClassDiagramController(UMLDiagram * diagram)
-		: _dd(new ClassDiagramControllerPrivate(this, diagram))
+	ClassDiagramController::ClassDiagramController()
+		: _rules(initRules())
 	{
 	}
 
 	/*!
-	  Returns a pointer to the UMLDiagram
-	*/
-	UMLDiagram * ClassDiagramController::diagram() const
-	{
-		return _dd->_diagram;
-	}
-
-	/*!
-	  This overloaded static method returns a rulechecker for the element supplied \c elementObject. If \c elementObject is not specified, it returns a zero
+	  This overloaded method returns a rulechecker for the element supplied \c elementObject. If \c elementObject is not specified, it returns a zero
 	  pointer. Otherwise the best possible rule checker is returned.
 	*/
-	const IClassDiagramRules * ClassDiagramController::RulesFor(element::ElementObject * elementObject)
+	const IClassDiagramRules * ClassDiagramController::RulesFor(element::ElementObject * elementObject) const
 	{
 		if(elementObject == 0)
 			return 0;
@@ -68,13 +72,13 @@ namespace controller
 	}
 
 	/*!
-	  This overloaded static method returns a rulechecker for the element type \c elementType. The best possible ruleCheckerType is returned.
+	  This overloaded method returns a rulechecker for the element type \c elementType. The best possible ruleCheckerType is returned.
 	*/
-	const IClassDiagramRules * ClassDiagramController::RulesFor(element::ElementType elementType)
+	const IClassDiagramRules * ClassDiagramController::RulesFor(element::ElementType elementType) const
 	{
-		if(_dd->_rules.contains(elementType))
-			return _dd->_rules[elementType].get();
+		if(_rules.contains(elementType))
+			return _rules[elementType].get();
 		else
-			return _dd->_rules[element::Element].get();
+			return _rules[element::Element].get();
 	}
 }

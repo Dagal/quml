@@ -71,6 +71,7 @@ namespace element
 		ElementObject * findElement(const QString & qualifiedName) const;
 		QList<ElementObject*> findElementsIn(const QString & parentQualifiedName, const QString & name) const;
 		template <class T> QList<T*> findElementsIn(const QString & name, const QString & parentQualifiedName) const;
+		template <class T> QList<T*> findElements(const QString & name = QString()) const;
 
 		// static helper functions / variables
 		static QStringList ParseQualifiedName(const QString & qualifiedName);
@@ -96,6 +97,24 @@ namespace element
 		foreach(ElementObject * elementObject, listToSearchIn)
 			if(elementObject->name() == name && element_castable<T>(elementObject))
 				lst << element_cast<T>(elementObject);
+
+		return lst;
+	}
+
+	/*!
+	  This function searches all the elements attached to this diagram and returns a list of all the elements
+	  of type T with a certain name. If name is undefined or empty, all the elements of type T are returned.
+	*/
+	template <class T> QList<T*> UMLDiagram::findElements(const QString & name) const
+	{
+		QList<T*> lst;
+		bool checkForName = !name.isEmpty();
+		T * tmpElement;
+
+		foreach(ElementObject * elementObject, allElements())
+			if( (tmpElement = element_cast<T>(elementObject)) != 0)
+				if(!checkForName || tmpElement->name() == name)
+					lst << tmpElement;
 
 		return lst;
 	}

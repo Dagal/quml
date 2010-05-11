@@ -30,13 +30,8 @@ HEADERS += model/element/umldiagram.hpp \
     control/interface/ilistener.hpp \
     control/interface/icommand.hpp \
     control/controller/classdiagramcontroller.hpp \
-    control/controller/_classdiagramcontroller.hpp \
-    control/command/classcommand.hpp \
-    control/command/elementcommand.hpp \
-    control/command/commandtype.hpp \
     control/controller/controller.hpp \
     util/notifier.hpp \
-    control/command/event.hpp \
     control/controller/classdiagramrules.hpp \
     control/interface/iclassdiagramrules.hpp \
     control/controller/command.hpp
@@ -52,8 +47,6 @@ SOURCES += model/element/umldiagram.cpp \
     model/element/classobject.cpp \
     model/element/primitiveobject.cpp \
     control/controller/classdiagramcontroller.cpp \
-    control/command/classcommand.cpp \
-    control/command/elementcommand.cpp \
     control/controller/controller.cpp \
     control/controller/classdiagramrules.cpp \
     control/controller/command.cpp
