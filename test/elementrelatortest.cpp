@@ -60,6 +60,7 @@ void ElementRelatorTest::propertyDetachFromUML()
 	prop1->setUMLDiagram(0);
 
 	QCOMPARE(prop1->datatype(), (element::DatatypeObject*)0);
+	QCOMPARE(prop1->umlDiagram(), (element::UMLDiagram*)0);
 
 	delete prop1;
 }
@@ -126,6 +127,4 @@ void ElementRelatorTest::init()
 
 	oper1->addParameter(element::Parameter("param1", data1));
 	oper1->addParameter(element::Parameter("param2", data2));
-
-
 }

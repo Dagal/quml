@@ -23,44 +23,34 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef ELEMENTRELATORTEST_HPP
-#define ELEMENTRELATORTEST_HPP
+#ifndef SAFECOMMAND_HPP
+#define SAFECOMMAND_HPP
 
-#include <QObject>
-#include <QtTest/QtTest>
+#include "icommand.hpp"
+#include "command.hpp"
+#include <QList>
 
-#include "element.hpp"
-
-class ElementRelatorTest : public QObject
+namespace controller
 {
-	Q_OBJECT
 
-public:
-    ElementRelatorTest();
+	class SafeCommand : public ICommand
+	{
+	public:
+		SafeCommand(const QList<UMLDiagramCommand*> & commands);
+		~SafeCommand();
 
-private slots:
-	void cleanup();
-	void init();
+		virtual int redo();
+		virtual int undo();
 
-	void relatorTest();
+	private:
+		void undoLoop(int startPos);
 
-	void propertyDatatypeDetachFromUML();
-	void propertyDetachFromUML();
-	void propertyParentDetachFromUML();
-	void propertyParentAndDatatypeParentDetachFromUML();
-	void propertyDatatypeAttachToNewUML();
-	void propertyAttachToNewUML();
-	void propertyParentAttachToNewUML();
-	void propertyParentAndDatatypeParentAttachToNewUML();
 
-private:
-	element::ClassObject * data1;
-	element::ClassObject * data2;
-	element::PackageObject* pack1;
-	element::PropertyObject * prop1;
-	element::UMLDiagram * diagram;
-	element::UMLDiagram * newdiagram;
-	element::OperationObject * oper1;
-};
 
-#endif // ELEMENTRELATORTEST_HPP
+	private:
+		QList<UMLDiagramCommand*> _commands;
+		bool _nextIsRedo;
+	};
+}
+
+#endif // SAFECOMMAND_HPP

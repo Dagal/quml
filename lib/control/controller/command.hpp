@@ -51,11 +51,6 @@ namespace controller
 	class RenameCommand : public UMLDiagramCommand
 	{
 	public:
-		enum Error
-		{
-			Error_ElementNotFound = ICommand::Error_NoError+1,
-		};
-
 		RenameCommand(element::UMLDiagram * diagram, const QString & elementQualifiedName, const QString & newName);
 
 		virtual int redo();
@@ -76,11 +71,6 @@ namespace controller
 	class MoveCommand : public UMLDiagramCommand
 	{
 	public:
-		enum Error
-		{
-			Error_ElementNotFound = ICommand::Error_NoError+1,
-		};
-
 		MoveCommand(element::UMLDiagram * diagram, const QString & elementQualifiedName, const QString & newParentQualifiedName);
 
 		virtual int redo();
@@ -97,33 +87,6 @@ namespace controller
 		QString _newQualifiedName;
 		QString _oldParentQualifiedName;
 		const QString _newParentQualifiedName;
-	};
-
-	class SafeCommand : public ICommand
-	{
-	public:
-		enum Error
-		{
-			Error_NotReadyForUndo = ICommand::Error_NoError + 1,
-			Error_NotReadyForRedo,
-			Error_SubCommandError,
-			Error_CheckingElementsError,
-		};
-
-		SafeCommand(const QList<UMLDiagramCommand*> & commands);
-		~SafeCommand();
-
-		virtual int redo();
-		virtual int undo();
-
-	private:
-		void undoLoop(int startPos);
-
-
-
-	private:
-		QList<UMLDiagramCommand*> _commands;
-		bool _nextIsRedo;
 	};
 }
 

@@ -23,44 +23,68 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef ELEMENTRELATORTEST_HPP
-#define ELEMENTRELATORTEST_HPP
+#include "safecommand.hpp"
 
-#include <QObject>
-#include <QtTest/QtTest>
-
-#include "element.hpp"
-
-class ElementRelatorTest : public QObject
+namespace controller
 {
-	Q_OBJECT
+	SafeCommand::SafeCommand(const QList<UMLDiagramCommand*> & commands)
+		: _commands(commands)
+		, _nextIsRedo(true)
+	{
+	}
 
-public:
-    ElementRelatorTest();
+	SafeCommand::~SafeCommand()
+	{
+		qDeleteAll(_commands);
+	}
 
-private slots:
-	void cleanup();
-	void init();
+	int SafeCommand::redo()
+	{
+		if(!_nextIsRedo) return Error_NotReadyForRedo;
 
-	void relatorTest();
+		QSet<element::ElementObject*> _alteredElements;
+		UMLDiagramCommand * problemCommand = 0;
 
-	void propertyDatatypeDetachFromUML();
-	void propertyDetachFromUML();
-	void propertyParentDetachFromUML();
-	void propertyParentAndDatatypeParentDetachFromUML();
-	void propertyDatatypeAttachToNewUML();
-	void propertyAttachToNewUML();
-	void propertyParentAttachToNewUML();
-	void propertyParentAndDatatypeParentAttachToNewUML();
+		for(int i = 0; i < _commands.size(); i++)
+		{
+			UMLDiagramCommand * curCommand = _commands[i];
 
-private:
-	element::ClassObject * data1;
-	element::ClassObject * data2;
-	element::PackageObject* pack1;
-	element::PropertyObject * prop1;
-	element::UMLDiagram * diagram;
-	element::UMLDiagram * newdiagram;
-	element::OperationObject * oper1;
-};
+			// can we execute the command correctly?
+			if(curCommand->redo() == Error_NoError)
+			{
+				// add all elements to check to the list
+				_alteredElements.unite(curCommand->changedElements());
+			}
+			else
+			{
+				// store the problem command
+				problemCommand = curCommand;
 
-#endif // ELEMENTRELATORTEST_HPP
+				// undo the loop
+				undoLoop(i);
+
+				// break the loop and send an error
+				return Error_SubCommandError;
+			}
+		}
+
+		// check all the altered elements
+
+
+		// correctly executed
+		_nextIsRedo = false;
+
+		return 0;
+	}
+
+	void SafeCommand::undoLoop(int startPos)
+	{
+		for(int i = startPos; i >= 0; --i)
+			_commands[i]->undo();
+	}
+
+	int SafeCommand::undo()
+	{
+		if(_nextIsRedo) return -1;
+	}
+}

@@ -87,6 +87,8 @@ void ElementDiagramTest::removeChild()
 	QCOMPARE(_child->umlDiagram(), (UMLDiagram*)0);
 	QCOMPARE(_child->parent(), (ElementObject*)0);
 	QCOMPARE(_parent->children().size(), 0);
+
+	delete _child;
 }
 
 

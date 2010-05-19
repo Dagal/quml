@@ -5,7 +5,7 @@ SOURCES += main.cpp \
     graphicsview/connection/graphicsitemconnectionline.cpp \
     util/graphicsext.cpp \
     graphicsview/graphicsitemclass.cpp \
-	graphicsview/graphicsitemrelation.cpp
+    graphicsview/graphicsitemrelation.cpp
 unix:OBJECTS_DIR = .obj/
 unix:MOC_DIR = .obj/
 REL_PATH = ../lib/
@@ -17,5 +17,9 @@ HEADERS += mainwindow.hpp \
     util/graphicsext.hpp \
     graphicsview/graphicsitemclass.hpp \
     graphicsview/graphicsitemrelation.hpp \
-	graphicsview/_graphicsitemclass.hpp
+    graphicsview/_graphicsitemclass.hpp
 FORMS += mainwindow.ui
+
+
+
+

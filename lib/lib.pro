@@ -34,7 +34,9 @@ HEADERS += model/element/umldiagram.hpp \
     util/notifier.hpp \
     control/controller/classdiagramrules.hpp \
     control/interface/iclassdiagramrules.hpp \
-    control/controller/command.hpp
+    control/controller/command.hpp \
+    control/controller/error.hpp \
+    control/controller/safecommand.hpp
 SOURCES += model/element/umldiagram.cpp \
     model/element/elementobject.cpp \
     model/element/elementhelper.cpp \
@@ -49,6 +51,7 @@ SOURCES += model/element/umldiagram.cpp \
     control/controller/classdiagramcontroller.cpp \
     control/controller/controller.cpp \
     control/controller/classdiagramrules.cpp \
-    control/controller/command.cpp
+    control/controller/command.cpp \
+    control/controller/safecommand.cpp
 REL_PATH = 
 include($${REL_PATH}lib.pri)

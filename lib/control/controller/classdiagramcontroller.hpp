@@ -41,6 +41,8 @@ namespace controller
 		const IClassDiagramRules * RulesFor(element::ElementObject * elementObject) const;
 		const IClassDiagramRules * RulesFor(element::ElementType elementType) const;
 
+		void addRule(element::ElementType elementType, IClassDiagramRules * rule);
+
 	private:
 		ClassDiagramController();
 		~ClassDiagramController() {};

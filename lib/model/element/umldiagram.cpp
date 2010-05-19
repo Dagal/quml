@@ -251,6 +251,10 @@ namespace element
 	*/
 	void UMLDiagram::UMLDiagramPrivate::INT_recursivelyRemoveRelations(ElementObject * elementObject)
 	{
+		// dirty hack to make sure that if remove attached elements from this elementObject, they message is send to the
+		// correct umlDiagram.
+		elementObject->_dd->_diagram = _diagram;
+
 		// check the relations: elementObject --> ...
 		for(int i = 0; i < elementObject->attachedElementCount(); i++)
 		{
@@ -259,11 +263,16 @@ namespace element
 				elementObject->setAttachedElementAt(i, 0);
 		}
 
+		// back to zero, the umlDiagram should not be set
+		elementObject->_dd->_diagram = 0;
+
 		// check the relations: ... -> elementObject
 		QList<ElementRelator::RelatedElementDetails> details = _elementRelator.findAllRelatedElementDetailsTo(elementObject);
 		for(int i = 0; i < details.size(); i++)
 			if(details[i]._relatedElement != 0 && details[i]._relatedElement->umlDiagram() != 0)
 				details[i]._relatedElement->setAttachedElementAt(details[i]._position, 0);
+
+
 
 		// remove from list of related elements
 		_elementRelator.remove(elementObject);

@@ -46,6 +46,16 @@ namespace
 
 		return ruleMap;
 	}
+
+	template <typename T> T highestBit(T n)
+	{
+		n |= (n >>  1);
+		n |= (n >>  2);
+		n |= (n >>  4);
+		n |= (n >>  8);
+		n |= (n >> 16);
+		return n - (n >> 1);
+	}
 }
 
 namespace controller
@@ -76,9 +86,35 @@ namespace controller
 	*/
 	const IClassDiagramRules * ClassDiagramController::RulesFor(element::ElementType elementType) const
 	{
-		if(_rules.contains(elementType))
-			return _rules[elementType].get();
+		int val = elementType;
+
+		while(val != 0)
+		{
+			// try for the current value
+			element::ElementType cur =  static_cast<element::ElementType>(val);
+			if(_rules.contains(cur))
+				return _rules[cur].get();
+
+			// try for the highest bit
+			cur = static_cast<element::ElementType>(highestBit(val));
+			if(cur != val && _rules.contains(cur))
+				return _rules[cur].get();
+
+			// no, remove highest bit
+			val ^= cur;
+		}
+
+		return _rules[element::Element].get();
+	}
+
+	/*!
+	  Use this method to add a new rulechecker for the element with type \c elementType. The controller takes control over the \c rule.
+	*/
+	void ClassDiagramController::addRule(element::ElementType elementType, IClassDiagramRules * rule)
+	{
+		if(rule == 0)
+			_rules.remove(elementType);
 		else
-			return _rules[element::Element].get();
+			_rules[elementType] = rulePtr(rule);
 	}
 }

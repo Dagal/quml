@@ -23,44 +23,20 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef ELEMENTRELATORTEST_HPP
-#define ELEMENTRELATORTEST_HPP
+#ifndef ERROR_HPP
+#define ERROR_HPP
 
-#include <QObject>
-#include <QtTest/QtTest>
-
-#include "element.hpp"
-
-class ElementRelatorTest : public QObject
+namespace controller
 {
-	Q_OBJECT
-
-public:
-    ElementRelatorTest();
-
-private slots:
-	void cleanup();
-	void init();
-
-	void relatorTest();
-
-	void propertyDatatypeDetachFromUML();
-	void propertyDetachFromUML();
-	void propertyParentDetachFromUML();
-	void propertyParentAndDatatypeParentDetachFromUML();
-	void propertyDatatypeAttachToNewUML();
-	void propertyAttachToNewUML();
-	void propertyParentAttachToNewUML();
-	void propertyParentAndDatatypeParentAttachToNewUML();
-
-private:
-	element::ClassObject * data1;
-	element::ClassObject * data2;
-	element::PackageObject* pack1;
-	element::PropertyObject * prop1;
-	element::UMLDiagram * diagram;
-	element::UMLDiagram * newdiagram;
-	element::OperationObject * oper1;
+	enum Error
+	{
+		Error_NoError,
+		Error_ElementNotFound,
+		Error_NotReadyForUndo,
+		Error_NotReadyForRedo,
+		Error_SubCommandError,
+		Error_CheckingElementsError,
+	};
 };
 
-#endif // ELEMENTRELATORTEST_HPP
+#endif // ERROR_HPP

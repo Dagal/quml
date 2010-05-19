@@ -27,10 +27,12 @@
 #ifndef SINGLETON_HPP
 #define SINGLETON_HPP
 
+#include <boost/shared_ptr.hpp>
+
 template <class T> class Singleton
 {
 private:
-	static T * _instance;
+	static boost::shared_ptr<T>_instance;
 
 protected:
 	Singleton() {}
@@ -39,22 +41,18 @@ public:
 	static T * Instance()
 	{
 		if(_instance == 0)
-			_instance = new T;
+			_instance = boost::shared_ptr<T>(new T);
 
 		return _instance;
 	}
 	static void Destroy()
 	{
 		if(_instance != 0)
-		{
-			delete _instance;
-			_instance = 0;
-		}
-
+			_instance = boost::shared_ptr<T>(0);
 	}
 };
 
-template <class T> T * Singleton<T>::_instance = 0;
+template <class T> boost::shared_ptr<T> Singleton<T>::_instance = boost::shared_ptr<T>();
 
 
 

@@ -26,16 +26,13 @@
 #ifndef ICOMMAND_HPP
 #define ICOMMAND_HPP
 
+#include "error.hpp"
+
 namespace controller
 {
 	class ICommand
 	{
 	public:
-		enum Error
-		{
-			Error_NoError = 0
-		};
-
 		virtual ~ICommand() {};
 
 		/*!

@@ -26,7 +26,6 @@
 #include <QApplication>
 #include "mainwindow.hpp"
 #include <cmath>
-
 #include <iostream>
 
 int main(int argc, char ** argv)

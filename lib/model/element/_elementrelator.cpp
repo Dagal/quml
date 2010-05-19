@@ -79,21 +79,10 @@ namespace element
 		_relatedElements.remove(elementObject);
 
 		// remove value side (where elementObject is the related element)
-		for(int i = 0; i < elementObject->attachedElementCount(); i++)
+		for(relatedElements_map::iterator i = _relatedElements.begin(); i != _relatedElements.end(); ++i)
 		{
-			ElementObject * attachedElement = elementObject->getAttachedElementAt(i);
-			if(_relatedElements.contains(attachedElement))
-			{
-				QList<RelatedElementDetails> & lst = _relatedElements[attachedElement];
-				QList<RelatedElementDetails>::iterator i = std::find(
-						lst.begin(),
-						lst.end(),
-						elementObject
-						);
-
-				if(i != lst.end())
-					lst.erase(i);
-			}
+			// do we find th elementObject somewhere in the list?
+			i.value().removeAll(elementObject);
 		}
 	}
 

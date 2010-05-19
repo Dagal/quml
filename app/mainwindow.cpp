@@ -48,14 +48,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 	QGraphicsScene * scene = new QGraphicsScene(this);
 	ui->mainView->setScene(scene);
-	ui->mainView->setTransform(QTransform(), false);
+	//ui->mainView->setTransform(QTransform(), false);
 
-	scene->addItem(new QGraphicsLineItem(-100,0, 100, 0));
-	scene->addItem(new QGraphicsLineItem(0,100, 0, -100));
+	//scene->addItem(new QGraphicsLineItem(-100,0, 100, 0));
+	//scene->addItem(new QGraphicsLineItem(0,100, 0, -100));
 
 	//scene->addItem(new GraphicsItemClass(controller.getElement<element::ClassObject>("Person")));
-
-	ui->mainView->setSceneRect(QRectF());
+	//ui->mainView->setSceneRect(QRectF());
 
 }
 
