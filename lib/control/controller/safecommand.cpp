@@ -27,9 +27,33 @@
 
 namespace controller
 {
+    namespace
+    {
+        SafeCommand::ErrorCommand setError(UMLDiagramCommand * cmd, int position, int error)
+        {
+            SafeCommand::ErrorCommand e;
+            e.command = cmd;
+            e.position = position;
+            e.error = error;
+
+            return e;
+        }
+
+        SafeCommand::ErrorCommand clearError()
+        {
+            SafeCommand::ErrorCommand e;
+            e.command = 0;
+            e.position = -1;
+            e.error = Error_NoError;
+
+            return e;
+        }
+    }
+
 	SafeCommand::SafeCommand(const QList<UMLDiagramCommand*> & commands)
 		: _commands(commands)
 		, _nextIsRedo(true)
+        , _errorCommand(clearError())
 	{
 	}
 
@@ -43,22 +67,23 @@ namespace controller
 		if(!_nextIsRedo) return Error_NotReadyForRedo;
 
 		QSet<element::ElementObject*> _alteredElements;
-		UMLDiagramCommand * problemCommand = 0;
 
-		for(int i = 0; i < _commands.size(); i++)
+        for(int i = 0; i < _commands.size(); i++)
 		{
 			UMLDiagramCommand * curCommand = _commands[i];
 
+            int curError;
+
 			// can we execute the command correctly?
-			if(curCommand->redo() == Error_NoError)
+            if( (curError = curCommand->redo()) == Error_NoError)
 			{
 				// add all elements to check to the list
 				_alteredElements.unite(curCommand->changedElements());
 			}
 			else
 			{
-				// store the problem command
-				problemCommand = curCommand;
+                // store the problem command
+                _errorCommand = setError(curCommand, i, curError);
 
 				// undo the loop
 				undoLoop(i);
@@ -67,6 +92,8 @@ namespace controller
 				return Error_SubCommandError;
 			}
 		}
+        // no error occured, clear the errors
+        _errorCommand = clearError();
 
 		// check all the altered elements
 
@@ -86,5 +113,7 @@ namespace controller
 	int SafeCommand::undo()
 	{
 		if(_nextIsRedo) return -1;
+
+
 	}
 }

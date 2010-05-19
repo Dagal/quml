@@ -32,15 +32,25 @@
 
 namespace controller
 {
-
 	class SafeCommand : public ICommand
 	{
+    public:
+        struct ErrorCommand
+        {
+            const UMLDiagramCommand * command;
+            int position;
+            int error;
+        };
+
 	public:
 		SafeCommand(const QList<UMLDiagramCommand*> & commands);
 		~SafeCommand();
 
 		virtual int redo();
 		virtual int undo();
+
+        const UMLDiagramCommand * commandAt(int i) const    { return _commands[i];}
+        const ErrorCommand & errorCommand() const           { return _errorCommand; }
 
 	private:
 		void undoLoop(int startPos);
@@ -50,6 +60,7 @@ namespace controller
 	private:
 		QList<UMLDiagramCommand*> _commands;
 		bool _nextIsRedo;
+        ErrorCommand _errorCommand;
 	};
 }
 
