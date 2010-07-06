@@ -25,6 +25,7 @@
 
 #include "command.hpp"
 #include "umldiagram.hpp"
+#include "classdiagramcontroller.hpp"
 
 using namespace element;
 
@@ -103,5 +104,49 @@ namespace controller
 		element->setParent(diagram()->findElement(oldParentQualifiedName()));
 
 		return Error_NoError;
+	}
+
+	CheckElementsCommand::CheckElementsCommand(const QSet<element::ElementObject *> & elements)
+		: _elements(elements)
+	{
+		undo();
+	}
+
+	void CheckElementsCommand::reinitialise(const QSet<element::ElementObject *> & elements)
+	{
+		undo();
+		_elements = elements;
+	}
+
+	int CheckElementsCommand::redo()
+	{
+		undo();
+
+		ClassDiagramController * controller = ClassDiagramController::Instance();
+
+		// check all elements
+		foreach(element::ElementObject * element, _elements)
+		{
+			const IClassDiagramRules * rules = controller->RulesFor(element);
+			_error.errorCode = rules->checkElement(element);
+
+			if(hasError())
+			{
+				_error.type = element->type();
+				_error.elementQualifiedName = element->qualifiedName();
+				break;
+			}
+		}
+
+		return _error.errorCode;
+	}
+
+	int CheckElementsCommand::undo()
+	{
+		_error.errorCode = Error_NoError;
+		_error.type = Element;
+		_error.elementQualifiedName = QString();
+
+		return _error.errorCode;
 	}
 }

@@ -29,27 +29,38 @@
 #include "icommand.hpp"
 #include "command.hpp"
 #include <QList>
+#include <boost/shared_ptr.hpp>
 
 namespace controller
 {
-
 	class SafeCommand : public ICommand
 	{
+		class SafeCommandPrivate;
+
+	public:
+		struct CommandError
+		{
+			CommandError()
+				: command(0)
+				, errorCode(Error_NoError)
+			{
+			}
+
+			ICommand * command;
+			int errorCode;
+		};
+
 	public:
 		SafeCommand(const QList<UMLDiagramCommand*> & commands);
-		~SafeCommand();
 
 		virtual int redo();
 		virtual int undo();
 
-	private:
-		void undoLoop(int startPos);
-
-
+		const QList<UMLDiagramCommand*> & commands() const;
+		const CommandError & error() const;
 
 	private:
-		QList<UMLDiagramCommand*> _commands;
-		bool _nextIsRedo;
+		boost::shared_ptr<SafeCommandPrivate> _dd;
 	};
 }
 

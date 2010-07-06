@@ -34,6 +34,14 @@ template <class T> class Singleton
 private:
 	static boost::shared_ptr<T>_instance;
 
+	struct deleter
+	{
+		void operator() (T * t)
+		{
+			delete t;
+		}
+	};
+
 protected:
 	Singleton() {}
 
@@ -41,9 +49,9 @@ public:
 	static T * Instance()
 	{
 		if(_instance == 0)
-			_instance = boost::shared_ptr<T>(new T);
+			_instance = boost::shared_ptr<T>(new T, deleter());
 
-		return _instance;
+		return _instance.get();
 	}
 	static void Destroy()
 	{

@@ -24,67 +24,104 @@
 *******************************************************************/
 
 #include "safecommand.hpp"
+#include "_safecommand.hpp"
+#include "classdiagramcontroller.hpp"
 
 namespace controller
 {
 	SafeCommand::SafeCommand(const QList<UMLDiagramCommand*> & commands)
-		: _commands(commands)
-		, _nextIsRedo(true)
+		: _dd(new SafeCommandPrivate(commands))
 	{
-	}
-
-	SafeCommand::~SafeCommand()
-	{
-		qDeleteAll(_commands);
 	}
 
 	int SafeCommand::redo()
 	{
-		if(!_nextIsRedo) return Error_NotReadyForRedo;
+		if(!_dd->_nextIsRedo) return Error_NotReadyForRedo;
 
-		QSet<element::ElementObject*> _alteredElements;
-		UMLDiagramCommand * problemCommand = 0;
+		// clean the error details
+		_dd->setError(0, Error_NoError);
 
-		for(int i = 0; i < _commands.size(); i++)
+		QSet<element::ElementObject*> alteredElements;
+
+		// redo all the commands
+		for(int i = 0; i < commands().size(); ++i)
 		{
-			UMLDiagramCommand * curCommand = _commands[i];
+			UMLDiagramCommand * curCommand = commands()[i];
+			int curError = curCommand->redo();
 
-			// can we execute the command correctly?
-			if(curCommand->redo() == Error_NoError)
+			// error in command, cleanup and exit
+			if(curError != Error_NoError)
 			{
-				// add all elements to check to the list
-				_alteredElements.unite(curCommand->changedElements());
+				_dd->setError(curCommand, curError);
+				_dd->undoLoop(i);
+
+				return Error_SubCommandError;
 			}
-			else
+
+			// store the changed elements to check
+			alteredElements.unite(curCommand->changedElements());
+		}
+
+		// check all the elements and unroll if necessary
+		_dd->_checker = boost::shared_ptr<CheckElementsCommand>(new CheckElementsCommand(alteredElements));
+		if(_dd->_checker->redo() != Error_CheckingElementsError)
+		{
+			_dd->setError(_dd->_checker.get(), Error_CheckingElementsError);
+			_dd->undoLoop(commands().size()-1);
+
+			return Error_CheckingElementsError;
+		}
+
+		// everything is okay
+		_dd->_nextIsRedo = false;
+
+		return Error_NoError;
+	}
+
+	int SafeCommand::undo()
+	{
+		if(_dd->_nextIsRedo) return Error_NotReadyForUndo;
+
+		// clean all the error details
+		_dd->setError(0, Error_NoError);
+
+		// try to undo everything
+		for(int i = commands().size()-1; i >= 0; --i)
+		{
+			UMLDiagramCommand * curCommand = commands()[i];
+			int curError = curCommand->undo();
+
+			if(curError != Error_NoError)
 			{
-				// store the problem command
-				problemCommand = curCommand;
-
-				// undo the loop
-				undoLoop(i);
-
-				// break the loop and send an error
+				_dd->setError(curCommand, curError);
 				return Error_SubCommandError;
 			}
 		}
 
-		// check all the altered elements
+		_dd->_nextIsRedo = true;
+		return Error_NoError;
 
-
-		// correctly executed
-		_nextIsRedo = false;
-
-		return 0;
 	}
 
-	void SafeCommand::undoLoop(int startPos)
+	void SafeCommand::SafeCommandPrivate::undoLoop(int startPos)
 	{
 		for(int i = startPos; i >= 0; --i)
 			_commands[i]->undo();
 	}
 
-	int SafeCommand::undo()
+	const QList<UMLDiagramCommand*> & SafeCommand::commands() const
 	{
-		if(_nextIsRedo) return -1;
+		return _dd->_commands;
+	}
+
+	const SafeCommand::CommandError & SafeCommand::error() const
+	{
+		return _dd->_commandError;
+	}
+
+	void SafeCommand::SafeCommandPrivate::setError(ICommand * command, int errorCode)
+	{
+		_commandError.command = command;
+		_commandError.errorCode = errorCode;
 	}
 }

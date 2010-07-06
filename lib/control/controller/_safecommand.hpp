@@ -23,33 +23,36 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 *******************************************************************/
 
-#ifndef CLASSDIAGRAMCONTROLLER_HPP
-#define CLASSDIAGRAMCONTROLLER_HPP
+#ifndef _SAFECOMMAND_HPP
+#define _SAFECOMMAND_HPP
 
-#include "umldiagram.hpp"
-#include "iclassdiagramrules.hpp"
-#include "singleton.hpp"
+#include "safecommand.hpp"
 
 namespace controller
 {
-	class ClassDiagramController : public Singleton<ClassDiagramController>
+	struct SafeCommand::SafeCommandPrivate
 	{
-		friend class Singleton<ClassDiagramController>;
+		SafeCommandPrivate(const QList<UMLDiagramCommand*> & commands)
+			: _commands(commands)
+			, _nextIsRedo(true)
+		{
+		}
 
-	public:
-		// static elementChecker functions
-		const IClassDiagramRules * RulesFor(element::ElementObject * elementObject) const;
-		const IClassDiagramRules * RulesFor(element::ElementType elementType) const;
+		~SafeCommandPrivate()
+		{
+			qDeleteAll(_commands);
+		}
 
-		void addRule(element::ElementType elementType, IClassDiagramRules * rule);
 
-	private:
-		ClassDiagramController();
-		~ClassDiagramController() {};
+		void undoLoop(int startPos);
+		void setError(ICommand * command, int errorCode);
 
-	private:
-		QMap<element::ElementType, boost::shared_ptr<IClassDiagramRules> > _rules;
+
+		QList<UMLDiagramCommand*> _commands;
+		bool _nextIsRedo;
+		CommandError _commandError;
+		boost::shared_ptr<CheckElementsCommand> _checker;
 	};
 }
 
-#endif // CLASSDIAGRAMCONTROLLER_HPP
+#endif // _SAFECOMMAND_HPP

@@ -36,7 +36,8 @@ HEADERS += model/element/umldiagram.hpp \
     control/interface/iclassdiagramrules.hpp \
     control/controller/command.hpp \
     control/controller/error.hpp \
-    control/controller/safecommand.hpp
+    control/controller/safecommand.hpp \
+    control/controller/_safecommand.hpp
 SOURCES += model/element/umldiagram.cpp \
     model/element/elementobject.cpp \
     model/element/elementhelper.cpp \

@@ -38,8 +38,8 @@ namespace controller
 	public:
 		UMLDiagramCommand(element::UMLDiagram * diagram) : _diagram(diagram) {}
 
-		element::UMLDiagram * diagram() const					{ return _diagram; }
-		QSet<element::ElementObject*> changedElements() const	{ return _changedElements; }
+		element::UMLDiagram * diagram() const							{ return _diagram; }
+		const QSet<element::ElementObject*> & changedElements() const	{ return _changedElements; }
 
 	protected:
 		QSet<element::ElementObject *> _changedElements;
@@ -87,6 +87,33 @@ namespace controller
 		QString _newQualifiedName;
 		QString _oldParentQualifiedName;
 		const QString _newParentQualifiedName;
+	};
+
+	class CheckElementsCommand : public ICommand
+	{		
+		struct ErrorDetails
+		{
+			int errorCode;
+			QString elementQualifiedName;
+			element::ElementType type;
+		};
+
+	public:
+		CheckElementsCommand(const QSet<element::ElementObject *> & elements);
+
+		virtual int redo();
+		virtual int undo();
+
+		void reinitialise(const QSet<element::ElementObject *> & elements);
+
+		// getters and setters
+		bool hasError() const						{ return _error.errorCode != Error_NoError; }
+		const ErrorDetails & errorDetails() const	{ return _error; }
+
+	private:
+		QSet<element::ElementObject*> _elements;
+		ErrorDetails _error;
+
 	};
 }
 
